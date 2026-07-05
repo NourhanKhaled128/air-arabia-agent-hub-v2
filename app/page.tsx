@@ -1,63 +1,53 @@
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
-import SearchBar from "./components/SearchBar";
-import QuickActions from "./components/QuickActions";
-import RecentUpdates from "./components/RecentUpdates";
-import DashboardCard from "./components/DashboardCard";
-import Link from "next/link";
+import AppLayout from "@/components/AppLayout";
+import Hero from "@/components/Hero";
 
-export default function Home() {
+import DashboardStats from "@/components/DashboardStats";
+import QuickActions from "@/components/QuickActions";
+
+import Announcements from "@/components/Announcements";
+import TimeConverter from "@/components/TimeConverter";
+
+import FavoriteArticles from "@/components/FavoriteArticles";
+import TrendingArticles from "@/components/TrendingArticles";
+
+import RecentArticles from "@/components/RecentArticles";
+import RecentActivity from "@/components/RecentActivity";
+
+import UpcomingTraining from "@/components/UpcomingTraining";
+
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen bg-gray-100">
+    <AppLayout>
 
-      <Sidebar />
+      <Hero />
 
-      <div className="flex-1 p-8">
+      <section className="mt-8">
+        <DashboardStats />
+      </section>
 
-        <Header />
+      <section className="mt-8">
+        <QuickActions />
+      </section>
 
-        <SearchBar />
+      <section className="mt-8 grid gap-6 lg:grid-cols-2 items-start">
+        <Announcements />
+        <TimeConverter />
+      </section>
 
-        <div className="grid grid-cols-2 gap-6 mt-8">
+      <section className="mt-8 grid gap-6 lg:grid-cols-2 items-start">
+        <FavoriteArticles />
+        <TrendingArticles />
+      </section>
 
-          <QuickActions />
+      <section className="mt-8 grid gap-6 lg:grid-cols-2 items-start">
+        <RecentArticles />
+        <RecentActivity />
+      </section>
 
-          <RecentUpdates />
+      <section className="mt-8">
+        <UpcomingTraining />
+      </section>
 
-          <DashboardCard title="Knowledge Categories">
-
-            <Link href="/reservations" className="block hover:text-red-700">
-              ✈ Reservations
-            </Link>
-
-            <Link href="/refunds" className="block hover:text-red-700">
-              💰 Refunds
-            </Link>
-
-            <Link href="/ancillaries" className="block hover:text-red-700">
-              🧳 Ancillaries
-            </Link>
-
-            <Link href="/payments" className="block hover:text-red-700">
-              💳 Payments
-            </Link>
-
-            <Link href="/airrewards" className="block hover:text-red-700">
-              🎁 AirRewards
-            </Link>
-
-          </DashboardCard>
-
-          <DashboardCard title="Recently Viewed">
-
-            <p>No articles viewed yet.</p>
-
-          </DashboardCard>
-
-        </div>
-
-      </div>
-
-    </main>
+    </AppLayout>
   );
 }

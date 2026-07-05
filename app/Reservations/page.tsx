@@ -1,60 +1,28 @@
-import Sidebar from "../components/Sidebar";
-import Breadcrumb from "../components/Breadcrumb";
-import Link from "next/link";
+import AppLayout from "@/components/AppLayout";
+import PageHeader from "@/components/PageHeader";
+import ArticleCard from "@/components/ArticleCard";
+import { articles } from "@/Data/articles";
 
 export default function ReservationsPage() {
+  const reservationArticles = articles.filter(
+    (article) => article.category === "Reservations"
+  );
+
   return (
-    <main className="flex min-h-screen bg-gray-100">
+    <AppLayout>
+      <PageHeader
+        title="Reservations"
+        subtitle="Reservation procedures, booking policies and operational guides."
+      />
 
-      <Sidebar />
-
-      <div className="flex-1 p-8">
-
-        <Breadcrumb current="Reservations" />
-
-        <h1 className="text-5xl font-bold text-red-700 mb-8">
-          Reservations
-        </h1>
-
-        <div className="bg-white rounded-2xl shadow-lg p-8">
-
-          <h2 className="text-2xl font-bold mb-6">
-            Articles
-          </h2>
-
-          <div className="space-y-4">
-
-            <Link
-              href="/articles/flight-change"
-              className="block hover:text-red-700"
-            >
-              ✈️ Flight Change
-            </Link>
-
-            <Link
-              href="/articles/new-booking"
-              className="block hover:text-red-700"
-            >
-              🛫 New Booking
-            </Link>
-
-            <Link
-              href="/articles/name-correction"
-              className="block hover:text-red-700"
-            >
-              ✍️ Name Correction
-            </Link>
-
-            <p>📅 Schedule Change</p>
-
-            <p>🚫 Duplicate Booking</p>
-
-          </div>
-
-        </div>
-
+      <div className="grid gap-6">
+        {reservationArticles.map((article) => (
+          <ArticleCard
+            key={article.id}
+            article={article}
+          />
+        ))}
       </div>
-
-    </main>
+    </AppLayout>
   );
 }
