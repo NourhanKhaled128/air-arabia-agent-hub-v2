@@ -1,55 +1,73 @@
-export default function UpcomingTraining(){
+const training = [
 
-    const sessions=[
+  {
+    title: "Reservation Refresher",
+    date: "08 July",
+  },
 
-        "Customer Service Refresher",
+  {
+    title: "Refund Policy",
+    date: "10 July",
+  },
 
-        "Refund Policies",
+  {
+    title: "Airport Operations",
+    date: "14 July",
+  },
 
-        "Flight Disruptions",
+];
 
-        "Ancillaries"
+export default function UpcomingTraining() {
 
-    ];
+  return (
 
-    return(
+    <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
 
-        <div className="rounded-3xl bg-white shadow-xl p-8">
+      <div className="mb-6 flex items-center justify-between">
 
-            <h2 className="text-2xl font-bold text-red-700 mb-6">
+        <h2 className="text-2xl font-bold">
 
-                Upcoming Training
+          Upcoming Training
 
-            </h2>
+        </h2>
 
-            <div className="space-y-4">
+        <button className="text-sm font-semibold text-red-700">
 
-                {sessions.map(session=>(
+          View Calendar
 
-                    <div
-                    key={session}
-                    className="rounded-xl border border-gray-200 p-4 hover:bg-red-50">
+        </button>
 
-                        <h3 className="font-semibold">
+      </div>
 
-                            {session}
+      <div className="grid gap-5 lg:grid-cols-3">
 
-                        </h3>
+        {training.map((course) => (
 
-                        <p className="text-gray-500">
+          <div
+            key={course.title}
+            className="rounded-2xl border border-gray-100 p-6"
+          >
 
-                            July 2026
+            <h3 className="font-semibold">
 
-                        </p>
+              {course.title}
 
-                    </div>
+            </h3>
 
-                ))}
+            <p className="mt-3 text-gray-500">
 
-            </div>
+              {course.date}
 
-        </div>
+            </p>
 
-    );
+          </div>
+
+        ))}
+
+      </div>
+
+    </section>
+
+  );
 
 }

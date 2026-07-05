@@ -1,113 +1,115 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Clock3 } from "lucide-react";
 
 export default function TimeConverter() {
-  const [time24, setTime24] = useState("");
+  const [input, setInput] = useState("");
   const [result, setResult] = useState("--:--");
 
-  const convertTime = (value: string) => {
-    setTime24(value);
-
-    const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-
-    if (!regex.test(value)) {
+  useEffect(() => {
+    if (input.length !== 4) {
       setResult("--:--");
       return;
     }
 
-    const [hourString, minute] = value.split(":");
-    let hour = parseInt(hourString);
+    const hour = Number(input.substring(0, 2));
+    const minute = Number(input.substring(2, 4));
+
+    if (
+      isNaN(hour) ||
+      isNaN(minute) ||
+      hour < 0 ||
+      hour > 23 ||
+      minute < 0 ||
+      minute > 59
+    ) {
+      setResult("Invalid");
+      return;
+    }
 
     const period = hour >= 12 ? "PM" : "AM";
 
-    hour = hour % 12;
-    if (hour === 0) hour = 12;
+    let h = hour % 12;
 
-    setResult(`${hour}:${minute} ${period}`);
-  };
+    if (h === 0) h = 12;
 
-  const clear = () => {
-    setTime24("");
-    setResult("--:--");
-  };
-
-  const copyResult = async () => {
-    if (result !== "--:--") {
-      await navigator.clipboard.writeText(result);
-    }
-  };
+    setResult(`${h}:${minute.toString().padStart(2, "0")} ${period}`);
+  }, [input]);
 
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-lg h-[420px]">
+    <section className="h-[360px] rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
 
       {/* Header */}
 
-      <div className="flex items-center gap-3 mb-5">
+      <div className="flex items-center gap-4">
 
-        <div className="h-12 w-12 rounded-xl bg-red-100 flex items-center justify-center">
-          <Clock3 className="h-6 w-6 text-red-700" />
+        <div className="rounded-xl bg-red-100 p-3">
+
+          <Clock3 className="text-red-700" size={24} />
+
         </div>
 
         <div>
+
           <h2 className="text-2xl font-bold text-red-700">
+
             Time Converter
+
           </h2>
 
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-500">
+
             24-Hour → 12-Hour Format
+
           </p>
+
         </div>
 
       </div>
 
       {/* Input */}
 
-      <div className="rounded-xl border border-gray-200 p-4">
+      <div className="mt-6">
 
-        <label className="block mb-2 font-semibold text-black">
+        <label className="mb-2 block font-semibold text-gray-800">
+
           Enter Time (24H)
+
         </label>
 
         <input
           type="text"
-          value={time24}
-          onChange={(e) => convertTime(e.target.value)}
-          placeholder="23:30"
-          className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-2xl font-bold text-black outline-none focus:border-red-600"
+          inputMode="numeric"
+          maxLength={4}
+          value={input}
+          onChange={(e) =>
+            setInput(e.target.value.replace(/\D/g, ""))
+          }
+          placeholder="2230"
+          className="w-full rounded-xl border border-gray-300 px-5 py-3 text-center text-2xl font-bold tracking-normal outline-none transition focus:border-red-700"
         />
-
-        <p className="mt-2 text-sm text-gray-500">
-          Format: HH:MM
-        </p>
-
-      </div>
-
-      {/* Arrow */}
-
-      <div className="flex justify-center my-5">
-
-        <div className="h-12 w-12 rounded-full bg-red-700 text-white flex items-center justify-center text-xl shadow">
-          ↓
-        </div>
 
       </div>
 
       {/* Result */}
 
-<div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
+      <div className="mt-6 rounded-2xl border border-red-100 bg-red-50 py-5 text-center">
 
-<h3 className="text-lg font-semibold text-gray-700">
-Converted Time
-</h3>
+        <p className="text-gray-500">
 
-<p className="mt-3 text-4xl font-bold text-red-700">
-{result}
-</p>
+          Converted Time
 
-</div>
-   
-    </div>
+        </p>
+
+        <h2 className="mt-2 text-4xl font-bold text-red-700">
+
+          {result}
+
+        </h2>
+
+      </div>
+
+    </section>
   );
 }

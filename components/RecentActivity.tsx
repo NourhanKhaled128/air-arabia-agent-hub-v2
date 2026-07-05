@@ -1,35 +1,81 @@
+const activity = [
+  {
+    title: "Refund Policy Updated",
+    description: "New refund workflow published.",
+    time: "10 min ago",
+  },
+  {
+    title: "Airport Alert",
+    description: "SHJ operational update.",
+    time: "45 min ago",
+  },
+  {
+    title: "Training Published",
+    description: "Customer Service Refresher.",
+    time: "2 hrs ago",
+  },
+  {
+    title: "Reservation SOP",
+    description: "Flight Change procedure updated.",
+    time: "Today",
+  },
+  {
+    title: "Payment Guide",
+    description: "New payment process.",
+    time: "Today",
+  },
+];
+
 export default function RecentActivity() {
-  const activities = [
-    "Refund Policy updated",
-    "New Reservation SOP",
-    "Summer Schedule Published",
-    "Payment Guide Updated",
-    "Ancillary Services Revised",
-  ];
-
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-lg h-[470px]">
+    <section className="h-[420px] rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
 
-      <h2 className="mb-5 text-2xl font-bold text-black">
-        Recent Activity
-      </h2>
+      <div className="mb-6 flex items-center justify-between">
 
-      <div className="space-y-4">
+        <h2 className="text-2xl font-bold">
 
-        {activities.map((item) => (
+          Recent Activity
+
+        </h2>
+
+        <button className="text-sm font-semibold text-red-700">
+
+          View All
+
+        </button>
+
+      </div>
+
+      <div className="h-[300px] space-y-4 overflow-y-auto pr-2">
+
+        {activity.map((item) => (
 
           <div
-            key={item}
-            className="flex items-center justify-between rounded-xl bg-gray-50 p-4"
+            key={item.title}
+            className="rounded-2xl border border-gray-100 bg-gray-50 p-5 transition hover:bg-red-50"
           >
 
-            <span className="font-medium text-black">
-              {item}
-            </span>
+            <div className="flex items-center justify-between">
 
-            <span className="text-sm text-gray-500">
-              Today
-            </span>
+              <h3 className="font-semibold">
+
+                {item.title}
+
+              </h3>
+
+              <span className="text-sm text-gray-500">
+
+                {item.time}
+
+              </span>
+
+            </div>
+
+            <p className="mt-2 text-gray-600">
+
+              {item.description}
+
+            </p>
 
           </div>
 
@@ -37,6 +83,6 @@ export default function RecentActivity() {
 
       </div>
 
-    </div>
+    </section>
   );
 }

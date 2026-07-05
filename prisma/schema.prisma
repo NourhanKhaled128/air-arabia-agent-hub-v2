@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  category    String
+  description String
+  overview    String
+  coverImage  String?
+  author      String
+  status      String   @default("Draft")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  procedures  ProcedureStep[]
+  dispositions Disposition[]
+  escalations Escalation[]
+  notes       Note[]
+  references  Reference[]
+  keywords    Keyword[]
+  images      ArticleImage[]
+}
+
+model ProcedureStep {
+  id        Int @id @default(autoincrement())
+
+  articleId Int
+
+  article   Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
+
+  stepNo    Int
+
+  title     String?
+
+  content   String
+
+  image     String?
+}
+
+model Disposition {
+
+  id Int @id @default(autoincrement())
+
+  articleId Int
+
+  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
+
+  content String
+
+}
+
+model Escalation {
+
+  id Int @id @default(autoincrement())
+
+  articleId Int
+
+  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
+
+  content String
+
+}
+
+model Note {
+
+  id Int @id @default(autoincrement())
+
+  articleId Int
+
+  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
+
+  content String
+
+}
+
+model Reference {
+
+  id Int @id @default(autoincrement())
+
+  articleId Int
+
+  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
+
+  title String
+
+  link String?
+
+}
+
+model Keyword {
+
+  id Int @id @default(autoincrement())
+
+  articleId Int
+
+  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
+
+  value String
+
+}
+
+model ArticleImage {
+
+  id Int @id @default(autoincrement())
+
+  articleId Int
+
+  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
+
+  image String
+
+}

@@ -2,32 +2,60 @@ import Link from "next/link";
 import { articles } from "@/Data/articles";
 
 export default function RecentArticles() {
-  const latest = [...articles].slice(0, 5);
+
+  const recent = [...articles].slice(0,5);
 
   return (
-    <div className="rounded-3xl bg-white p-6 shadow-lg h-[470px]">
-      <h2 className="mb-6 text-2xl font-bold text-red-700">
-        Recently Updated
-      </h2>
 
-      <div className="space-y-4">
-        {latest.map((article) => (
+    <section className="h-[420px] rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+
+      <div className="mb-6 flex items-center justify-between">
+
+        <h2 className="text-2xl font-bold">
+
+          Recently Updated
+
+        </h2>
+
+        <Link
+          href="/Knowledge"
+          className="text-sm font-semibold text-red-700"
+        >
+          View All
+        </Link>
+
+      </div>
+
+      <div className="space-y-4 overflow-y-auto h-[310px]">
+
+        {recent.map((article) => (
+
           <Link
             key={article.id}
-            href={`/article/${article.slug}`}
-            className="flex items-center justify-between rounded-xl border p-4 transition hover:border-red-600 hover:bg-red-50"
+            href={`/knowledge/${article.slug}`}
+            className="block rounded-xl border border-gray-100 p-4 transition hover:bg-red-50"
           >
-            <div>
-              <h3 className="font-bold">{article.title}</h3>
-              <p className="text-sm text-gray-500">
-                {article.lastUpdated}
-              </p>
-            </div>
 
-            <span className="text-red-600">→</span>
+            <h3 className="font-semibold text-black">
+
+              {article.title}
+
+            </h3>
+
+            <p className="mt-2 text-sm text-gray-500">
+
+              {article.category}
+
+            </p>
+
           </Link>
+
         ))}
+
       </div>
-    </div>
+
+    </section>
+
   );
+
 }

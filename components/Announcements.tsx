@@ -1,17 +1,73 @@
-export default function Announcements() {
-  return (
-    <div className="rounded-3xl bg-red-700 p-8 text-white shadow-lg h-[420px]">
-      <h2 className="text-2xl font-bold">
-        Latest Announcements
-      </h2>
+const announcements = [
+  {
+    title: "New Refund Policy",
+    date: "Today",
+  },
+  {
+    title: "Schedule Change Procedure Updated",
+    date: "Yesterday",
+  },
+  {
+    title: "Airport Alert - SHJ",
+    date: "2 days ago",
+  },
+  {
+    title: "Training Session Available",
+    date: "3 days ago",
+  },
+];
 
-      <ul className="mt-6 space-y-4">
-        <li>✅ New refund policy effective this week.</li>
-        <li>✈️ Flight disruption SOP updated.</li>
-        <li>🎓 July training schedule published.</li>
-        <li>💳 Payment gateway maintenance on Friday.</li>
-      </ul>
-      <div className="mt-6 space-y-5 overflow-y-auto pr-2 h-[280px]"></div>
-    </div>
+export default function Announcements() {
+
+  return (
+
+    <section className="h-[360px] rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+
+      <div className="flex items-center justify-between">
+
+        <h2 className="text-2xl font-bold">
+
+          Announcements
+
+        </h2>
+
+        <button className="text-sm font-semibold text-red-700">
+
+          View All
+
+        </button>
+
+      </div>
+
+      <div className="mt-6 space-y-5 overflow-y-auto h-[250px] pr-2">
+
+        {announcements.map((item) => (
+
+          <div
+            key={item.title}
+            className="rounded-2xl border border-gray-100 p-4 transition hover:bg-red-50"
+          >
+
+            <h3 className="font-semibold">
+
+              {item.title}
+
+            </h3>
+
+            <p className="mt-2 text-sm text-gray-500">
+
+              {item.date}
+
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </section>
+
   );
+
 }
