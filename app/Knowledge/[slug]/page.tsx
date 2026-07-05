@@ -1,94 +1,158 @@
 import { notFound } from "next/navigation";
-import AppLayout from "@/components/AppLayout";
-import Breadcrumb from "@/components/Breadcrumb";
-import { articles } from "@/Data/articles";
+import { prisma } from "@/lib/prisma";
 
 interface Props {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default function ArticlePage({ params }: Props) {
-  const article = articles.find(
-    (a) => a.slug === params.slug
-  );
+export default async function ArticlePage({ params }: Props) {
+  const { slug } = await params;
+
+  const article = await prisma.article.findUnique({
+    where: {
+      slug,
+    },
+    include: {
+      procedures: {
+        orderBy: {
+          stepNo: "asc",
+        },
+      },
+      dispositions: true,
+      escalations: true,
+      notes: true,
+      references: true,
+    },
+  });
 
   if (!article) {
     notFound();
   }
 
   return (
-    <AppLayout>
+    <div className="mx-auto max-w-5xl space-y-8">
 
-<div className="mx-auto max-w-5xl">
+      <div>
 
-  <Breadcrumb
-    category={article.category}
-    title={article.title}
-  />
+        <span className="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700">
+          {article.category}
+        </span>
 
-  <span className="rounded-full bg-red-100 px-4 py-2 text-sm font-semibold text-red-700">
-    {article.category}
-  </span>
-
-  <h1 className="mt-5 text-5xl font-bold text-black">
-    {article.title}
-  </h1>
+        <h1 className="mt-4 text-5xl font-bold">
+          {article.title}
+        </h1>
 
         <p className="mt-4 text-lg text-gray-600">
           {article.description}
         </p>
 
-        <div className="mt-6 flex gap-8 text-sm text-gray-500">
-
-          <span>
-            👤 {article.author}
-          </span>
-
-          <span>
-            📅 {article.lastUpdated}
-          </span>
-
-        </div>
-
-        <div className="mt-12 rounded-3xl bg-white p-8 shadow-lg">
-
-          <h2 className="mb-8 text-3xl font-bold">
-            Procedure
-          </h2>
-
-          <ol className="space-y-6">
-
-            {article.content.map((step, index) => (
-
-              <li
-                key={index}
-                className="flex gap-5"
-              >
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-700 font-bold text-white">
-
-                  {index + 1}
-
-                </div>
-
-                <p className="pt-2 text-lg text-gray-700">
-
-                  {step}
-
-                </p>
-
-              </li>
-
-            ))}
-
-          </ol>
-
-        </div>
-
       </div>
 
-    </AppLayout>
+      <section>
+
+        <h2 className="mb-4 text-3xl font-bold">
+          Overview
+        </h2>
+
+        <p className="whitespace-pre-wrap">
+          {article.overview}
+        </p>
+
+      </section>
+
+      <section>
+
+        <h2 className="mb-4 text-3xl font-bold">
+          Procedure
+        </h2>
+
+        <div className="space-y-6">
+
+          {article.procedures.map((step) => (
+
+            <div
+              key={step.id}
+              className="rounded-2xl border p-6"
+            >
+
+              <h3 className="mb-3 text-xl font-semibold">
+                Step {step.stepNo}
+              </h3>
+
+              <p className="whitespace-pre-wrap">
+                {step.content}
+              </p>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      </section>
+
+      <section>
+
+        <h2 className="mb-4 text-3xl font-bold">
+          Disposition
+        </h2>
+
+        <ul className="list-disc space-y-2 pl-6">
+
+          {article.dispositions.map((item) => (
+
+            <li key={item.id}>
+              {item.content}
+            </li>
+
+          ))}
+
+        </ul>
+
+      </section>
+
+      <section>
+
+        <h2 className="mb-4 text-3xl font-bold">
+          Escalation
+        </h2>
+
+        <ul className="list-disc space-y-2 pl-6">
+
+          {article.escalations.map((item) => (
+
+            <li key={item.id}>
+              {item.content}
+            </li>
+
+          ))}
+
+        </ul>
+
+      </section>
+
+      <section>
+
+        <h2 className="mb-4 text-3xl font-bold">
+          Notes
+        </h2>
+
+        <ul className="list-disc space-y-2 pl-6">
+
+          {article.notes.map((item) => (
+
+            <li key={item.id}>
+              {item.content}
+            </li>
+
+          ))}
+
+        </ul>
+
+      </section>
+
+    </div>
   );
 }

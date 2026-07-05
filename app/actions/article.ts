@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 
-export async function createArticle(data: {
+export async function createArticle(formData: {
   title: string;
   slug: string;
   category: string;
@@ -10,15 +10,27 @@ export async function createArticle(data: {
   overview: string;
   author: string;
 }) {
+
   return await prisma.article.create({
+
     data: {
-      title: data.title,
-      slug: data.slug,
-      category: data.category,
-      description: data.description,
-      overview: data.overview,
-      author: data.author,
+
+      title: formData.title,
+
+      slug: formData.slug,
+
+      category: formData.category,
+
+      description: formData.description,
+
+      overview: formData.overview,
+
+      author: formData.author,
+
       status: "Draft",
+
     },
+
   });
+
 }

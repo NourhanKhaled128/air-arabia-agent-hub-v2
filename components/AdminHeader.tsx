@@ -1,30 +1,33 @@
 "use client";
 
-import { Bell, Search } from "lucide-react";
+import {
+  Bell,
+  Search,
+} from "lucide-react";
 
 export default function AdminHeader() {
 
   return (
 
-    <header className="flex items-center justify-between border-b bg-white px-8 py-5">
+    <header className="sticky top-0 z-40 flex items-center justify-between border-b bg-white px-8 py-5">
 
       <div>
 
         <h1 className="text-3xl font-bold">
 
-          Admin Portal
+          Air Arabia CMS
 
         </h1>
 
         <p className="text-gray-500">
 
-          Manage Knowledge Base
+          Knowledge Management System
 
         </p>
 
       </div>
 
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-6">
 
         <div className="relative">
 
@@ -35,14 +38,14 @@ export default function AdminHeader() {
 
           <input
             placeholder="Search..."
-            className="w-80 rounded-xl border px-12 py-3 outline-none"
+            className="w-80 rounded-xl border border-gray-300 py-3 pl-11 pr-4 outline-none focus:border-red-700"
           />
 
         </div>
 
-        <button className="rounded-full bg-gray-100 p-3">
+        <button className="rounded-full bg-gray-100 p-3 hover:bg-red-50">
 
-          <Bell />
+          <Bell size={20} />
 
         </button>
 

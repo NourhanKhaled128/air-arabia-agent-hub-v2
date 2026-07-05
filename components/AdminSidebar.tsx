@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-
 import { usePathname } from "next/navigation";
 
 import {
@@ -18,7 +17,7 @@ GraduationCap,
 
 Settings,
 
-LogOut,
+Home,
 
 } from "lucide-react";
 
@@ -78,15 +77,15 @@ AIR ARABIA
 
 </h1>
 
-<p className="text-gray-500">
+<p className="mt-1 text-gray-500">
 
-Admin Portal
+Content Management
 
 </p>
 
 </div>
 
-<nav className="flex-1 p-4">
+<nav className="flex-1 p-5">
 
 {menu.map(item=>{
 
@@ -122,11 +121,7 @@ ${active
 
 <Icon size={20}/>
 
-<span>
-
 {item.title}
-
-</span>
 
 </Link>
 
@@ -138,13 +133,19 @@ ${active
 
 <div className="border-t p-5">
 
-<button className="flex items-center gap-3 text-red-700">
+<Link
 
-<LogOut size={20}/>
+href="/"
 
-Logout
+className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-gray-100"
 
-</button>
+>
+
+<Home size={20}/>
+
+Back to Agent Portal
+
+</Link>
 
 </div>
 
