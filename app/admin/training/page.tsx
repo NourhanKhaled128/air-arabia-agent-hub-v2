@@ -2,42 +2,21 @@ import Link from "next/link";
 import {
   GraduationCap,
   BookOpen,
-  ClipboardCheck,
   Award,
   Plus,
-  Pencil,
-  Trash2,
-  Eye,
 } from "lucide-react";
+import { getTrainingCourses } from "@/lib/training-service";
+import CourseRowActions from "@/components/admin/training/CourseRowActions";
 
-const courses = [
-  {
-    id: 1,
-    title: "Reservations Fundamentals",
-    category: "Reservations",
-    lessons: 14,
-    quizzes: 4,
-    status: "Published",
-  },
-  {
-    id: 2,
-    title: "Refunds & ADM",
-    category: "Refunds",
-    lessons: 10,
-    quizzes: 3,
-    status: "Published",
-  },
-  {
-    id: 3,
-    title: "Payments & EMD",
-    category: "Payments",
-    lessons: 8,
-    quizzes: 2,
-    status: "Draft",
-  },
-];
+export default async function TrainingPage() {
+  const courses = await getTrainingCourses();
 
-export default function TrainingPage() {
+  const totalLessons = courses.reduce(
+    (sum, course) => sum + course.lessons.length,
+    0
+  );
+  const published = courses.filter((c) => c.status === "Published").length;
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -55,35 +34,32 @@ export default function TrainingPage() {
           </p>
         </div>
 
-        <button className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800">
+        <Link
+          href="/admin/training/new"
+          className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+        >
           <Plus size={18} />
           New Course
-        </button>
+        </Link>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-3">
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <GraduationCap className="mb-4 text-red-700" />
           <p className="text-sm text-slate-500">Courses</p>
-          <h2 className="mt-2 text-3xl font-bold">18</h2>
+          <h2 className="mt-2 text-3xl font-bold">{courses.length}</h2>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <BookOpen className="mb-4 text-blue-700" />
           <p className="text-sm text-slate-500">Lessons</p>
-          <h2 className="mt-2 text-3xl font-bold">246</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <ClipboardCheck className="mb-4 text-emerald-700" />
-          <p className="text-sm text-slate-500">Quizzes</p>
-          <h2 className="mt-2 text-3xl font-bold">59</h2>
+          <h2 className="mt-2 text-3xl font-bold">{totalLessons}</h2>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <Award className="mb-4 text-amber-600" />
-          <p className="text-sm text-slate-500">Certificates</p>
-          <h2 className="mt-2 text-3xl font-bold">124</h2>
+          <p className="text-sm text-slate-500">Published</p>
+          <h2 className="mt-2 text-3xl font-bold">{published}</h2>
         </div>
       </div>
 
@@ -92,9 +68,9 @@ export default function TrainingPage() {
           <thead className="bg-slate-50">
             <tr>
               <th className="px-6 py-4 text-left">Course</th>
-              <th className="px-6 py-4 text-left">Category</th>
+              <th className="px-6 py-4 text-left">Duration</th>
               <th className="px-6 py-4 text-left">Lessons</th>
-              <th className="px-6 py-4 text-left">Quizzes</th>
+              <th className="px-6 py-4 text-left">Passing Score</th>
               <th className="px-6 py-4 text-left">Status</th>
               <th className="px-6 py-4 text-left">Actions</th>
             </tr>
@@ -108,15 +84,15 @@ export default function TrainingPage() {
                 </td>
 
                 <td className="px-6 py-5">
-                  {course.category}
+                  {course.duration ?? "-"}
                 </td>
 
                 <td className="px-6 py-5">
-                  {course.lessons}
+                  {course.lessons.length}
                 </td>
 
                 <td className="px-6 py-5">
-                  {course.quizzes}
+                  {course.passingScore != null ? `${course.passingScore}%` : "-"}
                 </td>
 
                 <td className="px-6 py-5">
@@ -132,29 +108,18 @@ export default function TrainingPage() {
                 </td>
 
                 <td className="px-6 py-5">
-                  <div className="flex gap-2">
-                    <button className="rounded-lg border p-2 hover:bg-slate-50">
-                      <Eye size={18} />
-                    </button>
-
-                    <button className="rounded-lg border p-2 hover:bg-slate-50">
-                      <Pencil size={18} />
-                    </button>
-
-                    <button className="rounded-lg border p-2 hover:bg-slate-50">
-                      <Trash2 size={18} />
-                    </button>
-
-                    <Link
-                      href={`/admin/training/${course.id}`}
-                      className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-slate-50"
-                    >
-                      Open
-                    </Link>
-                  </div>
+                  <CourseRowActions id={course.id} />
                 </td>
               </tr>
             ))}
+
+            {courses.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-6 py-10 text-center text-slate-500">
+                  No courses yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

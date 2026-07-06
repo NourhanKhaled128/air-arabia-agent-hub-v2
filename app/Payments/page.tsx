@@ -1,25 +1,22 @@
 import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
-import { articles } from "@/Data/articles";
+import { getArticlesByCategory } from "@/lib/article-service";
 
-export default function RefundsPage() {
-
-  const refunds = articles.filter(
-    article => article.category === "Refunds"
-  );
+export default async function PaymentsPage() {
+  const payments = await getArticlesByCategory("Payments");
 
   return (
     <AppLayout>
 
       <PageHeader
-        title="Refunds"
-        subtitle="Refund procedures and customer policies."
+        title="Payments"
+        subtitle="Payment methods, vouchers and ADM policies."
       />
 
       <div className="space-y-8">
 
-        {refunds.map(article => (
+        {payments.map((article) => (
           <ArticleCard
             key={article.id}
             article={article}

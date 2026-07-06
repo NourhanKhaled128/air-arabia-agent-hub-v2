@@ -1,12 +1,10 @@
 import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
-import { articles } from "@/Data/articles";
+import { getArticlesByCategory } from "@/lib/article-service";
 
-export default function ReservationsPage() {
-  const reservationArticles = articles.filter(
-    (article) => article.category === "Reservations"
-  );
+export default async function ReservationsPage() {
+  const reservationArticles = await getArticlesByCategory("Reservations");
 
   return (
     <AppLayout>

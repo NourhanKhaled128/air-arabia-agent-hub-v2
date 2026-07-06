@@ -8,6 +8,18 @@ export async function getCategories() {
   });
 }
 
+export async function getVisibleCategoriesForSidebar() {
+  return prisma.category.findMany({
+    where: {
+      visible: true,
+    },
+    orderBy: [
+      { group: "asc" },
+      { order: "asc" },
+    ],
+  });
+}
+
 export async function getCategoryById(id: number) {
   return prisma.category.findUnique({
     where: {
@@ -22,6 +34,9 @@ export async function createCategory(data: {
   description?: string;
   color?: string;
   icon?: string;
+  visible?: boolean;
+  order?: number;
+  group?: string;
 }) {
   return prisma.category.create({
     data,
@@ -36,6 +51,9 @@ export async function updateCategory(
     description?: string;
     color?: string;
     icon?: string;
+    visible?: boolean;
+    order?: number;
+    group?: string;
   }
 ) {
   return prisma.category.update({
@@ -52,4 +70,17 @@ export async function deleteCategory(id: number) {
       id,
     },
   });
+}
+
+export async function getArticleCountsByCategory() {
+  const counts = await prisma.article.groupBy({
+    by: ["category"],
+    _count: {
+      _all: true,
+    },
+  });
+
+  return Object.fromEntries(
+    counts.map((row) => [row.category, row._count._all])
+  );
 }

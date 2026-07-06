@@ -1,12 +1,10 @@
 import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
-import { articles } from "@/Data/articles";
+import { getArticlesByCategory } from "@/lib/article-service";
 
-export default function AirRewardsPage() {
-  const rewardArticles = articles.filter(
-    (article) => article.category === "AirRewards"
-  );
+export default async function AirRewardsPage() {
+  const rewardArticles = await getArticlesByCategory("AirRewards");
 
   return (
     <AppLayout>

@@ -2,10 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { Bell, Search } from "lucide-react";
-import { articles } from "@/Data/articles";
-import SearchDropdown from "./SearchDropdown";
+import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
 
-export default function Header() {
+interface Props {
+  articles: SearchableArticle[];
+}
+
+export default function Header({ articles }: Props) {
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -30,13 +33,11 @@ export default function Header() {
 
       article.category.toLowerCase().includes(q) ||
 
-      article.content.some(step =>
-        step.toLowerCase().includes(q)
-      )
+      article.overview.toLowerCase().includes(q)
 
     );
 
-  }, [query]);
+  }, [query, articles]);
 
   return (
 

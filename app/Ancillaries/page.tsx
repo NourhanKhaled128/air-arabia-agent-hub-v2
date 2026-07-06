@@ -1,12 +1,10 @@
 import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
-import { articles } from "@/Data/articles";
+import { getArticlesByCategory } from "@/lib/article-service";
 
-export default function AncillariesPage() {
-  const ancillaryArticles = articles.filter(
-    (article) => article.category === "Ancillaries"
-  );
+export default async function AncillariesPage() {
+  const ancillaryArticles = await getArticlesByCategory("Ancillaries");
 
   return (
     <AppLayout>

@@ -1,13 +1,10 @@
 import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
-import { articles } from "@/Data/articles";
+import { getArticlesByCategory } from "@/lib/article-service";
 
-export default function RefundsPage() {
-
-  const refunds = articles.filter(
-    article => article.category === "Refunds"
-  );
+export default async function RefundsPage() {
+  const refunds = await getArticlesByCategory("Refunds");
 
   return (
     <AppLayout>
@@ -19,7 +16,7 @@ export default function RefundsPage() {
 
       <div className="space-y-8">
 
-        {refunds.map(article => (
+        {refunds.map((article) => (
           <ArticleCard
             key={article.id}
             article={article}

@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import {
   createCategory,
   deleteCategory,
@@ -14,9 +15,14 @@ export async function createCategoryAction(formData: FormData) {
     description: formData.get("description") as string,
     color: formData.get("color") as string,
     icon: formData.get("icon") as string,
+    visible: formData.get("visible") === "on",
+    order: Number(formData.get("order") ?? 0),
+    group: (formData.get("group") as string) || "Knowledge Base",
   });
 
   revalidatePath("/admin/categories");
+  revalidatePath("/", "layout");
+  redirect("/admin/categories");
 }
 
 export async function updateCategoryAction(
@@ -29,9 +35,14 @@ export async function updateCategoryAction(
     description: formData.get("description") as string,
     color: formData.get("color") as string,
     icon: formData.get("icon") as string,
+    visible: formData.get("visible") === "on",
+    order: Number(formData.get("order") ?? 0),
+    group: (formData.get("group") as string) || "Knowledge Base",
   });
 
   revalidatePath("/admin/categories");
+  revalidatePath("/", "layout");
+  redirect("/admin/categories");
 }
 
 export async function deleteCategoryAction(id: number) {

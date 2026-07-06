@@ -5,17 +5,58 @@ import { useState } from "react";
 import ArticleInfo from "./ArticleInfo";
 import OverviewSection from "./OverviewSection";
 import PublishSection from "./PublishSection";
+import ProcedureSection, { type ProcedureStepInput } from "./ProcedureSection";
+import DispositionSection, { type DispositionInput } from "./DispositionSection";
+import EscalationSection, { type EscalationInput } from "./EscalationSection";
+import NotesSection, { type NoteInput } from "./NotesSection";
+import ReferencesSection, { type ReferenceInput } from "./ReferencesSection";
+import KeywordsSection from "./KeywordsSection";
+import ScenarioSection, { type ScenarioInput } from "./ScenarioSection";
+import PhotosSection, { type PhotoInput } from "./PhotosSection";
+import AttachmentsSection, { type AttachmentInput } from "./AttachmentsSection";
+
+interface ArticleFormData {
+  title: string;
+  category: string;
+  description: string;
+  overview: string;
+  author: string;
+  status: string;
+  coverImage: string;
+  procedures: ProcedureStepInput[];
+  dispositions: DispositionInput[];
+  escalations: EscalationInput[];
+  notes: NoteInput[];
+  references: ReferenceInput[];
+  keywords: string[];
+  scenarios: ScenarioInput[];
+  images: PhotoInput[];
+  attachments: AttachmentInput[];
+}
+
+const emptyFormData: ArticleFormData = {
+  title: "",
+  category: "",
+  description: "",
+  overview: "",
+  author: "Nourhan Khaled",
+  status: "Draft",
+  coverImage: "",
+  procedures: [],
+  dispositions: [],
+  escalations: [],
+  notes: [],
+  references: [],
+  keywords: [],
+  scenarios: [],
+  images: [],
+  attachments: [],
+};
 
 export default function ArticleForm() {
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState({
-    title: "",
-    category: "",
-    description: "",
-    overview: "",
-    author: "Nourhan Khaled",
-  });
+  const [formData, setFormData] = useState<ArticleFormData>(emptyFormData);
 
   function updateField(name: string, value: string) {
     setFormData((prev) => ({
@@ -24,7 +65,9 @@ export default function ArticleForm() {
     }));
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>
+  ) {
     e.preventDefault();
 
     setLoading(true);
@@ -38,27 +81,18 @@ export default function ArticleForm() {
         body: JSON.stringify(formData),
       });
 
-const text = await response.text();
+      const result = await response.json();
 
-console.log(text);
-
-const result = JSON.parse(text);
       if (!response.ok) {
-        throw new Error(result.error ?? "Failed to save article.");
+        throw new Error(
+          result.error ?? "Failed to save article."
+        );
       }
 
-      alert("Article saved successfully!");
+      alert("Article created successfully!");
 
-      setFormData({
-        title: "",
-        category: "",
-        description: "",
-        overview: "",
-        author: "Nourhan Khaled",
-      });
-
+      setFormData(emptyFormData);
     } catch (error) {
-
       console.error(error);
 
       alert(
@@ -66,11 +100,8 @@ const result = JSON.parse(text);
           ? error.message
           : "Unknown error"
       );
-
     } finally {
-
       setLoading(false);
-
     }
   }
 
@@ -87,6 +118,51 @@ const result = JSON.parse(text);
       <OverviewSection
         data={formData}
         updateField={updateField}
+      />
+
+      <ProcedureSection
+        items={formData.procedures}
+        onChange={(procedures) => setFormData((prev) => ({ ...prev, procedures }))}
+      />
+
+      <ScenarioSection
+        items={formData.scenarios}
+        onChange={(scenarios) => setFormData((prev) => ({ ...prev, scenarios }))}
+      />
+
+      <DispositionSection
+        items={formData.dispositions}
+        onChange={(dispositions) => setFormData((prev) => ({ ...prev, dispositions }))}
+      />
+
+      <EscalationSection
+        items={formData.escalations}
+        onChange={(escalations) => setFormData((prev) => ({ ...prev, escalations }))}
+      />
+
+      <NotesSection
+        items={formData.notes}
+        onChange={(notes) => setFormData((prev) => ({ ...prev, notes }))}
+      />
+
+      <ReferencesSection
+        items={formData.references}
+        onChange={(references) => setFormData((prev) => ({ ...prev, references }))}
+      />
+
+      <KeywordsSection
+        keywords={formData.keywords}
+        onChange={(keywords) => setFormData((prev) => ({ ...prev, keywords }))}
+      />
+
+      <PhotosSection
+        items={formData.images}
+        onChange={(images) => setFormData((prev) => ({ ...prev, images }))}
+      />
+
+      <AttachmentsSection
+        items={formData.attachments}
+        onChange={(attachments) => setFormData((prev) => ({ ...prev, attachments }))}
       />
 
       <PublishSection

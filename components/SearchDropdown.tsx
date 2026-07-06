@@ -1,10 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Article } from "@/Data/articles";
+
+export interface SearchableArticle {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  category: string;
+  overview: string;
+}
 
 interface Props {
-  results: Article[];
+  results: SearchableArticle[];
   onClose: () => void;
 }
 
@@ -29,7 +37,7 @@ export default function SearchDropdown({
 
         <Link
           key={article.id}
-          href={`/knowledge/${article.slug}`}
+          href={`/Knowledge/${article.slug}`}
           onClick={onClose}
           className="block border-b border-gray-100 p-5 transition hover:bg-red-50"
         >

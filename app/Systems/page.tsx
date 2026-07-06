@@ -1,12 +1,10 @@
 import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
-import { articles } from "@/Data/articles";
+import { getArticlesByCategory } from "@/lib/article-service";
 
-export default function SystemsPage() {
-  const systemArticles = articles.filter(
-    (article) => article.category === "Systems"
-  );
+export default async function SystemsPage() {
+  const systemArticles = await getArticlesByCategory("Systems");
 
   return (
     <AppLayout>

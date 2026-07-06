@@ -1,27 +1,54 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
 
-export default function ProcedureSection() {
+export interface ProcedureStepInput {
+  id: number;
+  title: string;
+  content: string;
+  image: string;
+}
 
-  const [steps, setSteps] = useState([
-    {
-      id: 1,
-    },
-  ]);
+interface Props {
+  items: ProcedureStepInput[];
+  onChange: (items: ProcedureStepInput[]) => void;
+}
+
+export default function ProcedureSection({ items, onChange }: Props) {
 
   function addStep() {
-    setSteps([
-      ...steps,
-      {
-        id: Date.now(),
-      },
+    onChange([
+      ...items,
+      { id: Date.now(), title: "", content: "", image: "" },
     ]);
   }
 
   function removeStep(id: number) {
-    setSteps(steps.filter(step => step.id !== id));
+    onChange(items.filter((step) => step.id !== id));
+  }
+
+  function updateStep(id: number, field: keyof ProcedureStepInput, value: string) {
+    onChange(
+      items.map((step) =>
+        step.id === id ? { ...step, [field]: value } : step
+      )
+    );
+  }
+
+  async function uploadImage(id: number, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      updateStep(id, "image", result.url);
+    }
   }
 
   return (
@@ -52,7 +79,7 @@ export default function ProcedureSection() {
 
       <div className="space-y-8">
 
-        {steps.map((step, index) => (
+        {items.map((step, index) => (
 
           <div
             key={step.id}
@@ -67,7 +94,7 @@ export default function ProcedureSection() {
 
               </h3>
 
-              {steps.length > 1 && (
+              {items.length > 1 && (
 
                 <button
                   type="button"
@@ -83,12 +110,16 @@ export default function ProcedureSection() {
             </div>
 
             <input
+              value={step.title}
+              onChange={(e) => updateStep(step.id, "title", e.target.value)}
               placeholder="Step title..."
               className="mb-5 w-full rounded-xl border border-gray-300 p-3"
             />
 
             <textarea
               rows={6}
+              value={step.content}
+              onChange={(e) => updateStep(step.id, "content", e.target.value)}
               placeholder="Describe the procedure..."
               className="w-full rounded-xl border border-gray-300 p-4"
             />
@@ -104,7 +135,19 @@ export default function ProcedureSection() {
               <input
                 type="file"
                 accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) uploadImage(step.id, file);
+                }}
               />
+
+              {step.image && (
+                <img
+                  src={step.image}
+                  alt=""
+                  className="mt-3 h-32 rounded-xl border object-cover"
+                />
+              )}
 
             </div>
 

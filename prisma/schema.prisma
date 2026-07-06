@@ -17,6 +17,7 @@ model Article {
   coverImage   String?
   author       String
   status       String          @default("Draft")
+  viewCount    Int             @default(0)
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
   images       ArticleImage[]
@@ -26,6 +27,8 @@ model Article {
   notes        Note[]
   procedures   ProcedureStep[]
   references   Reference[]
+  scenarios    Scenario[]
+  attachments  Attachment[]
 }
 
 model ProcedureStep {
@@ -41,20 +44,24 @@ model ProcedureStep {
 model Disposition {
   id        Int     @id @default(autoincrement())
   articleId Int
+  code      String?
   content   String
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Escalation {
-  id        Int     @id @default(autoincrement())
-  articleId Int
-  content   String
-  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  id         Int     @id @default(autoincrement())
+  articleId  Int
+  department String?
+  condition  String?
+  content    String
+  article    Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Note {
   id        Int     @id @default(autoincrement())
   articleId Int
+  type      String  @default("Information")
   content   String
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
@@ -63,6 +70,7 @@ model Reference {
   id        Int     @id @default(autoincrement())
   articleId Int
   title     String
+  type      String  @default("Internal SOP")
   link      String?
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
@@ -81,6 +89,25 @@ model ArticleImage {
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
+model Scenario {
+  id        Int     @id @default(autoincrement())
+  articleId Int
+  situation String
+  response  String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model Attachment {
+  id        Int      @id @default(autoincrement())
+  articleId Int
+  fileName  String
+  url       String
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
 model Category {
   id          Int      @id @default(autoincrement())
   name        String   @unique
@@ -88,6 +115,9 @@ model Category {
   description String?
   color       String?
   icon        String?
+  visible     Boolean  @default(true)
+  order       Int      @default(0)
+  group       String   @default("Knowledge Base")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

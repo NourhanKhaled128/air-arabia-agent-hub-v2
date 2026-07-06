@@ -1,18 +1,33 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
 
-export default function EscalationSection() {
+export interface EscalationInput {
+  id: number;
+  department: string;
+  condition: string;
+  content: string;
+}
 
-  const [items,setItems]=useState([{id:1}]);
+interface Props {
+  items: EscalationInput[];
+  onChange: (items: EscalationInput[]) => void;
+}
+
+export default function EscalationSection({ items, onChange }: Props) {
 
   function addItem(){
-    setItems([...items,{id:Date.now()}]);
+    onChange([...items, { id: Date.now(), department: "", condition: "", content: "" }]);
   }
 
-  function removeItem(id:number){
-    setItems(items.filter(item=>item.id!==id));
+  function removeItem(id: number){
+    onChange(items.filter(item => item.id !== id));
+  }
+
+  function updateItem(id: number, field: keyof EscalationInput, value: string) {
+    onChange(
+      items.map(item => (item.id === id ? { ...item, [field]: value } : item))
+    );
   }
 
   return(
@@ -74,17 +89,23 @@ onClick={()=>removeItem(item.id)}
 </div>
 
 <input
+value={item.department}
+onChange={(e) => updateItem(item.id, "department", e.target.value)}
 placeholder="Department"
 className="mb-4 w-full rounded-xl border p-3"
 />
 
 <input
+value={item.condition}
+onChange={(e) => updateItem(item.id, "condition", e.target.value)}
 placeholder="Condition"
 className="mb-4 w-full rounded-xl border p-3"
 />
 
 <textarea
 rows={4}
+value={item.content}
+onChange={(e) => updateItem(item.id, "content", e.target.value)}
 placeholder="Escalation instructions..."
 className="w-full rounded-xl border p-4"
 />

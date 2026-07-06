@@ -3,55 +3,42 @@ import {
   Bell,
   CalendarDays,
   Plus,
-  Pencil,
-  Trash2,
   Eye,
   Clock,
 } from "lucide-react";
+import { getAnnouncements } from "@/lib/announcement-service";
+import AnnouncementRowActions from "@/components/admin/announcement/AnnouncementRowActions";
 
-const announcements = [
-  {
-    id: 1,
-    title: "Summer Schedule Update",
-    priority: "High",
-    status: "Published",
-    audience: "All Agents",
-    publishDate: "06 Jul 2026",
-    expiryDate: "31 Jul 2026",
-  },
-  {
-    id: 2,
-    title: "New Refund SOP",
-    priority: "Medium",
-    status: "Scheduled",
-    audience: "Reservations",
-    publishDate: "08 Jul 2026",
-    expiryDate: "31 Aug 2026",
-  },
-  {
-    id: 3,
-    title: "System Maintenance",
-    priority: "Critical",
-    status: "Draft",
-    audience: "All Users",
-    publishDate: "-",
-    expiryDate: "-",
-  },
-];
-
-const badge = {
+const badge: Record<string, string> = {
   Published: "bg-emerald-100 text-emerald-700",
   Scheduled: "bg-amber-100 text-amber-700",
   Draft: "bg-slate-200 text-slate-700",
 };
 
-const priority = {
+const priority: Record<string, string> = {
   Critical: "bg-red-100 text-red-700",
   High: "bg-orange-100 text-orange-700",
   Medium: "bg-blue-100 text-blue-700",
+  Low: "bg-slate-100 text-slate-700",
 };
 
-export default function AnnouncementsPage() {
+function formatDate(date: Date | null) {
+  if (!date) return "-";
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export default async function AnnouncementsPage() {
+  const announcements = await getAnnouncements();
+
+  const total = announcements.length;
+  const published = announcements.filter((a) => a.status === "Published").length;
+  const scheduled = announcements.filter((a) => a.status === "Scheduled").length;
+  const drafts = announcements.filter((a) => a.status === "Draft").length;
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -69,35 +56,38 @@ export default function AnnouncementsPage() {
           </p>
         </div>
 
-        <button className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800">
+        <Link
+          href="/admin/announcements/new"
+          className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+        >
           <Plus size={18} />
           New Announcement
-        </button>
+        </Link>
       </div>
 
       <div className="grid gap-6 md:grid-cols-4">
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <Bell className="mb-4 text-red-700" />
           <p className="text-sm text-slate-500">Total</p>
-          <h2 className="mt-2 text-3xl font-bold">24</h2>
+          <h2 className="mt-2 text-3xl font-bold">{total}</h2>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <Eye className="mb-4 text-emerald-700" />
           <p className="text-sm text-slate-500">Published</p>
-          <h2 className="mt-2 text-3xl font-bold">18</h2>
+          <h2 className="mt-2 text-3xl font-bold">{published}</h2>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <CalendarDays className="mb-4 text-amber-700" />
           <p className="text-sm text-slate-500">Scheduled</p>
-          <h2 className="mt-2 text-3xl font-bold">3</h2>
+          <h2 className="mt-2 text-3xl font-bold">{scheduled}</h2>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <Clock className="mb-4 text-slate-700" />
           <p className="text-sm text-slate-500">Drafts</p>
-          <h2 className="mt-2 text-3xl font-bold">3</h2>
+          <h2 className="mt-2 text-3xl font-bold">{drafts}</h2>
         </div>
       </div>
 
@@ -122,9 +112,7 @@ export default function AnnouncementsPage() {
 
                 <td className="px-6 py-5">
                   <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                      priority[item.priority as keyof typeof priority]
-                    }`}
+                    className={`rounded-full px-3 py-1 text-sm font-semibold ${priority[item.priority] ?? priority.Medium}`}
                   >
                     {item.priority}
                   </span>
@@ -132,38 +120,29 @@ export default function AnnouncementsPage() {
 
                 <td className="px-6 py-5">
                   <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                      badge[item.status as keyof typeof badge]
-                    }`}
+                    className={`rounded-full px-3 py-1 text-sm font-semibold ${badge[item.status] ?? badge.Draft}`}
                   >
                     {item.status}
                   </span>
                 </td>
 
-                <td className="px-6 py-5">{item.audience}</td>
-                <td className="px-6 py-5">{item.publishDate}</td>
-                <td className="px-6 py-5">{item.expiryDate}</td>
+                <td className="px-6 py-5">{item.audience ?? "-"}</td>
+                <td className="px-6 py-5">{formatDate(item.publishDate)}</td>
+                <td className="px-6 py-5">{formatDate(item.expiryDate)}</td>
 
                 <td className="px-6 py-5">
-                  <div className="flex items-center gap-2">
-                    <button className="rounded-lg border p-2 hover:bg-slate-50">
-                      <Pencil size={18} />
-                    </button>
-
-                    <button className="rounded-lg border p-2 hover:bg-slate-50">
-                      <Trash2 size={18} />
-                    </button>
-
-                    <Link
-                      href={`/admin/announcements/${item.id}`}
-                      className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-slate-50"
-                    >
-                      View
-                    </Link>
-                  </div>
+                  <AnnouncementRowActions id={item.id} />
                 </td>
               </tr>
             ))}
+
+            {announcements.length === 0 && (
+              <tr>
+                <td colSpan={7} className="px-6 py-10 text-center text-slate-500">
+                  No announcements yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

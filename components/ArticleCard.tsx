@@ -1,13 +1,19 @@
 import Link from "next/link";
 
 interface Props {
-  article: any;
+  article: {
+    slug: string;
+    title: string;
+    description: string;
+    category: string;
+    updatedAt: Date;
+  };
 }
 
 export default function ArticleCard({ article }: Props) {
   return (
     <Link
-      href={`/article/${article.slug}`}
+      href={`/Knowledge/${article.slug}`}
       className="block bg-white rounded-3xl shadow-lg p-8 hover:shadow-xl transition"
     >
       <div className="flex justify-between">
@@ -35,7 +41,11 @@ export default function ArticleCard({ article }: Props) {
       <div className="flex justify-between text-gray-500">
 
         <span>
-          Updated: {article.lastUpdated}
+          Updated: {article.updatedAt.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })}
         </span>
 
         <span className="text-red-600 font-bold">

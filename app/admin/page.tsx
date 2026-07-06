@@ -1,5 +1,10 @@
 import Link from "next/link";
 import DashboardCards from "@/components/AdminDashboardCard";
+import {
+  getDashboardStats,
+  getLatestArticles,
+  getLatestAnnouncements,
+} from "@/lib/dashboard-service";
 
 const modules = [
   {
@@ -40,7 +45,30 @@ const modules = [
   },
 ];
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const [stats, latestArticles, latestAnnouncements] = await Promise.all([
+    getDashboardStats(),
+    getLatestArticles(),
+    getLatestAnnouncements(),
+  ]);
+
+  const activity = [
+    ...latestArticles.map((article) => ({
+      key: `article-${article.id}`,
+      label: `Article: ${article.title}`,
+      date: article.createdAt,
+      href: `/admin/articles/${article.id}`,
+    })),
+    ...latestAnnouncements.map((announcement) => ({
+      key: `announcement-${announcement.id}`,
+      label: `Announcement: ${announcement.title}`,
+      date: announcement.createdAt,
+      href: `/admin/announcements/${announcement.id}`,
+    })),
+  ]
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+    .slice(0, 5);
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -76,7 +104,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <DashboardCards />
+      <DashboardCards stats={stats} />
 
       <section>
         <h2 className="mb-6 text-2xl font-bold text-slate-900">
@@ -116,9 +144,34 @@ export default function AdminDashboard() {
             Recent Activity
           </h2>
 
-          <div className="mt-6 rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500">
-            No recent activity available.
-          </div>
+          {activity.length === 0 ? (
+            <div className="mt-6 rounded-2xl border border-dashed border-slate-300 p-10 text-center text-slate-500">
+              No recent activity available.
+            </div>
+          ) : (
+            <ul className="mt-6 space-y-3">
+              {activity.map((item) => (
+                <li key={item.key}>
+                  <Link
+                    href={item.href}
+                    className="flex items-center justify-between rounded-xl border border-slate-200 px-5 py-4 hover:bg-slate-50"
+                  >
+                    <span className="font-medium text-slate-800">
+                      {item.label}
+                    </span>
+
+                    <span className="text-sm text-slate-500">
+                      {item.date.toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section className="rounded-3xl bg-white p-8 shadow-sm">

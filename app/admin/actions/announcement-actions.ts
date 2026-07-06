@@ -1,11 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import {
   createAnnouncement,
   updateAnnouncement,
   deleteAnnouncement,
 } from "@/lib/announcement-service";
+
+function parseDate(value: FormDataEntryValue | null) {
+  if (!value || typeof value !== "string") return undefined;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? undefined : date;
+}
 
 export async function createAnnouncementAction(
   formData: FormData
@@ -16,9 +23,12 @@ export async function createAnnouncementAction(
     priority: formData.get("priority") as string,
     status: formData.get("status") as string,
     audience: formData.get("audience") as string,
+    publishDate: parseDate(formData.get("publishDate")),
+    expiryDate: parseDate(formData.get("expiryDate")),
   });
 
   revalidatePath("/admin/announcements");
+  redirect("/admin/announcements");
 }
 
 export async function updateAnnouncementAction(
@@ -31,9 +41,12 @@ export async function updateAnnouncementAction(
     priority: formData.get("priority") as string,
     status: formData.get("status") as string,
     audience: formData.get("audience") as string,
+    publishDate: parseDate(formData.get("publishDate")),
+    expiryDate: parseDate(formData.get("expiryDate")),
   });
 
   revalidatePath("/admin/announcements");
+  redirect("/admin/announcements");
 }
 
 export async function deleteAnnouncementAction(id: number) {

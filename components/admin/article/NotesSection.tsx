@@ -1,21 +1,35 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
 
-export default function NotesSection(){
-
-const [notes,setNotes]=useState([{id:1}]);
-
-function addNote(){
-setNotes([...notes,{id:Date.now()}]);
+export interface NoteInput {
+  id: number;
+  type: string;
+  content: string;
 }
 
-function removeNote(id:number){
-setNotes(notes.filter(note=>note.id!==id));
+interface Props {
+  items: NoteInput[];
+  onChange: (items: NoteInput[]) => void;
 }
 
-return(
+export default function NotesSection({ items, onChange }: Props) {
+
+  function addNote(){
+    onChange([...items, { id: Date.now(), type: "Information", content: "" }]);
+  }
+
+  function removeNote(id: number){
+    onChange(items.filter(note => note.id !== id));
+  }
+
+  function updateNote(id: number, field: keyof NoteInput, value: string) {
+    onChange(
+      items.map(note => (note.id === id ? { ...note, [field]: value } : note))
+    );
+  }
+
+  return(
 
 <section className="rounded-3xl bg-white p-8 shadow-sm">
 
@@ -43,7 +57,7 @@ Add Note
 
 <div className="space-y-6">
 
-{notes.map((note,index)=>(
+{items.map((note,index)=>(
 
 <div
 key={note.id}
@@ -58,7 +72,7 @@ Note {index+1}
 
 </h3>
 
-{notes.length>1&&(
+{items.length>1&&(
 
 <button
 type="button"
@@ -74,6 +88,8 @@ onClick={()=>removeNote(note.id)}
 </div>
 
 <select
+value={note.type}
+onChange={(e) => updateNote(note.id, "type", e.target.value)}
 className="mb-4 w-full rounded-xl border p-3"
 >
 
@@ -87,6 +103,8 @@ className="mb-4 w-full rounded-xl border p-3"
 
 <textarea
 rows={5}
+value={note.content}
+onChange={(e) => updateNote(note.id, "content", e.target.value)}
 placeholder="Internal note..."
 className="w-full rounded-xl border p-4"
 />

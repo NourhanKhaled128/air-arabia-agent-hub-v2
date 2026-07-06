@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { LogOut } from "lucide-react";
+import { logoutAction } from "@/app/admin/actions/auth-actions";
 
 import {
 
@@ -146,6 +148,24 @@ className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-gray-100"
 Back to Agent Portal
 
 </Link>
+
+<form action={logoutAction}>
+
+<button
+
+type="submit"
+
+className="mt-2 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-700 hover:bg-red-50"
+
+>
+
+<LogOut size={20}/>
+
+Logout
+
+</button>
+
+</form>
 
 </div>
 

@@ -8,12 +8,14 @@ import {
   Trash2,
   Globe,
   Archive,
+  Copy,
 } from "lucide-react";
 
 import {
   deleteArticleAction,
   publishArticleAction,
   archiveArticleAction,
+  duplicateArticleAction,
 } from "@/app/admin/actions/article-actions";
 
 interface Article {
@@ -127,6 +129,17 @@ export default function ArticleTable({ articles }: Props) {
                     <Archive size={18} />
                   </button>
 
+                  <button
+                    disabled={isPending}
+                    onClick={() =>
+                      run(() =>
+                        duplicateArticleAction(article.id)
+                      )
+                    }
+                    className="rounded-lg border p-2 hover:bg-slate-100"
+                  >
+                    <Copy size={18} />
+                  </button>
 
                   <button
                     disabled={isPending}

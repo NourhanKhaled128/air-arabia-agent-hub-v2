@@ -3,9 +3,13 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 
-export default function KeywordsSection() {
+interface Props {
+  keywords: string[];
+  onChange: (keywords: string[]) => void;
+}
 
-  const [keywords, setKeywords] = useState<string[]>([]);
+export default function KeywordsSection({ keywords, onChange }: Props) {
+
   const [value, setValue] = useState("");
 
   function addKeyword() {
@@ -14,7 +18,7 @@ export default function KeywordsSection() {
 
     if (keywords.includes(value.trim())) return;
 
-    setKeywords([...keywords, value.trim()]);
+    onChange([...keywords, value.trim()]);
 
     setValue("");
 
@@ -22,9 +26,7 @@ export default function KeywordsSection() {
 
   function removeKeyword(keyword: string) {
 
-    setKeywords(
-      keywords.filter(item => item !== keyword)
-    );
+    onChange(keywords.filter(item => item !== keyword));
 
   }
 

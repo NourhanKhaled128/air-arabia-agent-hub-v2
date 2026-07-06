@@ -3,7 +3,19 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-interface Article {
+import ArticleInfo from "./ArticleInfo";
+import OverviewSection from "./OverviewSection";
+import ProcedureSection, { type ProcedureStepInput } from "./ProcedureSection";
+import DispositionSection, { type DispositionInput } from "./DispositionSection";
+import EscalationSection, { type EscalationInput } from "./EscalationSection";
+import NotesSection, { type NoteInput } from "./NotesSection";
+import ReferencesSection, { type ReferenceInput } from "./ReferencesSection";
+import KeywordsSection from "./KeywordsSection";
+import ScenarioSection, { type ScenarioInput } from "./ScenarioSection";
+import PhotosSection, { type PhotoInput } from "./PhotosSection";
+import AttachmentsSection, { type AttachmentInput } from "./AttachmentsSection";
+
+interface ArticleWithRelations {
   id: number;
   title: string;
   category: string;
@@ -11,10 +23,93 @@ interface Article {
   overview: string;
   author: string;
   status: string;
+  coverImage: string | null;
+  procedures: { id: number; title: string | null; content: string; image: string | null }[];
+  dispositions: { id: number; code: string | null; content: string }[];
+  escalations: { id: number; department: string | null; condition: string | null; content: string }[];
+  notes: { id: number; type: string; content: string }[];
+  references: { id: number; title: string; type: string; link: string | null }[];
+  keywords: { id: number; value: string }[];
+  scenarios: { id: number; situation: string; response: string }[];
+  images: { id: number; image: string }[];
+  attachments: { id: number; fileName: string; url: string; mimeType: string; size: number }[];
 }
 
 interface Props {
-  article: Article;
+  article: ArticleWithRelations;
+}
+
+interface EditFormData {
+  title: string;
+  category: string;
+  description: string;
+  overview: string;
+  author: string;
+  status: string;
+  coverImage: string;
+  procedures: ProcedureStepInput[];
+  dispositions: DispositionInput[];
+  escalations: EscalationInput[];
+  notes: NoteInput[];
+  references: ReferenceInput[];
+  keywords: string[];
+  scenarios: ScenarioInput[];
+  images: PhotoInput[];
+  attachments: AttachmentInput[];
+}
+
+function toFormData(article: ArticleWithRelations): EditFormData {
+  return {
+    title: article.title,
+    category: article.category,
+    description: article.description,
+    overview: article.overview,
+    author: article.author,
+    status: article.status,
+    coverImage: article.coverImage ?? "",
+    procedures: article.procedures.map((p) => ({
+      id: p.id,
+      title: p.title ?? "",
+      content: p.content,
+      image: p.image ?? "",
+    })),
+    dispositions: article.dispositions.map((d) => ({
+      id: d.id,
+      code: d.code ?? "",
+      content: d.content,
+    })),
+    escalations: article.escalations.map((e) => ({
+      id: e.id,
+      department: e.department ?? "",
+      condition: e.condition ?? "",
+      content: e.content,
+    })),
+    notes: article.notes.map((n) => ({
+      id: n.id,
+      type: n.type,
+      content: n.content,
+    })),
+    references: article.references.map((r) => ({
+      id: r.id,
+      title: r.title,
+      type: r.type,
+      link: r.link ?? "",
+    })),
+    keywords: article.keywords.map((k) => k.value),
+    scenarios: article.scenarios.map((s) => ({
+      id: s.id,
+      situation: s.situation,
+      response: s.response,
+    })),
+    images: article.images.map((i) => ({ id: i.id, url: i.image })),
+    attachments: article.attachments.map((a) => ({
+      id: a.id,
+      fileName: a.fileName,
+      url: a.url,
+      mimeType: a.mimeType,
+      size: a.size,
+    })),
+  };
 }
 
 export default function EditArticleForm({
@@ -25,15 +120,12 @@ export default function EditArticleForm({
 
   const [loading, setLoading] = useState(false);
 
-  const [form, setForm] = useState(article);
+  const [form, setForm] = useState<EditFormData>(() => toFormData(article));
 
-  function update(
-    key: keyof Article,
-    value: string
-  ) {
+  function updateField(name: string, value: string) {
     setForm((prev) => ({
       ...prev,
-      [key]: value,
+      [name]: value,
     }));
   }
 
@@ -85,71 +177,60 @@ export default function EditArticleForm({
   return (
     <div className="space-y-8">
 
-      <div className="rounded-3xl bg-white p-8 shadow-sm">
+      <ArticleInfo
+        data={form}
+        updateField={updateField}
+      />
 
-        <div className="grid gap-6">
+      <OverviewSection
+        data={form}
+        updateField={updateField}
+      />
 
-          <input
-            value={form.title}
-            onChange={(e) =>
-              update("title", e.target.value)
-            }
-            className="rounded-xl border p-3"
-          />
+      <ProcedureSection
+        items={form.procedures}
+        onChange={(procedures) => setForm((prev) => ({ ...prev, procedures }))}
+      />
 
-          <input
-            value={form.category}
-            onChange={(e) =>
-              update("category", e.target.value)
-            }
-            className="rounded-xl border p-3"
-          />
+      <ScenarioSection
+        items={form.scenarios}
+        onChange={(scenarios) => setForm((prev) => ({ ...prev, scenarios }))}
+      />
 
-          <textarea
-            rows={4}
-            value={form.description}
-            onChange={(e) =>
-              update("description", e.target.value)
-            }
-            className="rounded-xl border p-3"
-          />
+      <DispositionSection
+        items={form.dispositions}
+        onChange={(dispositions) => setForm((prev) => ({ ...prev, dispositions }))}
+      />
 
-          <textarea
-            rows={10}
-            value={form.overview}
-            onChange={(e) =>
-              update("overview", e.target.value)
-            }
-            className="rounded-xl border p-3"
-          />
+      <EscalationSection
+        items={form.escalations}
+        onChange={(escalations) => setForm((prev) => ({ ...prev, escalations }))}
+      />
 
-          <input
-            value={form.author}
-            onChange={(e) =>
-              update("author", e.target.value)
-            }
-            className="rounded-xl border p-3"
-          />
+      <NotesSection
+        items={form.notes}
+        onChange={(notes) => setForm((prev) => ({ ...prev, notes }))}
+      />
 
-          <select
-            value={form.status}
-            onChange={(e) =>
-              update("status", e.target.value)
-            }
-            className="rounded-xl border p-3"
-          >
+      <ReferencesSection
+        items={form.references}
+        onChange={(references) => setForm((prev) => ({ ...prev, references }))}
+      />
 
-            <option>Draft</option>
+      <KeywordsSection
+        keywords={form.keywords}
+        onChange={(keywords) => setForm((prev) => ({ ...prev, keywords }))}
+      />
 
-            <option>Published</option>
+      <PhotosSection
+        items={form.images}
+        onChange={(images) => setForm((prev) => ({ ...prev, images }))}
+      />
 
-            <option>Archived</option>
-
-          </select>
-
-        </div>
-
-      </div>
+      <AttachmentsSection
+        items={form.attachments}
+        onChange={(attachments) => setForm((prev) => ({ ...prev, attachments }))}
+      />
 
       <div className="flex justify-end">
 

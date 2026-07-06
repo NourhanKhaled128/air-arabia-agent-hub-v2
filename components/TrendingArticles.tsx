@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { articles } from "@/Data/articles";
+import { Eye } from "lucide-react";
+import { getTrendingArticles } from "@/lib/article-service";
 
-export default function TrendingArticles() {
+export default async function TrendingArticles() {
 
-  const trending = articles.slice(4,8);
+  const trending = await getTrendingArticles(4);
 
   return (
 
@@ -32,15 +33,24 @@ export default function TrendingArticles() {
 
           <Link
             key={article.id}
-            href={`/knowledge/${article.slug}`}
+            href={`/Knowledge/${article.slug}`}
             className="block rounded-2xl border border-gray-100 p-4 transition hover:bg-red-50"
           >
 
-            <h3 className="font-semibold">
+            <div className="flex items-center justify-between">
 
-              {article.title}
+              <h3 className="font-semibold">
 
-            </h3>
+                {article.title}
+
+              </h3>
+
+              <span className="flex items-center gap-1 text-xs font-semibold text-gray-500">
+                <Eye size={14} />
+                {article.viewCount}
+              </span>
+
+            </div>
 
             <p className="mt-2 text-sm text-gray-500">
 

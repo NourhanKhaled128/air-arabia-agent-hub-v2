@@ -9,12 +9,7 @@ import {
   Home,
   BookOpen,
   Plane,
-  CreditCard,
-  Gift,
   AlertTriangle,
-  Laptop,
-  GraduationCap,
-  Briefcase,
   Clock3,
   Globe,
   DollarSign,
@@ -24,22 +19,27 @@ import {
   ChevronDown,
   ChevronRight,
   Star,
+  Folder,
 } from "lucide-react";
 
-const knowledgeItems = [
+interface SidebarCategory {
+  id: number;
+  name: string;
+  slug: string;
+  group: string;
+}
+
+interface Props {
+  categories: SidebarCategory[];
+}
+
+const pinnedKnowledgeItems = [
   { title: "Knowledge", icon: BookOpen, href: "/Knowledge" },
-  { title: "Reservations", icon: Plane, href: "/Reservations" },
-  { title: "Refunds", icon: DollarSign, href: "/Refunds" },
-  { title: "Ancillaries", icon: Briefcase, href: "/Ancillaries" },
-  { title: "Payments", icon: CreditCard, href: "/Payments" },
-  { title: "AirRewards", icon: Gift, href: "/AirRewards" },
   {
     title: "Flight Disruptions",
     icon: AlertTriangle,
-    href: "/flight-disruptions",
+    href: "/disruptions",
   },
-  { title: "Systems", icon: Laptop, href: "/Systems" },
-  { title: "Training", icon: GraduationCap, href: "/Training" },
 ];
 
 const toolItems = [
@@ -121,14 +121,33 @@ function MenuSection({
   );
 }
 
-export default function Sidebar() {
+export default function Sidebar({ categories }: Props) {
   const pathname = usePathname();
 
   const [search, setSearch] = useState("");
 
-  const [knowledgeOpen, setKnowledgeOpen] = useState(true);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
   const [toolsOpen, setToolsOpen] = useState(true);
+
+  const groups = new Map<string, SidebarCategory[]>();
+
+  for (const category of categories) {
+    const items = groups.get(category.group) ?? [];
+    items.push(category);
+    groups.set(category.group, items);
+  }
+
+  function isGroupOpen(group: string) {
+    return openGroups[group] ?? true;
+  }
+
+  function toggleGroup(group: string) {
+    setOpenGroups((prev) => ({
+      ...prev,
+      [group]: !isGroupOpen(group),
+    }));
+  }
 
   return (
     <aside className="fixed left-0 top-0 flex h-screen w-72 flex-col border-r border-gray-200 bg-white">
@@ -214,36 +233,49 @@ export default function Sidebar() {
           </Link>
 
         </div>
-                {/* Knowledge Base */}
 
         <div className="mb-8">
+          <MenuSection
+            items={pinnedKnowledgeItems}
+            pathname={pathname}
+            search={search}
+          />
+        </div>
 
-          <button
-            onClick={() => setKnowledgeOpen(!knowledgeOpen)}
-            className="mb-3 flex w-full items-center justify-between px-4"
-          >
+        {Array.from(groups.entries()).map(([group, items]) => (
+          <div key={group} className="mb-8">
 
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
-              Knowledge Base
-            </span>
+            <button
+              onClick={() => toggleGroup(group)}
+              className="mb-3 flex w-full items-center justify-between px-4"
+            >
 
-            {knowledgeOpen ? (
-              <ChevronDown size={16} />
-            ) : (
-              <ChevronRight size={16} />
+              <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                {group}
+              </span>
+
+              {isGroupOpen(group) ? (
+                <ChevronDown size={16} />
+              ) : (
+                <ChevronRight size={16} />
+              )}
+
+            </button>
+
+            {isGroupOpen(group) && (
+              <MenuSection
+                items={items.map((category) => ({
+                  title: category.name,
+                  href: `/category/${category.slug}`,
+                  icon: Folder,
+                }))}
+                pathname={pathname}
+                search={search}
+              />
             )}
 
-          </button>
-
-          {knowledgeOpen && (
-            <MenuSection
-              items={knowledgeItems}
-              pathname={pathname}
-              search={search}
-            />
-          )}
-
-        </div>
+          </div>
+        ))}
 
         {/* Agent Tools */}
 

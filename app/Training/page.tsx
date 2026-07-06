@@ -1,12 +1,10 @@
 import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
-import { articles } from "@/Data/articles";
+import { getArticlesByCategory } from "@/lib/article-service";
 
-export default function TrainingPage() {
-  const trainingArticles = articles.filter(
-    (article) => article.category === "Training"
-  );
+export default async function TrainingArticlesPage() {
+  const trainingArticles = await getArticlesByCategory("Training");
 
   return (
     <AppLayout>

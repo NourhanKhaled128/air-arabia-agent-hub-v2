@@ -31,6 +31,11 @@ export default async function ArticlePage({ params }: Props) {
     notFound();
   }
 
+  await prisma.article.update({
+    where: { id: article.id },
+    data: { viewCount: { increment: 1 } },
+  });
+
   return (
     <div className="mx-auto max-w-5xl space-y-8">
 

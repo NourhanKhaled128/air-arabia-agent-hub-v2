@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { articles } from "@/Data/articles";
+import { getAllArticles } from "@/lib/article-service";
 
-export default function RecentArticles() {
+export default async function RecentArticles() {
 
-  const recent = [...articles].slice(0,5);
+  const articles = await getAllArticles();
+  const recent = articles.slice(0, 5);
 
   return (
 
@@ -32,7 +33,7 @@ export default function RecentArticles() {
 
           <Link
             key={article.id}
-            href={`/knowledge/${article.slug}`}
+            href={`/Knowledge/${article.slug}`}
             className="block rounded-xl border border-gray-100 p-4 transition hover:bg-red-50"
           >
 

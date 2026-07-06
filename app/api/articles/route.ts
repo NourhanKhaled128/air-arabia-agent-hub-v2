@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { buildArticleSectionsCreateData } from "@/lib/article-service";
 
 function slugify(text: string) {
   return text
@@ -16,29 +17,24 @@ export async function POST(request: Request) {
     const article = await prisma.article.create({
       data: {
         title: body.title,
-slug:
-  slugify(body.title) +
-  "-" +
-  Date.now(),
-          category: body.category ?? "",
+        slug: `${slugify(body.title)}-${Date.now()}`,
+        category: body.category ?? "",
         description: body.description ?? "",
         overview: body.overview ?? "",
+        coverImage: body.coverImage ?? null,
         author: body.author ?? "Unknown",
-        status: "Draft",
+        status: body.status ?? "Draft",
+        ...buildArticleSectionsCreateData(body),
       },
     });
 
     return NextResponse.json(article);
   } catch (error) {
-    console.error("===== API ERROR =====");
     console.error(error);
 
     return NextResponse.json(
       {
-        error:
-          error instanceof Error
-            ? error.message
-            : String(error),
+        error: "Failed to create article",
       },
       {
         status: 500,

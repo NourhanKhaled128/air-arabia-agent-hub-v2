@@ -1,7 +1,7 @@
 import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
-import { articles } from "@/Data/articles";
+import { getArticlesByCategory } from "@/lib/article-service";
 import { notFound } from "next/navigation";
 
 export default async function CategoryPage({
@@ -13,11 +13,7 @@ export default async function CategoryPage({
 
   const formattedCategory = decodeURIComponent(category).replace(/-/g, " ");
 
-  const categoryArticles = articles.filter(
-    (article) =>
-      article.category.toLowerCase() ===
-      formattedCategory.toLowerCase()
-  );
+  const categoryArticles = await getArticlesByCategory(formattedCategory);
 
   if (categoryArticles.length === 0) {
     notFound();

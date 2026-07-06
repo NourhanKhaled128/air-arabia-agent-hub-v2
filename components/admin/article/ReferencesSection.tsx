@@ -1,20 +1,36 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
 
-export default function ReferencesSection() {
+export interface ReferenceInput {
+  id: number;
+  title: string;
+  type: string;
+  link: string;
+}
 
-  const [references, setReferences] = useState([
-    { id: 1 }
-  ]);
+interface Props {
+  items: ReferenceInput[];
+  onChange: (items: ReferenceInput[]) => void;
+}
+
+export default function ReferencesSection({ items, onChange }: Props) {
 
   function addReference() {
-    setReferences([...references, { id: Date.now() }]);
+    onChange([
+      ...items,
+      { id: Date.now(), title: "", type: "Internal SOP", link: "" },
+    ]);
   }
 
   function removeReference(id: number) {
-    setReferences(references.filter(ref => ref.id !== id));
+    onChange(items.filter(ref => ref.id !== id));
+  }
+
+  function updateReference(id: number, field: keyof ReferenceInput, value: string) {
+    onChange(
+      items.map(ref => (ref.id === id ? { ...ref, [field]: value } : ref))
+    );
   }
 
   return (
@@ -45,7 +61,7 @@ export default function ReferencesSection() {
 
       <div className="space-y-6">
 
-        {references.map((reference, index) => (
+        {items.map((reference, index) => (
 
           <div
             key={reference.id}
@@ -60,7 +76,7 @@ export default function ReferencesSection() {
 
               </h3>
 
-              {references.length > 1 && (
+              {items.length > 1 && (
 
                 <button
                   type="button"
@@ -76,11 +92,15 @@ export default function ReferencesSection() {
             </div>
 
             <input
+              value={reference.title}
+              onChange={(e) => updateReference(reference.id, "title", e.target.value)}
               placeholder="Reference Title"
               className="mb-4 w-full rounded-xl border p-3"
             />
 
             <select
+              value={reference.type}
+              onChange={(e) => updateReference(reference.id, "type", e.target.value)}
               className="mb-4 w-full rounded-xl border p-3"
             >
 
@@ -92,6 +112,8 @@ export default function ReferencesSection() {
             </select>
 
             <input
+              value={reference.link}
+              onChange={(e) => updateReference(reference.id, "link", e.target.value)}
               placeholder="Link (optional)"
               className="w-full rounded-xl border p-3"
             />

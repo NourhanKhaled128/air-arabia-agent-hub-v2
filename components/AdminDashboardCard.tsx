@@ -5,34 +5,43 @@ import {
   GraduationCap,
 } from "lucide-react";
 
-const cards = [
-  {
-    title: "Articles",
-    value: "0",
-    color: "text-red-700",
-    icon: FileText,
-  },
-  {
-    title: "Categories",
-    value: "0",
-    color: "text-blue-700",
-    icon: Folder,
-  },
-  {
-    title: "Announcements",
-    value: "0",
-    color: "text-green-700",
-    icon: Megaphone,
-  },
-  {
-    title: "Training",
-    value: "0",
-    color: "text-orange-600",
-    icon: GraduationCap,
-  },
-];
+interface Props {
+  stats: {
+    articles: number;
+    categories: number;
+    announcements: number;
+    courses: number;
+  };
+}
 
-export default function DashboardCards() {
+export default function DashboardCards({ stats }: Props) {
+  const cards = [
+    {
+      title: "Articles",
+      value: stats.articles,
+      color: "text-red-700",
+      icon: FileText,
+    },
+    {
+      title: "Categories",
+      value: stats.categories,
+      color: "text-blue-700",
+      icon: Folder,
+    },
+    {
+      title: "Announcements",
+      value: stats.announcements,
+      color: "text-green-700",
+      icon: Megaphone,
+    },
+    {
+      title: "Training",
+      value: stats.courses,
+      color: "text-orange-600",
+      icon: GraduationCap,
+    },
+  ];
+
   return (
     <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 

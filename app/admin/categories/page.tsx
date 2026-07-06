@@ -1,45 +1,19 @@
 import Link from "next/link";
-import { FolderOpen, Plus, Pencil, Trash2, Layers3 } from "lucide-react";
+import { FolderOpen, Plus, Layers3 } from "lucide-react";
+import { getCategories, getArticleCountsByCategory } from "@/lib/category-service";
+import CategoryRowActions from "@/components/admin/categories/CategoryRowActions";
 
-const categories = [
-  {
-    id: 1,
-    name: "Reservations",
-    description: "Booking creation, modification and cancellation procedures.",
-    articles: 124,
-    color: "bg-red-100 text-red-700",
-  },
-  {
-    id: 2,
-    name: "Payments",
-    description: "Payments, vouchers, refunds and ADM policies.",
-    articles: 67,
-    color: "bg-blue-100 text-blue-700",
-  },
-  {
-    id: 3,
-    name: "Baggage",
-    description: "Checked baggage, cabin baggage and excess baggage.",
-    articles: 39,
-    color: "bg-emerald-100 text-emerald-700",
-  },
-  {
-    id: 4,
-    name: "Airport Services",
-    description: "Check-in, boarding, SSRs and airport operations.",
-    articles: 58,
-    color: "bg-amber-100 text-amber-700",
-  },
-  {
-    id: 5,
-    name: "Policies",
-    description: "Commercial, operational and customer service policies.",
-    articles: 91,
-    color: "bg-violet-100 text-violet-700",
-  },
-];
+export default async function CategoriesPage() {
+  const [categories, articleCounts] = await Promise.all([
+    getCategories(),
+    getArticleCountsByCategory(),
+  ]);
 
-export default function CategoriesPage() {
+  const totalArticles = Object.values(articleCounts).reduce(
+    (sum, count) => sum + count,
+    0
+  );
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -57,33 +31,26 @@ export default function CategoriesPage() {
           </p>
         </div>
 
-        <button className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800">
+        <Link
+          href="/admin/categories/new"
+          className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+        >
           <Plus size={18} />
           New Category
-        </button>
+        </Link>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <FolderOpen className="mb-4 text-red-700" />
           <p className="text-sm text-slate-500">Categories</p>
-          <h2 className="mt-2 text-3xl font-bold">5</h2>
+          <h2 className="mt-2 text-3xl font-bold">{categories.length}</h2>
         </div>
 
         <div className="rounded-2xl bg-white p-6 shadow-sm">
           <Layers3 className="mb-4 text-blue-700" />
           <p className="text-sm text-slate-500">Articles</p>
-          <h2 className="mt-2 text-3xl font-bold">379</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <p className="text-sm text-slate-500">Published</p>
-          <h2 className="mt-2 text-3xl font-bold">352</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <p className="text-sm text-slate-500">Drafts</p>
-          <h2 className="mt-2 text-3xl font-bold">27</h2>
+          <h2 className="mt-2 text-3xl font-bold">{totalArticles}</h2>
         </div>
       </div>
 
@@ -94,6 +61,9 @@ export default function CategoriesPage() {
               <th className="px-6 py-4">Category</th>
               <th className="px-6 py-4">Description</th>
               <th className="px-6 py-4">Articles</th>
+              <th className="px-6 py-4">Group</th>
+              <th className="px-6 py-4">Order</th>
+              <th className="px-6 py-4">Visible</th>
               <th className="px-6 py-4">Actions</th>
             </tr>
           </thead>
@@ -103,7 +73,7 @@ export default function CategoriesPage() {
               <tr key={category.id} className="border-t">
                 <td className="px-6 py-5">
                   <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${category.color}`}
+                    className={`rounded-full px-3 py-1 text-sm font-semibold ${category.color ?? "bg-slate-100 text-slate-700"}`}
                   >
                     {category.name}
                   </span>
@@ -114,29 +84,42 @@ export default function CategoriesPage() {
                 </td>
 
                 <td className="px-6 py-5 font-semibold">
-                  {category.articles}
+                  {articleCounts[category.name] ?? 0}
+                </td>
+
+                <td className="px-6 py-5 text-slate-600">
+                  {category.group}
+                </td>
+
+                <td className="px-6 py-5 text-slate-600">
+                  {category.order}
                 </td>
 
                 <td className="px-6 py-5">
-                  <div className="flex gap-3">
-                    <button className="rounded-lg border p-2 hover:bg-slate-50">
-                      <Pencil size={18} />
-                    </button>
+                  <span
+                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                      category.visible
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-slate-200 text-slate-700"
+                    }`}
+                  >
+                    {category.visible ? "Visible" : "Hidden"}
+                  </span>
+                </td>
 
-                    <button className="rounded-lg border p-2 hover:bg-slate-50">
-                      <Trash2 size={18} />
-                    </button>
-
-                    <Link
-                      href="/admin/articles"
-                      className="rounded-lg border px-4 py-2 text-sm font-semibold hover:bg-slate-50"
-                    >
-                      View Articles
-                    </Link>
-                  </div>
+                <td className="px-6 py-5">
+                  <CategoryRowActions id={category.id} />
                 </td>
               </tr>
             ))}
+
+            {categories.length === 0 && (
+              <tr>
+                <td colSpan={7} className="px-6 py-10 text-center text-slate-500">
+                  No categories yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

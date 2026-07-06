@@ -1,18 +1,32 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
 
-export default function DispositionSection() {
+export interface DispositionInput {
+  id: number;
+  code: string;
+  content: string;
+}
 
-  const [items, setItems] = useState([{ id: 1 }]);
+interface Props {
+  items: DispositionInput[];
+  onChange: (items: DispositionInput[]) => void;
+}
+
+export default function DispositionSection({ items, onChange }: Props) {
 
   function addItem() {
-    setItems([...items, { id: Date.now() }]);
+    onChange([...items, { id: Date.now(), code: "", content: "" }]);
   }
 
   function removeItem(id: number) {
-    setItems(items.filter(item => item.id !== id));
+    onChange(items.filter(item => item.id !== id));
+  }
+
+  function updateItem(id: number, field: keyof DispositionInput, value: string) {
+    onChange(
+      items.map(item => (item.id === id ? { ...item, [field]: value } : item))
+    );
   }
 
   return (
@@ -64,12 +78,16 @@ export default function DispositionSection() {
             </div>
 
             <input
+              value={item.code}
+              onChange={(e) => updateItem(item.id, "code", e.target.value)}
               placeholder="Disposition Code (Optional)"
               className="mb-4 w-full rounded-xl border p-3"
             />
 
             <textarea
               rows={4}
+              value={item.content}
+              onChange={(e) => updateItem(item.id, "content", e.target.value)}
               placeholder="Disposition description..."
               className="w-full rounded-xl border p-4"
             />

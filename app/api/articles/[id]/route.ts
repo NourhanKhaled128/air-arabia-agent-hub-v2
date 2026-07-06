@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { buildArticleSectionsReplaceData } from "@/lib/article-service";
 
 interface RouteContext {
   params: Promise<{
@@ -13,12 +14,24 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
+    const articleId = Number(id);
+
+    if (!Number.isInteger(articleId)) {
+      return NextResponse.json(
+        {
+          error: "Invalid article id",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
 
     const body = await request.json();
 
     const article = await prisma.article.update({
       where: {
-        id: Number(id),
+        id: articleId,
       },
       data: {
         title: body.title,
@@ -27,6 +40,8 @@ export async function PUT(
         overview: body.overview,
         author: body.author,
         status: body.status,
+        coverImage: body.coverImage ?? null,
+        ...buildArticleSectionsReplaceData(body),
       },
     });
 
