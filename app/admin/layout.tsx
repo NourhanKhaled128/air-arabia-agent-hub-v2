@@ -1,28 +1,27 @@
+import type { ReactNode } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminHeader from "@/components/AdminHeader";
 
+interface AdminLayoutProps {
+  children: ReactNode;
+}
+
 export default function AdminLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}: AdminLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-100">
-
+    <div className="min-h-screen bg-slate-100">
       <AdminSidebar />
 
-      <main className="ml-72">
-
+      <div className="ml-72 min-h-screen">
         <AdminHeader />
 
-        <div className="p-8">
-
-          {children}
-
-        </div>
-
-      </main>
-
+        <main className="p-8">
+          <div className="mx-auto w-full max-w-[1700px]">
+            {children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
