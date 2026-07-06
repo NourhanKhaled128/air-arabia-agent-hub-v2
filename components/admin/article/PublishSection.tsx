@@ -1,46 +1,22 @@
-"use client";
+interface Props {
+  loading: boolean;
+}
 
-import {
-  Eye,
-  Save,
-  Send,
-} from "lucide-react";
-
-export default function PublishSection() {
+export default function PublishSection({
+  loading,
+}: Props) {
   return (
-    <section className="sticky bottom-5 rounded-3xl bg-white p-8 shadow-xl">
+    <section className="rounded-3xl bg-white p-8 shadow-sm">
 
-      <div className="flex flex-wrap items-center justify-between gap-5">
+      <div className="flex justify-end">
 
-        <div>
-
-          <h2 className="text-2xl font-bold">
-            Publish
-          </h2>
-
-          <p className="text-gray-500">
-            Save your work or publish it for agents.
-          </p>
-
-        </div>
-
-<div className="flex gap-4">
-
-  <button
-    type="button"
-    className="rounded-xl border px-6 py-3"
-  >
-    Preview
-  </button>
-
-  <button
-    type="submit"
-    className="rounded-xl bg-red-700 px-6 py-3 font-semibold text-white"
-  >
-    Save Draft
-  </button>
-
-</div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded-xl bg-red-700 px-8 py-3 font-semibold text-white hover:bg-red-800 disabled:opacity-50"
+        >
+          {loading ? "Saving..." : "Save Draft"}
+        </button>
 
       </div>
 

@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import { prisma } from "@/lib/prisma";
 
 export async function getArticles() {
   return prisma.article.findMany({
@@ -8,10 +8,10 @@ export async function getArticles() {
   });
 }
 
-export async function getArticle(slug: string) {
+export async function getArticle(id: number) {
   return prisma.article.findUnique({
     where: {
-      slug,
+      id,
     },
     include: {
       procedures: true,

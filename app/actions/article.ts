@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 
-interface ArticleData {
+export interface CreateArticleData {
   title: string;
   category: string;
   description: string;
@@ -10,23 +10,29 @@ interface ArticleData {
   author: string;
 }
 
-function generateSlug(title: string) {
-  return title
+function slugify(text: string) {
+  return text
     .toLowerCase()
     .trim()
     .replace(/[^\w\s-]/g, "")
     .replace(/\s+/g, "-");
 }
 
-export async function createArticle(data: ArticleData) {
+export async function createArticle(data: CreateArticleData) {
+  if (!data.title.trim()) {
+    throw new Error("Title is required");
+  }
+
+  const slug = slugify(data.title);
+
   return prisma.article.create({
     data: {
       title: data.title,
-      slug: generateSlug(data.title),
-      category: data.category,
-      description: data.description,
-      overview: data.overview,
-      author: data.author,
+      slug,
+      category: data.category || "",
+      description: data.description || "",
+      overview: data.overview || "",
+      author: data.author || "Unknown",
       status: "Draft",
     },
   });

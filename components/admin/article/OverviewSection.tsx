@@ -1,13 +1,18 @@
-"use client";
-
-import { UseFormRegister } from "react-hook-form";
-import { ArticleFormData } from "@/types/article";
-
 interface Props {
-  register: UseFormRegister<ArticleFormData>;
+  data: {
+    overview: string;
+  };
+
+  updateField: (
+    name: string,
+    value: string
+  ) => void;
 }
 
-export default function OverviewSection({ register }: Props) {
+export default function OverviewSection({
+  data,
+  updateField,
+}: Props) {
   return (
     <section className="rounded-3xl bg-white p-8 shadow-sm">
 
@@ -16,10 +21,13 @@ export default function OverviewSection({ register }: Props) {
       </h2>
 
       <textarea
-        {...register("overview")}
         rows={12}
-        placeholder="Write article overview..."
+        value={data.overview}
+        onChange={(e) =>
+          updateField("overview", e.target.value)
+        }
         className="w-full rounded-xl border border-gray-300 p-4"
+        placeholder="Write the article overview..."
       />
 
     </section>

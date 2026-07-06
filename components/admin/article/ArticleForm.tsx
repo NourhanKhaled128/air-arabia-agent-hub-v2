@@ -1,72 +1,97 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { createArticle } from "@/app/actions/article";
-import { ArticleFormData } from "@/types/article";
+import { useState } from "react";
 
 import ArticleInfo from "./ArticleInfo";
 import OverviewSection from "./OverviewSection";
-import ProcedureSection from "./ProcedureSection";
-import DispositionSection from "./DispositionSection";
-import EscalationSection from "./EscalationSection";
-import NotesSection from "./NotesSection";
-import ReferencesSection from "./ReferencesSection";
-import RelatedArticlesSection from "./RelatedArticlesSection";
-import KeywordsSection from "./KeywordsSection";
-import AttachmentsSection from "./AttachmentsSection";
-import AirportSection from "./AirportSection";
 import PublishSection from "./PublishSection";
 
 export default function ArticleForm() {
-  const { register, handleSubmit, reset } = useForm<ArticleFormData>({
-    defaultValues: {
-      author: "Nourhan Khaled",
-    },
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "",
+    description: "",
+    overview: "",
+    author: "Nourhan Khaled",
   });
 
-  async function onSubmit(data: ArticleFormData) {
+  function updateField(name: string, value: string) {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    setLoading(true);
+
     try {
-      await createArticle(data);
+      const response = await fetch("/api/articles", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-      alert("✅ Article saved successfully!");
+const text = await response.text();
 
-      reset();
+console.log(text);
+
+const result = JSON.parse(text);
+      if (!response.ok) {
+        throw new Error(result.error ?? "Failed to save article.");
+      }
+
+      alert("Article saved successfully!");
+
+      setFormData({
+        title: "",
+        category: "",
+        description: "",
+        overview: "",
+        author: "Nourhan Khaled",
+      });
 
     } catch (error) {
+
       console.error(error);
 
-      alert("❌ Failed to save article.");
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Unknown error"
+      );
+
+    } finally {
+
+      setLoading(false);
+
     }
   }
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit}
       className="space-y-8"
     >
-      <ArticleInfo register={register} />
+      <ArticleInfo
+        data={formData}
+        updateField={updateField}
+      />
 
-      <OverviewSection register={register} />
+      <OverviewSection
+        data={formData}
+        updateField={updateField}
+      />
 
-      <ProcedureSection />
-
-      <DispositionSection />
-
-      <EscalationSection />
-
-      <NotesSection />
-
-      <ReferencesSection />
-
-      <RelatedArticlesSection />
-
-      <KeywordsSection />
-
-      <AttachmentsSection />
-
-      <AirportSection />
-
-      <PublishSection />
+      <PublishSection
+        loading={loading}
+      />
     </form>
   );
 }

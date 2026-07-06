@@ -7,114 +7,75 @@ datasource db {
 }
 
 model Article {
-  id          Int      @id @default(autoincrement())
-  title       String
-  slug        String   @unique
-  category    String
-  description String
-  overview    String
-  coverImage  String?
-  author      String
-  status      String   @default("Draft")
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  procedures  ProcedureStep[]
+  id           Int             @id @default(autoincrement())
+  title        String
+  slug         String          @unique
+  category     String
+  description  String
+  overview     String
+  coverImage   String?
+  author       String
+  status       String          @default("Draft")
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  images       ArticleImage[]
   dispositions Disposition[]
-  escalations Escalation[]
-  notes       Note[]
-  references  Reference[]
-  keywords    Keyword[]
-  images      ArticleImage[]
+  escalations  Escalation[]
+  keywords     Keyword[]
+  notes        Note[]
+  procedures   ProcedureStep[]
+  references   Reference[]
 }
 
 model ProcedureStep {
-  id        Int @id @default(autoincrement())
-
+  id        Int     @id @default(autoincrement())
   articleId Int
-
-  article   Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
-
   stepNo    Int
-
   title     String?
-
   content   String
-
   image     String?
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Disposition {
-
-  id Int @id @default(autoincrement())
-
+  id        Int     @id @default(autoincrement())
   articleId Int
-
-  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
-
-  content String
-
+  content   String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Escalation {
-
-  id Int @id @default(autoincrement())
-
+  id        Int     @id @default(autoincrement())
   articleId Int
-
-  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
-
-  content String
-
+  content   String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Note {
-
-  id Int @id @default(autoincrement())
-
+  id        Int     @id @default(autoincrement())
   articleId Int
-
-  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
-
-  content String
-
+  content   String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Reference {
-
-  id Int @id @default(autoincrement())
-
+  id        Int     @id @default(autoincrement())
   articleId Int
-
-  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
-
-  title String
-
-  link String?
-
+  title     String
+  link      String?
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Keyword {
-
-  id Int @id @default(autoincrement())
-
+  id        Int     @id @default(autoincrement())
   articleId Int
-
-  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
-
-  value String
-
+  value     String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model ArticleImage {
-
-  id Int @id @default(autoincrement())
-
+  id        Int     @id @default(autoincrement())
   articleId Int
-
-  article Article @relation(fields:[articleId], references:[id], onDelete: Cascade)
-
-  image String
-
+  image     String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
