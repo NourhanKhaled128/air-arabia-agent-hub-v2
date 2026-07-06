@@ -4,6 +4,8 @@ interface Props {
     category: string;
     description: string;
     author: string;
+    status?: string;
+    coverImage?: string;
   };
 
   updateField: (
@@ -28,11 +30,12 @@ export default function ArticleInfo({
         <div>
 
           <label className="mb-2 block font-semibold">
-            Title
+            Article Title
           </label>
 
           <input
             value={data.title}
+            placeholder="Enter article title..."
             onChange={(e) =>
               updateField("title", e.target.value)
             }
@@ -55,12 +58,57 @@ export default function ArticleInfo({
             className="w-full rounded-xl border border-gray-300 p-3"
           >
             <option value="">Select Category</option>
+
             <option>Reservations</option>
             <option>Refunds</option>
             <option>Payments</option>
-            <option>Systems</option>
+            <option>Baggage</option>
+            <option>Airport Services</option>
+            <option>Schedules</option>
             <option>Training</option>
             <option>AirRewards</option>
+            <option>Policies</option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+
+        <div>
+
+          <label className="mb-2 block font-semibold">
+            Author
+          </label>
+
+          <input
+            value={data.author}
+            onChange={(e) =>
+              updateField("author", e.target.value)
+            }
+            className="w-full rounded-xl border border-gray-300 p-3"
+          />
+
+        </div>
+
+        <div>
+
+          <label className="mb-2 block font-semibold">
+            Status
+          </label>
+
+          <select
+            value={data.status ?? "Draft"}
+            onChange={(e) =>
+              updateField("status", e.target.value)
+            }
+            className="w-full rounded-xl border border-gray-300 p-3"
+          >
+            <option>Draft</option>
+            <option>Published</option>
+            <option>Archived</option>
           </select>
 
         </div>
@@ -70,13 +118,14 @@ export default function ArticleInfo({
       <div className="mt-6">
 
         <label className="mb-2 block font-semibold">
-          Author
+          Cover Image URL
         </label>
 
         <input
-          value={data.author}
+          value={data.coverImage ?? ""}
+          placeholder="https://..."
           onChange={(e) =>
-            updateField("author", e.target.value)
+            updateField("coverImage", e.target.value)
           }
           className="w-full rounded-xl border border-gray-300 p-3"
         />
@@ -86,7 +135,7 @@ export default function ArticleInfo({
       <div className="mt-6">
 
         <label className="mb-2 block font-semibold">
-          Description
+          Short Description
         </label>
 
         <textarea

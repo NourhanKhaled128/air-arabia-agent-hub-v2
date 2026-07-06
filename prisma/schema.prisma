@@ -80,3 +80,84 @@ model ArticleImage {
   image     String
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  slug        String   @unique
+  description String?
+  color       String?
+  icon        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Announcement {
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     String
+  priority    String    @default("Medium")
+  status      String    @default("Draft")
+  audience    String?
+  publishDate DateTime?
+  expiryDate  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model TrainingCourse {
+  id           Int      @id @default(autoincrement())
+  title        String
+  description  String?
+  duration     String?
+  passingScore Int?
+  status       String   @default("Draft")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  lessons Lesson[]
+}
+
+model Lesson {
+  id       Int    @id @default(autoincrement())
+  courseId Int
+  title    String
+  content  String
+  order    Int
+
+  course TrainingCourse @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+model MediaFile {
+  id         Int      @id @default(autoincrement())
+  name       String
+  url        String
+  mimeType   String
+  size       Int
+  uploadedAt DateTime @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  title     String
+  message   String
+  audience  String?
+  sent      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  entity    String
+  entityId  Int?
+  userName  String
+  createdAt DateTime @default(now())
+}
+
+model AppSetting {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
