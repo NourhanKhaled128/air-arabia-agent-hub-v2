@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { getArticles } from "@/lib/article-service";
+import { getAllArticles } from "@/lib/article-service";
 import ArticleTable from "@/components/admin/ArticleTable";
 
 export default async function ArticlesPage() {
-
-  const articles = await getArticles();
+  const articles = await getAllArticles();
 
   return (
     <div className="space-y-8">
@@ -18,7 +17,7 @@ export default async function ArticlesPage() {
           </h1>
 
           <p className="mt-2 text-gray-500">
-            Manage all knowledge base articles.
+            Manage your knowledge base articles.
           </p>
 
         </div>

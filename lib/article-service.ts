@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
-export async function getArticles() {
+export async function getAllArticles() {
   return prisma.article.findMany({
     orderBy: {
       updatedAt: "desc",
@@ -8,19 +8,22 @@ export async function getArticles() {
   });
 }
 
-export async function getArticle(id: number) {
+export async function getArticleById(
+  id: number
+) {
   return prisma.article.findUnique({
     where: {
       id,
     },
-    include: {
-      procedures: true,
-      dispositions: true,
-      escalations: true,
-      notes: true,
-      references: true,
-      keywords: true,
-      images: true,
+  });
+}
+
+export async function deleteArticle(
+  id: number
+) {
+  return prisma.article.delete({
+    where: {
+      id,
     },
   });
 }
