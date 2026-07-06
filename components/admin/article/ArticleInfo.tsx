@@ -1,98 +1,109 @@
 "use client";
 
-export default function ArticleInfo() {
+import { UseFormRegister } from "react-hook-form";
+import { ArticleFormData } from "@/types/article";
+
+interface Props {
+  register: UseFormRegister<ArticleFormData>;
+}
+
+export default function ArticleInfo({
+  register,
+}: Props) {
+
   return (
+
     <section className="rounded-3xl bg-white p-8 shadow-sm">
 
       <h2 className="mb-8 text-2xl font-bold">
+
         Article Information
+
       </h2>
 
       <div className="grid gap-6 lg:grid-cols-2">
 
         <div>
-          <label className="mb-2 block font-semibold">
+
+          <label className="mb-2 block">
+
             Title
+
           </label>
 
           <input
-            className="w-full rounded-xl border border-gray-300 p-3 focus:border-red-700 focus:outline-none"
-            placeholder="Flight Change Procedure"
+
+            {...register("title")}
+
+            className="w-full rounded-xl border p-3"
+
           />
+
         </div>
 
-        <div>
-        </div>
 
         <div>
-          <label className="mb-2 block font-semibold">
+
+          <label className="mb-2 block">
+
             Category
+
           </label>
 
-          <select className="w-full rounded-xl border border-gray-300 p-3">
+          <input
 
-            <option>Reservations</option>
-            <option>Refunds</option>
-            <option>Payments</option>
-            <option>Systems</option>
-            <option>Training</option>
+            {...register("category")}
 
-          </select>
+            className="w-full rounded-xl border p-3"
+
+          />
+
         </div>
 
         <div>
-          <label className="mb-2 block font-semibold">
-            Status
-          </label>
 
-          <select className="w-full rounded-xl border border-gray-300 p-3">
+          <label className="mb-2 block">
 
-            <option>Draft</option>
-            <option>Published</option>
-            <option>Archived</option>
-
-          </select>
-        </div>
-
-        <div>
-          <label className="mb-2 block font-semibold">
             Author
+
           </label>
 
           <input
-            className="w-full rounded-xl border border-gray-300 p-3"
+
+            {...register("author")}
+
             defaultValue="Nourhan Khaled"
-          />
-        </div>
 
-        <div>
-          <label className="mb-2 block font-semibold">
-            Cover Image
-          </label>
+            className="w-full rounded-xl border p-3"
 
-          <input
-            type="file"
-            accept="image/*"
-            className="w-full rounded-xl border border-gray-300 p-2"
           />
+
         </div>
 
       </div>
 
       <div className="mt-6">
 
-        <label className="mb-2 block font-semibold">
-          Short Description
+        <label className="mb-2 block">
+
+          Description
+
         </label>
 
         <textarea
+
+          {...register("description")}
+
           rows={4}
-          className="w-full rounded-xl border border-gray-300 p-4"
-          placeholder="Short summary..."
+
+          className="w-full rounded-xl border p-4"
+
         />
 
       </div>
 
     </section>
+
   );
+
 }

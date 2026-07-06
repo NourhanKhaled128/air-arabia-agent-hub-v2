@@ -2,35 +2,32 @@
 
 import { prisma } from "@/lib/prisma";
 
-export async function createArticle(formData: {
+interface ArticleData {
   title: string;
-  slug: string;
   category: string;
   description: string;
   overview: string;
   author: string;
-}) {
+}
 
-  return await prisma.article.create({
+function generateSlug(title: string) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-");
+}
 
+export async function createArticle(data: ArticleData) {
+  return prisma.article.create({
     data: {
-
-      title: formData.title,
-
-      slug: formData.slug,
-
-      category: formData.category,
-
-      description: formData.description,
-
-      overview: formData.overview,
-
-      author: formData.author,
-
+      title: data.title,
+      slug: generateSlug(data.title),
+      category: data.category,
+      description: data.description,
+      overview: data.overview,
+      author: data.author,
       status: "Draft",
-
     },
-
   });
-
 }

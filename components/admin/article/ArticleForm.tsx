@@ -1,5 +1,9 @@
 "use client";
 
+import { useForm } from "react-hook-form";
+import { createArticle } from "@/app/actions/article";
+import { ArticleFormData } from "@/types/article";
+
 import ArticleInfo from "./ArticleInfo";
 import OverviewSection from "./OverviewSection";
 import ProcedureSection from "./ProcedureSection";
@@ -14,33 +18,55 @@ import AirportSection from "./AirportSection";
 import PublishSection from "./PublishSection";
 
 export default function ArticleForm() {
+  const { register, handleSubmit, reset } = useForm<ArticleFormData>({
+    defaultValues: {
+      author: "Nourhan Khaled",
+    },
+  });
+
+  async function onSubmit(data: ArticleFormData) {
+    try {
+      await createArticle(data);
+
+      alert("✅ Article saved successfully!");
+
+      reset();
+
+    } catch (error) {
+      console.error(error);
+
+      alert("❌ Failed to save article.");
+    }
+  }
+
   return (
-    <form className="space-y-8">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-8"
+    >
+      <ArticleInfo register={register} />
 
-<ArticleInfo />
+      <OverviewSection register={register} />
 
-<OverviewSection />
+      <ProcedureSection />
 
-<ProcedureSection />
+      <DispositionSection />
 
-<DispositionSection />
+      <EscalationSection />
 
-<EscalationSection />
+      <NotesSection />
 
-<NotesSection />
+      <ReferencesSection />
 
-<ReferencesSection />
+      <RelatedArticlesSection />
 
-<RelatedArticlesSection />
+      <KeywordsSection />
 
-<KeywordsSection />
+      <AttachmentsSection />
 
-<AttachmentsSection />
+      <AirportSection />
 
-<AirportSection />
-
-<PublishSection />
-
+      <PublishSection />
     </form>
   );
 }

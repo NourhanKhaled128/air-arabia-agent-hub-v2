@@ -24,33 +24,23 @@ export default function PublishSection() {
 
         </div>
 
-        <div className="flex flex-wrap gap-4">
+<div className="flex gap-4">
 
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-xl border px-6 py-3 font-semibold"
-          >
-            <Eye size={18} />
-            Preview
-          </button>
+  <button
+    type="button"
+    className="rounded-xl border px-6 py-3"
+  >
+    Preview
+  </button>
 
-          <button
-            type="button"
-            className="flex items-center gap-2 rounded-xl bg-gray-200 px-6 py-3 font-semibold"
-          >
-            <Save size={18} />
-            Save Draft
-          </button>
+  <button
+    type="submit"
+    className="rounded-xl bg-red-700 px-6 py-3 font-semibold text-white"
+  >
+    Save Draft
+  </button>
 
-          <button
-            type="submit"
-            className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
-          >
-            <Send size={18} />
-            Publish
-          </button>
-
-        </div>
+</div>
 
       </div>
 
