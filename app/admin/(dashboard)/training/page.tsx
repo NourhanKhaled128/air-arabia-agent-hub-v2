@@ -7,6 +7,9 @@ import {
 } from "lucide-react";
 import { getTrainingCourses } from "@/lib/training-service";
 import CourseRowActions from "@/components/admin/training/CourseRowActions";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminStatCard from "@/components/admin/AdminStatCard";
+import AdminBadge from "@/components/admin/AdminBadge";
 
 export default async function TrainingPage() {
   const courses = await getTrainingCourses();
@@ -19,48 +22,24 @@ export default async function TrainingPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
-            Administration
-          </p>
-
-          <h1 className="mt-2 text-4xl font-bold">
-            Training Center
-          </h1>
-
-          <p className="mt-3 text-slate-500">
-            Manage training courses, lessons and quizzes.
-          </p>
-        </div>
-
-        <Link
-          href="/admin/training/new"
-          className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
-        >
-          <Plus size={18} />
-          New Course
-        </Link>
-      </div>
+      <AdminPageHeader
+        title="Training Center"
+        description="Manage training courses, lessons and quizzes."
+        actions={
+          <Link
+            href="/admin/training/new"
+            className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+          >
+            <Plus size={18} />
+            New Course
+          </Link>
+        }
+      />
 
       <div className="grid gap-6 md:grid-cols-3">
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <GraduationCap className="mb-4 text-red-700" />
-          <p className="text-sm text-slate-500">Courses</p>
-          <h2 className="mt-2 text-3xl font-bold">{courses.length}</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <BookOpen className="mb-4 text-blue-700" />
-          <p className="text-sm text-slate-500">Lessons</p>
-          <h2 className="mt-2 text-3xl font-bold">{totalLessons}</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <Award className="mb-4 text-amber-600" />
-          <p className="text-sm text-slate-500">Published</p>
-          <h2 className="mt-2 text-3xl font-bold">{published}</h2>
-        </div>
+        <AdminStatCard title="Courses" value={courses.length} icon={GraduationCap} />
+        <AdminStatCard title="Lessons" value={totalLessons} icon={BookOpen} color="text-blue-700" />
+        <AdminStatCard title="Published" value={published} icon={Award} color="text-amber-600" />
       </div>
 
       <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
@@ -96,15 +75,9 @@ export default async function TrainingPage() {
                 </td>
 
                 <td className="px-6 py-5">
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                      course.status === "Published"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-slate-200 text-slate-700"
-                    }`}
-                  >
+                  <AdminBadge color={course.status === "Published" ? "green" : "gray"}>
                     {course.status}
-                  </span>
+                  </AdminBadge>
                 </td>
 
                 <td className="px-6 py-5">

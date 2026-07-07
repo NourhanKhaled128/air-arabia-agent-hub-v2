@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AnnouncementComposer from "@/components/admin/announcement/AnnouncementComposer";
 import { getAnnouncementById } from "@/lib/announcement-service";
 import { updateAnnouncementAction } from "@/app/admin/actions/announcement-actions";
@@ -26,15 +27,7 @@ export default async function EditAnnouncementPage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
-          Administration
-        </p>
-
-        <h1 className="mt-2 text-4xl font-bold text-slate-900">
-          Edit Announcement
-        </h1>
-      </div>
+      <AdminPageHeader title="Edit Announcement" />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <AnnouncementComposer

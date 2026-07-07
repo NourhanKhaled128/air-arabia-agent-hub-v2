@@ -1,16 +1,19 @@
-import ToolHeader from "@/components/ToolHeader";
+import PageHeader from "@/components/PageHeader";
 import AirportCodeFinder from "@/components/AirportCodeFinder";
+import { getAirports } from "@/lib/airport-service";
 
-export default function AirportCodesPage() {
+export default async function AirportCodesPage() {
+  const airports = await getAirports();
+
   return (
     <main className="space-y-8">
 
-      <ToolHeader
+      <PageHeader
         title="Airport Code Finder"
         subtitle="Search airports by code, city, or airport name."
       />
 
-      <AirportCodeFinder />
+      <AirportCodeFinder airports={airports} />
 
     </main>
   );

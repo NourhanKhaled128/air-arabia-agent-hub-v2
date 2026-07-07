@@ -19,6 +19,9 @@ import {
   ChevronsRight,
   ArrowLeftRight,
   X,
+  Plane,
+  ClipboardList,
+  PhoneCall,
 } from "lucide-react";
 import { logoutAction } from "@/app/admin/actions/auth-actions";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
@@ -31,6 +34,9 @@ const menu = [
   { title: "Disruptions", href: "/admin/disruptions", icon: AlertTriangle },
   { title: "Announcements", href: "/admin/announcements", icon: Megaphone },
   { title: "Training", href: "/admin/training", icon: GraduationCap },
+  { title: "Airport Codes", href: "/admin/airport-codes", icon: Plane },
+  { title: "Disposition Codes", href: "/admin/disposition-codes", icon: ClipboardList },
+  { title: "Escalation Contacts", href: "/admin/escalation", icon: PhoneCall },
   { title: "Users", href: "/admin/users", icon: Users },
   { title: "Roles", href: "/admin/roles", icon: Shield },
   { title: "Settings", href: "/admin/settings", icon: Settings },

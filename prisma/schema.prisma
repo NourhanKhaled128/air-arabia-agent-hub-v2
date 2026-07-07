@@ -238,3 +238,34 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model Airport {
+  id        Int      @id @default(autoincrement())
+  code      String
+  city      String
+  airport   String
+  country   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model DispositionCode {
+  id          Int      @id @default(autoincrement())
+  code        String
+  label       String
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}
+
+model EscalationContact {
+  id          Int      @id @default(autoincrement())
+  issueType   String
+  escalateTo  String
+  contactInfo String
+  notes       String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+}

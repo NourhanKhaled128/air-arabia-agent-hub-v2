@@ -2,9 +2,19 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
-import { airports } from "@/Data/airports";
 
-export default function AirportCodeFinder() {
+interface Airport {
+  code: string;
+  city: string;
+  airport: string;
+  country: string;
+}
+
+interface Props {
+  airports: Airport[];
+}
+
+export default function AirportCodeFinder({ airports }: Props) {
   const [query, setQuery] = useState("");
 
   const results = useMemo(() => {
@@ -19,7 +29,7 @@ export default function AirportCodeFinder() {
         airport.airport.toLowerCase().includes(q) ||
         airport.country.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, airports]);
 
   return (
     <div className="space-y-6">

@@ -14,6 +14,8 @@ import {
   FileText,
   Compass,
   MapPin,
+  ClipboardList,
+  PhoneCall,
   type LucideIcon,
 } from "lucide-react";
 
@@ -33,6 +35,8 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   FileText,
   Compass,
   MapPin,
+  ClipboardList,
+  PhoneCall,
 };
 
 export const SIDEBAR_ICON_KEYS = Object.keys(SIDEBAR_ICONS);

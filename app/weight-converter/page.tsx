@@ -1,11 +1,11 @@
-import ToolHeader from "@/components/ToolHeader";
+import PageHeader from "@/components/PageHeader";
 import WeightConverter from "@/components/WeightConverter";
 
 export default function WeightConverterPage() {
   return (
     <main className="space-y-8">
 
-      <ToolHeader
+      <PageHeader
         title="Weight Converter"
         subtitle="Convert baggage weight between common units."
       />

@@ -2,6 +2,18 @@ import Link from "next/link";
 import { FolderOpen, Plus, Layers3 } from "lucide-react";
 import { getCategories, getArticleCountsByCategory } from "@/lib/category-service";
 import CategoryRowActions from "@/components/admin/categories/CategoryRowActions";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminStatCard from "@/components/admin/AdminStatCard";
+import AdminBadge from "@/components/admin/AdminBadge";
+
+function categoryBadgeColor(color?: string | null): "red" | "green" | "blue" | "yellow" | "gray" {
+  if (!color) return "gray";
+  if (color.includes("red")) return "red";
+  if (color.includes("blue")) return "blue";
+  if (color.includes("emerald") || color.includes("green")) return "green";
+  if (color.includes("amber") || color.includes("yellow")) return "yellow";
+  return "gray";
+}
 
 export default async function CategoriesPage() {
   const [categories, articleCounts] = await Promise.all([
@@ -16,42 +28,23 @@ export default async function CategoriesPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
-            Administration
-          </p>
-
-          <h1 className="mt-2 text-4xl font-bold text-slate-900">
-            Categories
-          </h1>
-
-          <p className="mt-3 text-slate-500">
-            Organize your knowledge base with categories and subcategories.
-          </p>
-        </div>
-
-        <Link
-          href="/admin/categories/new"
-          className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
-        >
-          <Plus size={18} />
-          New Category
-        </Link>
-      </div>
+      <AdminPageHeader
+        title="Categories"
+        description="Organize your knowledge base with categories and subcategories."
+        actions={
+          <Link
+            href="/admin/categories/new"
+            className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+          >
+            <Plus size={18} />
+            New Category
+          </Link>
+        }
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <FolderOpen className="mb-4 text-red-700" />
-          <p className="text-sm text-slate-500">Categories</p>
-          <h2 className="mt-2 text-3xl font-bold">{categories.length}</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <Layers3 className="mb-4 text-blue-700" />
-          <p className="text-sm text-slate-500">Articles</p>
-          <h2 className="mt-2 text-3xl font-bold">{totalArticles}</h2>
-        </div>
+        <AdminStatCard title="Categories" value={categories.length} icon={FolderOpen} />
+        <AdminStatCard title="Articles" value={totalArticles} icon={Layers3} color="text-blue-700" />
       </div>
 
       <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
@@ -72,11 +65,9 @@ export default async function CategoriesPage() {
             {categories.map((category) => (
               <tr key={category.id} className="border-t">
                 <td className="px-6 py-5">
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${category.color ?? "bg-slate-100 text-slate-700"}`}
-                  >
+                  <AdminBadge color={categoryBadgeColor(category.color)}>
                     {category.name}
-                  </span>
+                  </AdminBadge>
                 </td>
 
                 <td className="px-6 py-5 text-slate-600">
@@ -96,15 +87,9 @@ export default async function CategoriesPage() {
                 </td>
 
                 <td className="px-6 py-5">
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                      category.visible
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-slate-200 text-slate-700"
-                    }`}
-                  >
+                  <AdminBadge color={category.visible ? "green" : "gray"}>
                     {category.visible ? "Visible" : "Hidden"}
-                  </span>
+                  </AdminBadge>
                 </td>
 
                 <td className="px-6 py-5">

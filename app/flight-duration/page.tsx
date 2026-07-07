@@ -1,11 +1,11 @@
-import ToolHeader from "@/components/ToolHeader";
+import PageHeader from "@/components/PageHeader";
 import FlightDurationCalculator from "@/components/FlightDurationCalculator";
 
 export default function FlightDurationPage() {
   return (
     <main className="space-y-8">
 
-      <ToolHeader
+      <PageHeader
         title="Flight Duration Calculator"
         subtitle="Calculate total flight time between departure and arrival."
       />

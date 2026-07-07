@@ -8,18 +8,23 @@ import {
 } from "lucide-react";
 import { getAnnouncements } from "@/lib/announcement-service";
 import AnnouncementRowActions from "@/components/admin/announcement/AnnouncementRowActions";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminStatCard from "@/components/admin/AdminStatCard";
+import AdminBadge from "@/components/admin/AdminBadge";
 
-const badge: Record<string, string> = {
-  Published: "bg-emerald-100 text-emerald-700",
-  Scheduled: "bg-amber-100 text-amber-700",
-  Draft: "bg-slate-200 text-slate-700",
+type BadgeColor = "red" | "green" | "blue" | "yellow" | "gray";
+
+const statusColor: Record<string, BadgeColor> = {
+  Published: "green",
+  Scheduled: "yellow",
+  Draft: "gray",
 };
 
-const priority: Record<string, string> = {
-  Critical: "bg-red-100 text-red-700",
-  High: "bg-orange-100 text-orange-700",
-  Medium: "bg-blue-100 text-blue-700",
-  Low: "bg-slate-100 text-slate-700",
+const priorityColor: Record<string, BadgeColor> = {
+  Critical: "red",
+  High: "yellow",
+  Medium: "blue",
+  Low: "gray",
 };
 
 function formatDate(date: Date | null) {
@@ -41,54 +46,25 @@ export default async function AnnouncementsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
-            Administration
-          </p>
-
-          <h1 className="mt-2 text-4xl font-bold text-slate-900">
-            Announcements
-          </h1>
-
-          <p className="mt-3 text-slate-500">
-            Create, schedule and manage announcements for all agents.
-          </p>
-        </div>
-
-        <Link
-          href="/admin/announcements/new"
-          className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
-        >
-          <Plus size={18} />
-          New Announcement
-        </Link>
-      </div>
+      <AdminPageHeader
+        title="Announcements"
+        description="Create, schedule and manage announcements for all agents."
+        actions={
+          <Link
+            href="/admin/announcements/new"
+            className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+          >
+            <Plus size={18} />
+            New Announcement
+          </Link>
+        }
+      />
 
       <div className="grid gap-6 md:grid-cols-4">
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <Bell className="mb-4 text-red-700" />
-          <p className="text-sm text-slate-500">Total</p>
-          <h2 className="mt-2 text-3xl font-bold">{total}</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <Eye className="mb-4 text-emerald-700" />
-          <p className="text-sm text-slate-500">Published</p>
-          <h2 className="mt-2 text-3xl font-bold">{published}</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <CalendarDays className="mb-4 text-amber-700" />
-          <p className="text-sm text-slate-500">Scheduled</p>
-          <h2 className="mt-2 text-3xl font-bold">{scheduled}</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <Clock className="mb-4 text-slate-700" />
-          <p className="text-sm text-slate-500">Drafts</p>
-          <h2 className="mt-2 text-3xl font-bold">{drafts}</h2>
-        </div>
+        <AdminStatCard title="Total" value={total} icon={Bell} />
+        <AdminStatCard title="Published" value={published} icon={Eye} color="text-emerald-700" />
+        <AdminStatCard title="Scheduled" value={scheduled} icon={CalendarDays} color="text-amber-700" />
+        <AdminStatCard title="Drafts" value={drafts} icon={Clock} color="text-slate-700" />
       </div>
 
       <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
@@ -111,19 +87,15 @@ export default async function AnnouncementsPage() {
                 <td className="px-6 py-5 font-semibold">{item.title}</td>
 
                 <td className="px-6 py-5">
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${priority[item.priority] ?? priority.Medium}`}
-                  >
+                  <AdminBadge color={priorityColor[item.priority] ?? "blue"}>
                     {item.priority}
-                  </span>
+                  </AdminBadge>
                 </td>
 
                 <td className="px-6 py-5">
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${badge[item.status] ?? badge.Draft}`}
-                  >
+                  <AdminBadge color={statusColor[item.status] ?? "gray"}>
                     {item.status}
-                  </span>
+                  </AdminBadge>
                 </td>
 
                 <td className="px-6 py-5">{item.audience ?? "-"}</td>

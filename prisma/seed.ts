@@ -25,6 +25,24 @@ async function seedSidebarLinks() {
   console.log("Seeded default sidebar links.");
 }
 
+async function seedReferenceToolLinks() {
+  const existing = await prisma.sidebarLink.findMany({
+    where: { href: { in: ["/disposition-codes", "/escalation"] } },
+  });
+  const existingHrefs = new Set(existing.map((link) => link.href));
+
+  const toCreate = [
+    { label: "Disposition Codes", href: "/disposition-codes", icon: "ClipboardList", section: "tools", order: 6 },
+    { label: "Escalation Contacts", href: "/escalation", icon: "PhoneCall", section: "tools", order: 7 },
+  ].filter((link) => !existingHrefs.has(link.href));
+
+  if (toCreate.length === 0) return;
+
+  await prisma.sidebarLink.createMany({ data: toCreate });
+
+  console.log("Seeded disposition/escalation sidebar links.");
+}
+
 async function seedQuickActions() {
   const count = await prisma.sidebarLink.count({
     where: { section: "quickActions" },
@@ -58,6 +76,59 @@ async function seedDisruptions() {
   });
 
   console.log("Seeded default flight disruption alerts.");
+}
+
+async function seedAirports() {
+  const count = await prisma.airport.count();
+  if (count > 0) return;
+
+  await prisma.airport.createMany({
+    data: [
+      { code: "SHJ", city: "Sharjah", airport: "Sharjah International Airport", country: "United Arab Emirates" },
+      { code: "DXB", city: "Dubai", airport: "Dubai International Airport", country: "United Arab Emirates" },
+      { code: "AUH", city: "Abu Dhabi", airport: "Zayed International Airport", country: "United Arab Emirates" },
+      { code: "CAI", city: "Cairo", airport: "Cairo International Airport", country: "Egypt" },
+      { code: "AMM", city: "Amman", airport: "Queen Alia International Airport", country: "Jordan" },
+      { code: "DOH", city: "Doha", airport: "Hamad International Airport", country: "Qatar" },
+      { code: "RUH", city: "Riyadh", airport: "King Khalid International Airport", country: "Saudi Arabia" },
+      { code: "JED", city: "Jeddah", airport: "King Abdulaziz International Airport", country: "Saudi Arabia" },
+      { code: "MCT", city: "Muscat", airport: "Muscat International Airport", country: "Oman" },
+      { code: "KWI", city: "Kuwait City", airport: "Kuwait International Airport", country: "Kuwait" },
+    ],
+  });
+
+  console.log("Seeded default airport codes.");
+}
+
+async function seedDispositionCodes() {
+  const count = await prisma.dispositionCode.count();
+  if (count > 0) return;
+
+  await prisma.dispositionCode.createMany({
+    data: [
+      { code: "RSLVD", label: "Resolved", description: "Issue fully resolved on the call." },
+      { code: "CALLBACK", label: "Callback Required", description: "Agent must call the customer back." },
+      { code: "ESC", label: "Escalated", description: "Sent to the next support tier." },
+      { code: "NOANS", label: "No Answer", description: "Customer could not be reached." },
+    ],
+  });
+
+  console.log("Seeded default disposition codes.");
+}
+
+async function seedEscalationContacts() {
+  const count = await prisma.escalationContact.count();
+  if (count > 0) return;
+
+  await prisma.escalationContact.createMany({
+    data: [
+      { issueType: "Payments", escalateTo: "Tier 2 Finance", contactInfo: "ext. 4521" },
+      { issueType: "Technical", escalateTo: "IT Support", contactInfo: "ext. 3010" },
+      { issueType: "Reservations", escalateTo: "Tier 2 Reservations", contactInfo: "ext. 4110" },
+    ],
+  });
+
+  console.log("Seeded default escalation contacts.");
 }
 
 async function seedNotifications() {
@@ -145,9 +216,13 @@ async function seedRolesAndAdmin() {
 
 async function main() {
   await seedSidebarLinks();
+  await seedReferenceToolLinks();
   await seedQuickActions();
   await seedDisruptions();
   await seedNotifications();
+  await seedAirports();
+  await seedDispositionCodes();
+  await seedEscalationContacts();
   await seedRolesAndAdmin();
 }
 

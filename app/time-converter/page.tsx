@@ -1,11 +1,11 @@
-import ToolHeader from "@/components/ToolHeader";
+import PageHeader from "@/components/PageHeader";
 import TimeConverter from "@/components/TimeConverter";
 
 export default function TimeConverterPage() {
   return (
     <main className="space-y-8">
 
-      <ToolHeader
+      <PageHeader
         title="Time Converter"
         subtitle="Convert time between airport time zones."
       />

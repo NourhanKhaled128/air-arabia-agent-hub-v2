@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import CourseBuilder from "@/components/admin/training/CourseBuilder";
 import { getTrainingCourse } from "@/lib/training-service";
 import { updateTrainingCourseAction } from "@/app/admin/actions/training-actions";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -26,15 +27,7 @@ export default async function EditCoursePage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
-          Administration
-        </p>
-
-        <h1 className="mt-2 text-4xl font-bold text-slate-900">
-          Edit Course
-        </h1>
-      </div>
+      <AdminPageHeader title="Edit Course" />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <CourseBuilder

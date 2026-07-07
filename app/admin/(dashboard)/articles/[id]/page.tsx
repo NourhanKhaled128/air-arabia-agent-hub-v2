@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getArticleById } from "@/lib/article-service";
 import EditArticleForm from "@/components/admin/article/EditArticleForm";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
 interface Props {
   params: Promise<{
@@ -20,17 +21,10 @@ export default async function EditArticlePage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <div>
-
-        <h1 className="text-4xl font-bold">
-          Edit Article
-        </h1>
-
-        <p className="mt-2 text-gray-500">
-          Update article information.
-        </p>
-
-      </div>
+      <AdminPageHeader
+        title="Edit Article"
+        description="Update article information."
+      />
 
       <EditArticleForm article={article} />
 
