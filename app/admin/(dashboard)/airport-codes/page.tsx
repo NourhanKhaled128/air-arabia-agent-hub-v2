@@ -33,6 +33,7 @@ export default async function AdminAirportCodesPage() {
               <th className="px-6 py-4 text-left">Code</th>
               <th className="px-6 py-4 text-left">City</th>
               <th className="px-6 py-4 text-left">Airport</th>
+              <th className="px-6 py-4 text-left">Terminal</th>
               <th className="px-6 py-4 text-left">Country</th>
             </tr>
           </thead>
@@ -43,13 +44,14 @@ export default async function AdminAirportCodesPage() {
                 <td className="px-6 py-5 font-semibold">{airport.code}</td>
                 <td className="px-6 py-5">{airport.city}</td>
                 <td className="px-6 py-5">{airport.airport}</td>
+                <td className="px-6 py-5">{airport.terminal ?? "-"}</td>
                 <td className="px-6 py-5">{airport.country}</td>
               </tr>
             ))}
 
             {airports.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-10 text-center text-slate-500">
+                <td colSpan={5} className="px-6 py-10 text-center text-slate-500">
                   No airports uploaded yet.
                 </td>
               </tr>

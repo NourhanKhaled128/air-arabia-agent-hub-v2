@@ -8,6 +8,7 @@ interface Airport {
   city: string;
   airport: string;
   country: string;
+  terminal: string | null;
 }
 
 interface Props {
@@ -27,7 +28,8 @@ export default function AirportCodeFinder({ airports }: Props) {
         airport.code.toLowerCase().includes(q) ||
         airport.city.toLowerCase().includes(q) ||
         airport.airport.toLowerCase().includes(q) ||
-        airport.country.toLowerCase().includes(q)
+        airport.country.toLowerCase().includes(q) ||
+        (airport.terminal ?? "").toLowerCase().includes(q)
     );
   }, [query, airports]);
 
@@ -40,7 +42,7 @@ export default function AirportCodeFinder({ airports }: Props) {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by code, city, airport, or country..."
+          placeholder="Search by code, city, airport, terminal, or country..."
           className="w-full bg-transparent outline-none"
         />
       </div>
@@ -52,6 +54,7 @@ export default function AirportCodeFinder({ airports }: Props) {
               <th className="px-6 py-4">Code</th>
               <th className="px-6 py-4">City</th>
               <th className="px-6 py-4">Airport</th>
+              <th className="px-6 py-4">Terminal</th>
               <th className="px-6 py-4">Country</th>
             </tr>
           </thead>
@@ -66,13 +69,14 @@ export default function AirportCodeFinder({ airports }: Props) {
                 </td>
                 <td className="px-6 py-4 font-medium">{airport.city}</td>
                 <td className="px-6 py-4 text-gray-600">{airport.airport}</td>
+                <td className="px-6 py-4 text-gray-600">{airport.terminal ?? "-"}</td>
                 <td className="px-6 py-4 text-gray-600">{airport.country}</td>
               </tr>
             ))}
 
             {results.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-10 text-center text-gray-500">
+                <td colSpan={5} className="px-6 py-10 text-center text-gray-500">
                   No airports match your search.
                 </td>
               </tr>

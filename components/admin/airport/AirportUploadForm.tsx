@@ -35,7 +35,7 @@ export default function AirportUploadForm() {
         />
 
         <p className="mt-2 text-sm text-slate-500">
-          Expects a header row with columns: code, city, airport, country. Uploading replaces the entire list.
+          Expects a header row with columns: code, city, airport, country, and optionally terminal. Column names are matched flexibly (e.g. &quot;Airport&quot; or &quot;Airport Name&quot; both work). Uploading replaces the entire list.
         </p>
       </div>
 
