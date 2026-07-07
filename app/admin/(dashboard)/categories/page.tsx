@@ -54,7 +54,7 @@ export default async function CategoriesPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
         <table className="w-full">
           <thead className="bg-slate-50">
             <tr className="text-left text-sm">

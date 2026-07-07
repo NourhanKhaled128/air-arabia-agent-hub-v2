@@ -47,7 +47,7 @@ export default function RecentSearchesPage() {
 
       </div>
 
-      <div className="rounded-3xl bg-white shadow-sm overflow-hidden">
+      <div className="rounded-3xl bg-white shadow-sm overflow-x-auto">
 
         <table className="w-full">
 

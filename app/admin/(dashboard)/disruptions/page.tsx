@@ -35,7 +35,7 @@ export default async function DisruptionsPage() {
         <AdminStatCard title="High Severity (Active)" value={highCount} icon={ShieldAlert} color="text-red-700" />
       </div>
 
-      <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
         <table className="w-full">
           <thead className="bg-slate-50">
             <tr className="text-left text-sm">

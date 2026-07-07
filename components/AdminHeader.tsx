@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Bell, Search } from "lucide-react";
+import { Bell, Menu, Search } from "lucide-react";
+import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
 
 interface AdminSearchableArticle {
   id: number;
@@ -20,6 +21,8 @@ interface Props {
 }
 
 export default function AdminHeader({ articles, user }: Props) {
+  const { toggleMobileOpen } = useSidebarPrefs();
+
   const [query, setQuery] = useState("");
 
   const results = useMemo(() => {
@@ -35,21 +38,32 @@ export default function AdminHeader({ articles, user }: Props) {
   }, [query, articles]);
 
   return (
-    <header className="flex items-center justify-between rounded-3xl border border-slate-200 bg-white px-8 py-5 shadow-sm">
+    <header className="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-8 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
 
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">
-          Air Arabia CMS
-        </h1>
+      <div className="flex items-center gap-3">
 
-        <p className="text-slate-500">
-          Knowledge Management System
-        </p>
+        <button
+          onClick={toggleMobileOpen}
+          className="rounded-xl border border-slate-200 p-2 text-slate-700 hover:bg-slate-50 lg:hidden"
+        >
+          <Menu size={22} />
+        </button>
+
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
+            Air Arabia CMS
+          </h1>
+
+          <p className="text-slate-500">
+            Knowledge Management System
+          </p>
+        </div>
+
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 sm:gap-6">
 
-        <div className="relative w-80">
+        <div className="relative w-full sm:w-64 lg:w-80">
 
           <Search
             className="absolute left-4 top-3.5 text-slate-400"
@@ -101,11 +115,11 @@ export default function AdminHeader({ articles, user }: Props) {
 
         <div className="flex items-center gap-3 rounded-xl bg-slate-100 px-4 py-2">
 
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-700 font-bold text-white">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-700 font-bold text-white">
             {user?.name?.charAt(0).toUpperCase() ?? "?"}
           </div>
 
-          <div>
+          <div className="hidden sm:block">
             <p className="font-semibold text-slate-900">
               {user?.name ?? "Not signed in"}
             </p>

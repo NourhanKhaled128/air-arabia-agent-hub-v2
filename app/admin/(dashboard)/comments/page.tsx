@@ -51,7 +51,8 @@ export default function CommentsPage() {
 
         </div>
 
-        <table className="w-full">
+        <div className="overflow-x-auto">
+          <table className="w-full">
 
           <thead className="bg-slate-50">
 
@@ -116,6 +117,7 @@ export default function CommentsPage() {
           </tbody>
 
         </table>
+        </div>
 
       </div>
 

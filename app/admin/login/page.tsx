@@ -1,4 +1,9 @@
+import type { Metadata } from "next";
 import { loginAction } from "@/app/admin/actions/auth-actions";
+
+export const metadata: Metadata = {
+  title: "KB Admin",
+};
 
 interface Props {
   searchParams: Promise<{ error?: string }>;

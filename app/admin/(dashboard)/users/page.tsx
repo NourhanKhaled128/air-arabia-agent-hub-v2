@@ -30,7 +30,7 @@ export default async function UsersPage() {
         <AdminStatCard title="Administrators" value={adminCount} icon={Shield} color="text-blue-700" />
       </div>
 
-      <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
+      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
         <table className="w-full">
           <thead className="bg-slate-50">
             <tr className="text-left text-sm">
