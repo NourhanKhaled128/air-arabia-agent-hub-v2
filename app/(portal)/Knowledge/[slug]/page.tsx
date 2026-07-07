@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Paperclip, Download } from "lucide-react";
 
-import AppLayout from "@/components/AppLayout";
 import Breadcrumb from "@/components/Breadcrumb";
 import ArticleCard from "@/components/ArticleCard";
 import { prisma } from "@/lib/prisma";
@@ -61,7 +60,7 @@ export default async function ArticlePage({ params }: Props) {
   ).filter((related) => related.id !== article.id);
 
   return (
-    <AppLayout>
+    <>
       <div className="mx-auto max-w-5xl space-y-8">
 
         <Breadcrumb category={article.category} title={article.title} />
@@ -315,6 +314,6 @@ export default async function ArticlePage({ params }: Props) {
         </div>
 
       </div>
-    </AppLayout>
+    </>
   );
 }

@@ -1,4 +1,3 @@
-import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
 import { getArticlesByCategory } from "@/lib/article-service";
@@ -7,7 +6,7 @@ export default async function SystemsPage() {
   const systemArticles = await getArticlesByCategory("Systems");
 
   return (
-    <AppLayout>
+    <>
       <PageHeader
         title="Systems"
         subtitle="Navitaire, Salesforce and internal system guides."
@@ -21,6 +20,6 @@ export default async function SystemsPage() {
           />
         ))}
       </div>
-    </AppLayout>
+    </>
   );
 }

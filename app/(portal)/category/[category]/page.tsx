@@ -1,4 +1,3 @@
-import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
 import { getArticlesByCategory } from "@/lib/article-service";
@@ -23,7 +22,7 @@ export default async function CategoryPage({
   const categoryArticles = await getArticlesByCategory(categoryRow.name);
 
   return (
-    <AppLayout>
+    <>
       <PageHeader
         title={categoryRow.name}
         subtitle={`${categoryArticles.length} knowledge articles available`}
@@ -48,6 +47,6 @@ export default async function CategoryPage({
           ))}
         </div>
       )}
-    </AppLayout>
+    </>
   );
 }

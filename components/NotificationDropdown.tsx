@@ -13,7 +13,7 @@ export default function NotificationDropdown() {
 
   return (
 
-    <div className="absolute right-0 top-14 z-50 w-96 rounded-2xl border bg-white shadow-2xl">
+    <div className="absolute right-0 top-14 z-50 w-[calc(100vw-2rem)] rounded-2xl border bg-white shadow-2xl sm:w-96">
 
       <div className="flex items-center justify-between border-b p-5">
 

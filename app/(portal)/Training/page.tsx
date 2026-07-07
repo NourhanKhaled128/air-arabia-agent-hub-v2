@@ -1,4 +1,3 @@
-import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
 import { getArticlesByCategory } from "@/lib/article-service";
@@ -7,7 +6,7 @@ export default async function TrainingArticlesPage() {
   const trainingArticles = await getArticlesByCategory("Training");
 
   return (
-    <AppLayout>
+    <>
       <PageHeader
         title="Training"
         subtitle="Training manuals, SOPs and onboarding material."
@@ -21,6 +20,6 @@ export default async function TrainingArticlesPage() {
           />
         ))}
       </div>
-    </AppLayout>
+    </>
   );
 }

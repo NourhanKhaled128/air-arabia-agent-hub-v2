@@ -1,4 +1,3 @@
-import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
 import { getArticlesByCategory } from "@/lib/article-service";
@@ -7,7 +6,7 @@ export default async function ReservationsPage() {
   const reservationArticles = await getArticlesByCategory("Reservations");
 
   return (
-    <AppLayout>
+    <>
       <PageHeader
         title="Reservations"
         subtitle="Reservation procedures, booking policies and operational guides."
@@ -21,6 +20,6 @@ export default async function ReservationsPage() {
           />
         ))}
       </div>
-    </AppLayout>
+    </>
   );
 }

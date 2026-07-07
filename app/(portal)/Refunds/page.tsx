@@ -1,4 +1,3 @@
-import AppLayout from "@/components/AppLayout";
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
 import { getArticlesByCategory } from "@/lib/article-service";
@@ -7,7 +6,7 @@ export default async function RefundsPage() {
   const refunds = await getArticlesByCategory("Refunds");
 
   return (
-    <AppLayout>
+    <>
 
       <PageHeader
         title="Refunds"
@@ -25,6 +24,6 @@ export default async function RefundsPage() {
 
       </div>
 
-    </AppLayout>
+    </>
   );
 }

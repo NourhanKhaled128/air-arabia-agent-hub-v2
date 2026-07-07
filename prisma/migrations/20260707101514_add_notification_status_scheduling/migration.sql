@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "public"."Notification" ADD COLUMN     "sendDate" TIMESTAMP(3),
+ADD COLUMN     "status" TEXT NOT NULL DEFAULT 'Draft',
+ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

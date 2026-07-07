@@ -1,6 +1,5 @@
 export const dynamic = "force-dynamic";
 
-import AppLayout from "@/components/AppLayout";
 
 import Hero from "@/components/Hero";
 
@@ -26,7 +25,7 @@ export default function HomePage() {
 
   return (
 
-    <AppLayout>
+    <>
 
       <Hero />
 
@@ -60,7 +59,7 @@ export default function HomePage() {
 
       <UpcomingTraining />
 
-    </AppLayout>
+    </>
 
   );
 

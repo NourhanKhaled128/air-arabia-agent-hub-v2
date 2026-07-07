@@ -1,15 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
 import NotificationBell from "./NotificationBell";
+import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
 
 interface Props {
   articles: SearchableArticle[];
 }
 
 export default function Header({ articles }: Props) {
+
+  const { toggleMobileOpen } = useSidebarPrefs();
 
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
@@ -46,27 +49,38 @@ export default function Header({ articles }: Props) {
 
   return (
 
-    <header className="flex items-center justify-between rounded-3xl border border-gray-200 bg-white px-8 py-5 shadow-sm">
+    <header className="flex flex-col gap-4 rounded-3xl border border-gray-200 bg-white px-4 py-4 shadow-sm sm:px-8 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
 
-      <div>
+      <div className="flex items-center gap-3">
 
-        <h1 className="text-3xl font-bold text-gray-900">
+        <button
+          onClick={toggleMobileOpen}
+          className="rounded-xl border border-gray-200 p-2 text-gray-700 hover:bg-gray-50 lg:hidden"
+        >
+          <Menu size={22} />
+        </button>
 
-          Welcome back, Nourhan 👋
+        <div>
 
-        </h1>
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
 
-        <p className="mt-2 text-gray-500">
+            Welcome back, Nourhan 👋
 
-          {today}
+          </h1>
 
-        </p>
+          <p className="mt-2 text-gray-500">
+
+            {today}
+
+          </p>
+
+        </div>
 
       </div>
 
-      <div className="flex items-center gap-5">
+      <div className="flex items-center gap-3 sm:gap-5">
 
-        <div className="relative w-96">
+        <div className="relative w-full sm:w-72 lg:w-96">
 
           <Search
             size={18}
@@ -98,13 +112,13 @@ export default function Header({ articles }: Props) {
 
         <div className="flex items-center gap-3 rounded-xl bg-gray-100 px-4 py-2">
 
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-700 font-bold text-white">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-700 font-bold text-white">
 
             N
 
           </div>
 
-          <div>
+          <div className="hidden sm:block">
 
             <p className="font-semibold">
 

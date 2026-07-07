@@ -1,5 +1,7 @@
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
+import PortalMain from "@/components/PortalMain";
+import { SidebarPrefsProvider } from "@/components/SidebarPrefsProvider";
 import { getArticlesForSearch } from "@/lib/article-service";
 import { getVisibleCategoriesForSidebar } from "@/lib/category-service";
 import { getVisibleSidebarLinksBySection } from "@/lib/sidebar-service";
@@ -8,9 +10,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export default async function AppLayout({
-  children,
-}: Props) {
+export default async function PortalLayout({ children }: Props) {
   const [articles, categories, pinnedLinks, toolLinks] = await Promise.all([
     getArticlesForSearch(),
     getVisibleCategoriesForSidebar(),
@@ -19,30 +19,28 @@ export default async function AppLayout({
   ]);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <SidebarPrefsProvider>
+      <div className="min-h-screen bg-gray-100">
 
-      <Sidebar
-        categories={categories}
-        pinnedLinks={pinnedLinks}
-        toolLinks={toolLinks}
-      />
+        <Sidebar
+          categories={categories}
+          pinnedLinks={pinnedLinks}
+          toolLinks={toolLinks}
+        />
 
-      <main className="ml-72">
-
-        <div className="px-8 py-6">
+        <PortalMain>
 
           <Header articles={articles} />
 
-          <div className="mt-8 space-y-8">
+          <div className="mt-4 space-y-8 sm:mt-8">
 
             {children}
 
           </div>
 
-        </div>
+        </PortalMain>
 
-      </main>
-
-    </div>
+      </div>
+    </SidebarPrefsProvider>
   );
 }

@@ -190,12 +190,15 @@ model MediaFile {
 }
 
 model Notification {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   title     String
   message   String
   audience  String?
-  sent      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  status    String    @default("Draft")
+  sendDate  DateTime?
+  sent      Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
 }
 
 model AuditLog {
