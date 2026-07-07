@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminHeader from "@/components/AdminHeader";
 import { getAllArticles } from "@/lib/article-service";
 import { getCurrentAdminUser } from "@/lib/admin-dal";
+
+export const metadata: Metadata = {
+  title: "KB Admin",
+};
 
 interface AdminLayoutProps {
   children: ReactNode;
