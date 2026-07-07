@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
+import NotificationBell from "./NotificationBell";
 
 interface Props {
   articles: SearchableArticle[];
@@ -93,13 +94,7 @@ export default function Header({ articles }: Props) {
 
         </div>
 
-        <button className="relative rounded-full bg-gray-100 p-3 transition hover:bg-red-50">
-
-          <Bell size={22} />
-
-          <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-red-600"></span>
-
-        </button>
+        <NotificationBell />
 
         <div className="flex items-center gap-3 rounded-xl bg-gray-100 px-4 py-2">
 

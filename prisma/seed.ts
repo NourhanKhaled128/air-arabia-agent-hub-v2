@@ -60,6 +60,30 @@ async function seedDisruptions() {
   console.log("Seeded default flight disruption alerts.");
 }
 
+async function seedNotifications() {
+  const count = await prisma.notification.count();
+  if (count > 0) return;
+
+  await prisma.notification.createMany({
+    data: [
+      {
+        title: "Refund Policy Updated",
+        message: "The refund procedure has been updated. Review the Refunds knowledge base for details.",
+        audience: "All Agents",
+        sent: true,
+      },
+      {
+        title: "System Maintenance",
+        message: "Scheduled maintenance window tonight between 22:00 - 04:00.",
+        audience: "All Agents",
+        sent: true,
+      },
+    ],
+  });
+
+  console.log("Seeded default notifications.");
+}
+
 async function seedRolesAndAdmin() {
   const userCount = await prisma.user.count();
   if (userCount > 0) return;
@@ -121,6 +145,7 @@ async function main() {
   await seedSidebarLinks();
   await seedQuickActions();
   await seedDisruptions();
+  await seedNotifications();
   await seedRolesAndAdmin();
 }
 

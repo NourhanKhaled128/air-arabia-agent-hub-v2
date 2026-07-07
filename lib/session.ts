@@ -6,6 +6,13 @@ import { cookies } from "next/headers";
 export const SESSION_COOKIE = "admin_session";
 
 const secretKey = process.env.SESSION_SECRET;
+
+if (!secretKey) {
+  throw new Error(
+    "SESSION_SECRET environment variable is not set. Add it in your hosting platform's environment variables (it is not read from .env in production)."
+  );
+}
+
 const encodedKey = new TextEncoder().encode(secretKey);
 
 interface SessionPayload {

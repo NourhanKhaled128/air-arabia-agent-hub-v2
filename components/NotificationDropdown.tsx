@@ -32,6 +32,12 @@ export default function NotificationDropdown() {
 
       <div className="max-h-96 overflow-y-auto p-4 space-y-3">
 
+        {notifications.length === 0 && (
+          <p className="py-6 text-center text-sm text-gray-500">
+            No notifications yet.
+          </p>
+        )}
+
         {notifications.map((item) => (
 
           <NotificationItem
