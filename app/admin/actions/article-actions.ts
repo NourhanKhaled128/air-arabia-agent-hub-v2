@@ -2,6 +2,13 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { logAction } from "@/lib/audit-service";
+import { getCurrentAdminUser } from "@/lib/admin-dal";
+
+async function currentUserName() {
+  const user = await getCurrentAdminUser();
+  return user?.name ?? "System";
+}
 
 export async function deleteArticleAction(id: number) {
   await prisma.article.delete({
@@ -9,6 +16,8 @@ export async function deleteArticleAction(id: number) {
       id,
     },
   });
+
+  await logAction("Deleted", "Article", id, await currentUserName());
 
   revalidatePath("/admin/articles");
 }
@@ -23,6 +32,8 @@ export async function publishArticleAction(id: number) {
     },
   });
 
+  await logAction("Published", "Article", id, await currentUserName());
+
   revalidatePath("/admin/articles");
 }
 
@@ -35,6 +46,8 @@ export async function archiveArticleAction(id: number) {
       status: "Archived",
     },
   });
+
+  await logAction("Archived", "Article", id, await currentUserName());
 
   revalidatePath("/admin/articles");
 }
@@ -73,7 +86,7 @@ export async function duplicateArticleAction(id: number) {
     ...articleData
   } = article;
 
-  await prisma.article.create({
+  const duplicated = await prisma.article.create({
     data: {
       ...articleData,
       title: `${article.title} (Copy)`,
@@ -127,6 +140,8 @@ export async function duplicateArticleAction(id: number) {
       },
     },
   });
+
+  await logAction("Duplicated", "Article", duplicated.id, await currentUserName());
 
   revalidatePath("/admin/articles");
 }

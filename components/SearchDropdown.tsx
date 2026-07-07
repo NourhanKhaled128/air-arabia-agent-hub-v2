@@ -9,6 +9,8 @@ export interface SearchableArticle {
   description: string;
   category: string;
   overview: string;
+  keywords: { value: string }[];
+  scenarios: { situation: string }[];
 }
 
 interface Props {

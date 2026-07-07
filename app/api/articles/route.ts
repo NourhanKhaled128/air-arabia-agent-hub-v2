@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { buildArticleSectionsCreateData } from "@/lib/article-service";
+import { logAction } from "@/lib/audit-service";
+import { getCurrentAdminUser } from "@/lib/admin-dal";
 
 function slugify(text: string) {
   return text
@@ -27,6 +29,9 @@ export async function POST(request: Request) {
         ...buildArticleSectionsCreateData(body),
       },
     });
+
+    const user = await getCurrentAdminUser();
+    await logAction("Created", "Article", article.id, user?.name ?? "System");
 
     return NextResponse.json(article);
   } catch (error) {

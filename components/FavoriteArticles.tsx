@@ -16,7 +16,7 @@ export default async function FavoriteArticles() {
 
         <h2 className="text-2xl font-bold">
 
-          ⭐ Favorite Articles
+          🔤 Browse A–Z
 
         </h2>
 

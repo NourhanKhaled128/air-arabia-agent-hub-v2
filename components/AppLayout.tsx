@@ -1,7 +1,8 @@
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-import { getAllArticles } from "@/lib/article-service";
+import { getArticlesForSearch } from "@/lib/article-service";
 import { getVisibleCategoriesForSidebar } from "@/lib/category-service";
+import { getVisibleSidebarLinksBySection } from "@/lib/sidebar-service";
 
 interface Props {
   children: React.ReactNode;
@@ -10,15 +11,21 @@ interface Props {
 export default async function AppLayout({
   children,
 }: Props) {
-  const [articles, categories] = await Promise.all([
-    getAllArticles(),
+  const [articles, categories, pinnedLinks, toolLinks] = await Promise.all([
+    getArticlesForSearch(),
     getVisibleCategoriesForSidebar(),
+    getVisibleSidebarLinksBySection("pinned"),
+    getVisibleSidebarLinksBySection("tools"),
   ]);
 
   return (
     <div className="min-h-screen bg-gray-100">
 
-      <Sidebar categories={categories} />
+      <Sidebar
+        categories={categories}
+        pinnedLinks={pinnedLinks}
+        toolLinks={toolLinks}
+      />
 
       <main className="ml-72">
 

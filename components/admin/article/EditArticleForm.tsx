@@ -14,6 +14,7 @@ import KeywordsSection from "./KeywordsSection";
 import ScenarioSection, { type ScenarioInput } from "./ScenarioSection";
 import PhotosSection, { type PhotoInput } from "./PhotosSection";
 import AttachmentsSection, { type AttachmentInput } from "./AttachmentsSection";
+import ArticleSidebar from "./ArticleSidebar";
 
 interface ArticleWithRelations {
   id: number;
@@ -24,6 +25,8 @@ interface ArticleWithRelations {
   author: string;
   status: string;
   coverImage: string | null;
+  createdAt: Date;
+  updatedAt: Date;
   procedures: { id: number; title: string | null; content: string; image: string | null }[];
   dispositions: { id: number; code: string | null; content: string }[];
   escalations: { id: number; department: string | null; condition: string | null; content: string }[];
@@ -175,7 +178,9 @@ export default function EditArticleForm({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="grid gap-8 lg:grid-cols-3">
+
+      <div className="space-y-8 lg:col-span-2">
 
       <ArticleInfo
         data={form}
@@ -242,6 +247,16 @@ export default function EditArticleForm({
           {loading ? "Saving..." : "Save Changes"}
         </button>
 
+      </div>
+
+      </div>
+
+      <div className="lg:col-span-1">
+        <ArticleSidebar
+          author={article.author}
+          createdAt={article.createdAt}
+          updatedAt={article.updatedAt}
+        />
       </div>
 
     </div>

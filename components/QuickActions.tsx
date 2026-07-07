@@ -1,47 +1,10 @@
 import Link from "next/link";
-import {
-  Clock3,
-  Globe,
-  DollarSign,
-  Scale,
-  Timer,
-  Plane,
-} from "lucide-react";
+import { getVisibleSidebarLinksBySection } from "@/lib/sidebar-service";
+import { getSidebarIcon } from "@/lib/sidebar-icons";
 
-const actions = [
-  {
-    title: "Reservations",
-    href: "/Reservations",
-    icon: Plane,
-  },
-  {
-    title: "Airport Codes",
-    href: "/airport-codes",
-    icon: Globe,
-  },
-  {
-    title: "Currency",
-    href: "/currency-converter",
-    icon: DollarSign,
-  },
-  {
-    title: "Time",
-    href: "/time-converter",
-    icon: Clock3,
-  },
-  {
-    title: "Weight",
-    href: "/weight-converter",
-    icon: Scale,
-  },
-  {
-    title: "Duration",
-    href: "/flight-duration",
-    icon: Timer,
-  },
-];
+export default async function QuickActions() {
 
-export default function QuickActions() {
+  const actions = await getVisibleSidebarLinksBySection("quickActions");
 
   return (
 
@@ -51,38 +14,48 @@ export default function QuickActions() {
         Quick Actions
       </h2>
 
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {actions.length === 0 ? (
 
-        {actions.map((action) => {
+        <p className="text-gray-500">
+          No quick actions configured yet.
+        </p>
 
-          const Icon = action.icon;
+      ) : (
 
-          return (
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
 
-            <Link
-              key={action.title}
-              href={action.href}
-              className="rounded-2xl border border-gray-200 p-6 transition hover:border-red-600 hover:shadow-md"
-            >
+          {actions.map((action) => {
 
-              <Icon
-                className="mb-4 text-red-700"
-                size={30}
-              />
+            const Icon = getSidebarIcon(action.icon);
 
-              <h3 className="font-semibold">
+            return (
 
-                {action.title}
+              <Link
+                key={action.id}
+                href={action.href}
+                className="rounded-2xl border border-gray-200 p-6 transition hover:border-red-600 hover:shadow-md"
+              >
 
-              </h3>
+                <Icon
+                  className="mb-4 text-red-700"
+                  size={30}
+                />
 
-            </Link>
+                <h3 className="font-semibold">
 
-          );
+                  {action.label}
 
-        })}
+                </h3>
 
-      </div>
+              </Link>
+
+            );
+
+          })}
+
+        </div>
+
+      )}
 
     </section>
 

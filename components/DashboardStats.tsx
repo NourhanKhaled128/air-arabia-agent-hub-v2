@@ -1,46 +1,49 @@
 import {
   BookOpen,
   Bell,
-  Star,
-  Wrench,
+  Folder,
+  GraduationCap,
 } from "lucide-react";
+import { getDashboardStats } from "@/lib/dashboard-service";
 
-const stats = [
-  {
-    title: "Knowledge",
-    value: "145",
-    subtitle: "Articles",
-    icon: BookOpen,
-    color: "bg-blue-100 text-blue-700",
-  },
-  {
-    title: "Notifications",
-    value: "7",
-    subtitle: "Unread",
-    icon: Bell,
-    color: "bg-yellow-100 text-yellow-700",
-  },
-  {
-    title: "Favorites",
-    value: "12",
-    subtitle: "Saved",
-    icon: Star,
-    color: "bg-red-100 text-red-700",
-  },
-  {
-    title: "Tools",
-    value: "6",
-    subtitle: "Available",
-    icon: Wrench,
-    color: "bg-green-100 text-green-700",
-  },
-];
+export default async function DashboardStats() {
+  const stats = await getDashboardStats();
 
-export default function DashboardStats() {
+  const cards = [
+    {
+      title: "Knowledge",
+      value: stats.articles,
+      subtitle: "Articles",
+      icon: BookOpen,
+      color: "bg-blue-100 text-blue-700",
+    },
+    {
+      title: "Notifications",
+      value: stats.announcements,
+      subtitle: "Announcements",
+      icon: Bell,
+      color: "bg-yellow-100 text-yellow-700",
+    },
+    {
+      title: "Categories",
+      value: stats.categories,
+      subtitle: "Total",
+      icon: Folder,
+      color: "bg-red-100 text-red-700",
+    },
+    {
+      title: "Training",
+      value: stats.courses,
+      subtitle: "Courses",
+      icon: GraduationCap,
+      color: "bg-green-100 text-green-700",
+    },
+  ];
+
   return (
     <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
-      {stats.map((item) => {
+      {cards.map((item) => {
 
         const Icon = item.icon;
 

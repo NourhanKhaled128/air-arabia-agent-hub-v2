@@ -1,23 +1,10 @@
-const training = [
+import { getTrainingCourses } from "@/lib/training-service";
 
-  {
-    title: "Reservation Refresher",
-    date: "08 July",
-  },
+export default async function UpcomingTraining() {
 
-  {
-    title: "Refund Policy",
-    date: "10 July",
-  },
-
-  {
-    title: "Airport Operations",
-    date: "14 July",
-  },
-
-];
-
-export default function UpcomingTraining() {
+  const courses = (await getTrainingCourses())
+    .filter((course) => course.status === "Published")
+    .slice(0, 3);
 
   return (
 
@@ -27,44 +14,46 @@ export default function UpcomingTraining() {
 
         <h2 className="text-2xl font-bold">
 
-          Upcoming Training
+          Available Training
 
         </h2>
 
-        <button className="text-sm font-semibold text-red-700">
-
-          View Calendar
-
-        </button>
-
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-3">
+      {courses.length === 0 ? (
 
-        {training.map((course) => (
+        <p className="text-gray-500">No published training courses yet.</p>
 
-          <div
-            key={course.title}
-            className="rounded-2xl border border-gray-100 p-6"
-          >
+      ) : (
 
-            <h3 className="font-semibold">
+        <div className="grid gap-5 lg:grid-cols-3">
 
-              {course.title}
+          {courses.map((course) => (
 
-            </h3>
+            <div
+              key={course.id}
+              className="rounded-2xl border border-gray-100 p-6"
+            >
 
-            <p className="mt-3 text-gray-500">
+              <h3 className="font-semibold">
 
-              {course.date}
+                {course.title}
 
-            </p>
+              </h3>
 
-          </div>
+              <p className="mt-3 text-gray-500">
 
-        ))}
+                {course.duration ?? "Self-paced"} · {course.lessons.length} lesson{course.lessons.length === 1 ? "" : "s"}
 
-      </div>
+              </p>
+
+            </div>
+
+          ))}
+
+        </div>
+
+      )}
 
     </section>
 

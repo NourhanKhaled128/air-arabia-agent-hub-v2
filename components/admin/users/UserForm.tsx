@@ -1,55 +1,88 @@
-"use client";
-
 import AdminInput from "../AdminInput";
 import AdminSelect from "../AdminSelect";
-import AdminSwitch from "../AdminSwitch";
-import { useState } from "react";
+import AdminButton from "../AdminButton";
 
-export default function UserForm() {
-  const [active, setActive] = useState(true);
+interface RoleOption {
+  id: number;
+  name: string;
+}
 
+interface UserData {
+  name: string;
+  email: string;
+  roleId: number;
+  status: string;
+}
+
+interface Props {
+  action: (formData: FormData) => void;
+  submitLabel?: string;
+  user?: UserData;
+  roles: RoleOption[];
+  passwordRequired?: boolean;
+}
+
+export default function UserForm({
+  action,
+  submitLabel = "Save User",
+  user,
+  roles,
+  passwordRequired = true,
+}: Props) {
   return (
-    <div className="space-y-6">
+    <form action={action} className="space-y-6">
 
       <AdminInput
+        name="name"
         label="Full Name"
-        placeholder="Ahmed Hassan"
+        placeholder="Jane Doe"
+        defaultValue={user?.name}
+        required
       />
 
       <AdminInput
-        label="Email"
         type="email"
-        placeholder="ahmed@airarabia.com"
+        name="email"
+        label="Email"
+        placeholder="jane@airarabia.com"
+        defaultValue={user?.email}
+        required
       />
 
-      <AdminSelect
-        label="Role"
-        options={[
-          {
-            label: "Administrator",
-            value: "admin",
-          },
-          {
-            label: "Supervisor",
-            value: "supervisor",
-          },
-          {
-            label: "Agent",
-            value: "agent",
-          },
-        ]}
+      <AdminInput
+        type="password"
+        name="password"
+        label={passwordRequired ? "Password" : "New Password (leave blank to keep current)"}
+        placeholder="••••••••"
+        required={passwordRequired}
       />
 
-      <AdminSwitch
-        label="Active User"
-        checked={active}
-        onChange={setActive}
-      />
+      <div className="grid gap-6 md:grid-cols-2">
 
-      <button className="rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800">
-        Save User
-      </button>
+        <AdminSelect
+          name="roleId"
+          label="Role"
+          defaultValue={user?.roleId ?? roles[0]?.id}
+          options={roles.map((role) => ({
+            label: role.name,
+            value: String(role.id),
+          }))}
+        />
 
-    </div>
+        <AdminSelect
+          name="status"
+          label="Status"
+          defaultValue={user?.status ?? "Active"}
+          options={[
+            { label: "Active", value: "Active" },
+            { label: "Inactive", value: "Inactive" },
+          ]}
+        />
+
+      </div>
+
+      <AdminButton>{submitLabel}</AdminButton>
+
+    </form>
   );
 }

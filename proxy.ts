@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ADMIN_SESSION_COOKIE, getExpectedAdminSessionToken } from "@/lib/admin-auth";
+import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 
-export default function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/admin/login")) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+  const token = request.cookies.get(SESSION_COOKIE)?.value;
+  const session = await verifySessionToken(token);
 
-  if (token !== getExpectedAdminSessionToken()) {
+  if (!session?.userId) {
     return NextResponse.redirect(new URL("/admin/login", request.nextUrl));
   }
 

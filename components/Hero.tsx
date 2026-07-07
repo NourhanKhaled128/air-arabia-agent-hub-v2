@@ -1,4 +1,9 @@
-export default function Hero() {
+import Link from "next/link";
+import { getDashboardStats } from "@/lib/dashboard-service";
+
+export default async function Hero() {
+  const stats = await getDashboardStats();
+
   return (
     <section className="relative overflow-hidden rounded-3xl">
 
@@ -36,17 +41,23 @@ export default function Hero() {
 
           <div className="mt-8 flex gap-4">
 
-            <button className="rounded-xl bg-white px-6 py-3 font-semibold text-red-700 transition hover:bg-red-100">
+            <Link
+              href="/Knowledge"
+              className="rounded-xl bg-white px-6 py-3 font-semibold text-red-700 transition hover:bg-red-100"
+            >
 
               Browse Knowledge
 
-            </button>
+            </Link>
 
-            <button className="rounded-xl border border-white px-6 py-3 font-semibold text-white transition hover:bg-white hover:text-red-700">
+            <Link
+              href="/disruptions"
+              className="rounded-xl border border-white px-6 py-3 font-semibold text-white transition hover:bg-white hover:text-red-700"
+            >
 
               Latest Updates
 
-            </button>
+            </Link>
 
           </div>
 
@@ -68,7 +79,7 @@ export default function Hero() {
 
                 <span>Knowledge</span>
 
-                <strong>145</strong>
+                <strong>{stats.articles}</strong>
 
               </div>
 
@@ -76,7 +87,7 @@ export default function Hero() {
 
                 <span>Notifications</span>
 
-                <strong>7</strong>
+                <strong>{stats.announcements}</strong>
 
               </div>
 
@@ -84,7 +95,7 @@ export default function Hero() {
 
                 <span>Training</span>
 
-                <strong>3</strong>
+                <strong>{stats.courses}</strong>
 
               </div>
 
@@ -92,7 +103,7 @@ export default function Hero() {
 
                 <span>Alerts</span>
 
-                <strong>2</strong>
+                <strong>{stats.activeAlerts}</strong>
 
               </div>
 

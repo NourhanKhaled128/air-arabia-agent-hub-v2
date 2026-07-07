@@ -7,6 +7,13 @@ import {
   updateAnnouncement,
   deleteAnnouncement,
 } from "@/lib/announcement-service";
+import { logAction } from "@/lib/audit-service";
+import { getCurrentAdminUser } from "@/lib/admin-dal";
+
+async function currentUserName() {
+  const user = await getCurrentAdminUser();
+  return user?.name ?? "System";
+}
 
 function parseDate(value: FormDataEntryValue | null) {
   if (!value || typeof value !== "string") return undefined;
@@ -17,7 +24,7 @@ function parseDate(value: FormDataEntryValue | null) {
 export async function createAnnouncementAction(
   formData: FormData
 ) {
-  await createAnnouncement({
+  const announcement = await createAnnouncement({
     title: formData.get("title") as string,
     content: formData.get("content") as string,
     priority: formData.get("priority") as string,
@@ -27,7 +34,10 @@ export async function createAnnouncementAction(
     expiryDate: parseDate(formData.get("expiryDate")),
   });
 
+  await logAction("Created", "Announcement", announcement.id, await currentUserName());
+
   revalidatePath("/admin/announcements");
+  revalidatePath("/", "layout");
   redirect("/admin/announcements");
 }
 
@@ -45,12 +55,18 @@ export async function updateAnnouncementAction(
     expiryDate: parseDate(formData.get("expiryDate")),
   });
 
+  await logAction("Updated", "Announcement", id, await currentUserName());
+
   revalidatePath("/admin/announcements");
+  revalidatePath("/", "layout");
   redirect("/admin/announcements");
 }
 
 export async function deleteAnnouncementAction(id: number) {
   await deleteAnnouncement(id);
 
+  await logAction("Deleted", "Announcement", id, await currentUserName());
+
   revalidatePath("/admin/announcements");
+  revalidatePath("/", "layout");
 }

@@ -1,14 +1,27 @@
 import ArticleMetadataCard from "./ArticleMetadataCard";
 
-export default function ArticleSidebar() {
+interface Props {
+  author: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export default function ArticleSidebar({ author, createdAt, updatedAt }: Props) {
   return (
     <div className="space-y-6">
 
       <ArticleMetadataCard
-        author="Administrator"
-        createdAt="06 Jul 2026"
-        updatedAt="06 Jul 2026"
-        version="1.0"
+        author={author}
+        createdAt={formatDate(createdAt)}
+        updatedAt={formatDate(updatedAt)}
       />
 
     </div>

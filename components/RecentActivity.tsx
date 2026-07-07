@@ -1,32 +1,9 @@
-const activity = [
-  {
-    title: "Refund Policy Updated",
-    description: "New refund workflow published.",
-    time: "10 min ago",
-  },
-  {
-    title: "Airport Alert",
-    description: "SHJ operational update.",
-    time: "45 min ago",
-  },
-  {
-    title: "Training Published",
-    description: "Customer Service Refresher.",
-    time: "2 hrs ago",
-  },
-  {
-    title: "Reservation SOP",
-    description: "Flight Change procedure updated.",
-    time: "Today",
-  },
-  {
-    title: "Payment Guide",
-    description: "New payment process.",
-    time: "Today",
-  },
-];
+import { getRecentAuditLogs } from "@/lib/audit-service";
+import { formatRelativeTime } from "@/lib/format";
 
-export default function RecentActivity() {
+export default async function RecentActivity() {
+  const activity = await getRecentAuditLogs(5);
+
   return (
     <section className="h-[420px] rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
 
@@ -38,20 +15,18 @@ export default function RecentActivity() {
 
         </h2>
 
-        <button className="text-sm font-semibold text-red-700">
-
-          View All
-
-        </button>
-
       </div>
 
       <div className="h-[300px] space-y-4 overflow-y-auto pr-2">
 
+        {activity.length === 0 && (
+          <p className="text-gray-500">No activity yet.</p>
+        )}
+
         {activity.map((item) => (
 
           <div
-            key={item.title}
+            key={item.id}
             className="rounded-2xl border border-gray-100 bg-gray-50 p-5 transition hover:bg-red-50"
           >
 
@@ -59,13 +34,13 @@ export default function RecentActivity() {
 
               <h3 className="font-semibold">
 
-                {item.title}
+                {item.action} {item.entity}
 
               </h3>
 
               <span className="text-sm text-gray-500">
 
-                {item.time}
+                {formatRelativeTime(item.createdAt)}
 
               </span>
 
@@ -73,7 +48,7 @@ export default function RecentActivity() {
 
             <p className="mt-2 text-gray-600">
 
-              {item.description}
+              by {item.userName}
 
             </p>
 

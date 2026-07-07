@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import ToolHeader from "@/components/ToolHeader";
 import AirportAlerts from "@/components/AirportAlerts";
 

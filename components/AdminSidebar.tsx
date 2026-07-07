@@ -13,9 +13,17 @@ FileText,
 
 Folder,
 
+PanelLeft,
+
+AlertTriangle,
+
 Megaphone,
 
 GraduationCap,
+
+Users,
+
+Shield,
 
 Settings,
 
@@ -44,6 +52,18 @@ icon:Folder
 },
 
 {
+title:"Sidebar Links",
+href:"/admin/sidebar",
+icon:PanelLeft
+},
+
+{
+title:"Disruptions",
+href:"/admin/disruptions",
+icon:AlertTriangle
+},
+
+{
 title:"Announcements",
 href:"/admin/announcements",
 icon:Megaphone
@@ -53,6 +73,18 @@ icon:Megaphone
 title:"Training",
 href:"/admin/training",
 icon:GraduationCap
+},
+
+{
+title:"Users",
+href:"/admin/users",
+icon:Users
+},
+
+{
+title:"Roles",
+href:"/admin/roles",
+icon:Shield
 },
 
 {

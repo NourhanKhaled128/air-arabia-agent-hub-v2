@@ -1,4 +1,5 @@
 import ToolHeader from "@/components/ToolHeader";
+import AirportCodeFinder from "@/components/AirportCodeFinder";
 
 export default function AirportCodesPage() {
   return (
@@ -9,6 +10,7 @@ export default function AirportCodesPage() {
         subtitle="Search airports by code, city, or airport name."
       />
 
+      <AirportCodeFinder />
 
     </main>
   );

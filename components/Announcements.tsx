@@ -1,23 +1,9 @@
-const announcements = [
-  {
-    title: "New Refund Policy",
-    date: "Today",
-  },
-  {
-    title: "Schedule Change Procedure Updated",
-    date: "Yesterday",
-  },
-  {
-    title: "Airport Alert - SHJ",
-    date: "2 days ago",
-  },
-  {
-    title: "Training Session Available",
-    date: "3 days ago",
-  },
-];
+import { getLatestAnnouncements } from "@/lib/dashboard-service";
+import { formatRelativeTime } from "@/lib/format";
 
-export default function Announcements() {
+export default async function Announcements() {
+
+  const announcements = await getLatestAnnouncements();
 
   return (
 
@@ -31,20 +17,18 @@ export default function Announcements() {
 
         </h2>
 
-        <button className="text-sm font-semibold text-red-700">
-
-          View All
-
-        </button>
-
       </div>
 
       <div className="mt-6 space-y-5 overflow-y-auto h-[250px] pr-2">
 
+        {announcements.length === 0 && (
+          <p className="text-gray-500">No announcements yet.</p>
+        )}
+
         {announcements.map((item) => (
 
           <div
-            key={item.title}
+            key={item.id}
             className="rounded-2xl border border-gray-100 p-4 transition hover:bg-red-50"
           >
 
@@ -56,7 +40,7 @@ export default function Announcements() {
 
             <p className="mt-2 text-sm text-gray-500">
 
-              {item.date}
+              {formatRelativeTime(item.createdAt)}
 
             </p>
 

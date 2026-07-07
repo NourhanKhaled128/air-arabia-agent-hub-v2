@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { buildArticleSectionsReplaceData } from "@/lib/article-service";
+import { logAction } from "@/lib/audit-service";
+import { getCurrentAdminUser } from "@/lib/admin-dal";
 
 interface RouteContext {
   params: Promise<{
@@ -44,6 +46,9 @@ export async function PUT(
         ...buildArticleSectionsReplaceData(body),
       },
     });
+
+    const user = await getCurrentAdminUser();
+    await logAction("Updated", "Article", article.id, user?.name ?? "System");
 
     return NextResponse.json(article);
 

@@ -40,6 +40,24 @@ export async function getTrendingArticles(limit = 4) {
   });
 }
 
+export async function getArticlesForSearch() {
+  return prisma.article.findMany({
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      description: true,
+      category: true,
+      overview: true,
+      keywords: { select: { value: true } },
+      scenarios: { select: { situation: true } },
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+}
+
 export async function getArticlesByCategory(category: string) {
   return prisma.article.findMany({
     where: {

@@ -8,14 +8,14 @@ export default async function AdminLoginPage({ searchParams }: Props) {
   const { error } = await searchParams;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
       <div className="w-full max-w-md rounded-3xl bg-white p-10 shadow-xl">
 
         <h1 className="text-3xl font-bold text-red-700">
           AIR ARABIA
         </h1>
 
-        <p className="mt-1 text-gray-500">
+        <p className="mt-1 text-slate-500">
           Content Management Login
         </p>
 
@@ -23,21 +23,34 @@ export default async function AdminLoginPage({ searchParams }: Props) {
 
           <div>
             <label className="mb-2 block font-semibold">
-              Admin Password
+              Email
+            </label>
+
+            <input
+              type="email"
+              name="email"
+              required
+              autoFocus
+              className="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-red-600"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block font-semibold">
+              Password
             </label>
 
             <input
               type="password"
               name="password"
               required
-              autoFocus
-              className="w-full rounded-xl border border-gray-300 p-3"
+              className="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-red-600"
             />
           </div>
 
           {error && (
             <p className="text-sm font-semibold text-red-600">
-              Incorrect password. Please try again.
+              Incorrect email or password. Please try again.
             </p>
           )}
 

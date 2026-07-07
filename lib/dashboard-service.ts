@@ -6,11 +6,13 @@ export async function getDashboardStats() {
     categories,
     announcements,
     courses,
+    activeAlerts,
   ] = await Promise.all([
     prisma.article.count(),
     prisma.category.count(),
     prisma.announcement.count(),
     prisma.trainingCourse.count(),
+    prisma.disruption.count({ where: { active: true } }),
   ]);
 
   return {
@@ -18,6 +20,7 @@ export async function getDashboardStats() {
     categories,
     announcements,
     courses,
+    activeAlerts,
   };
 }
 

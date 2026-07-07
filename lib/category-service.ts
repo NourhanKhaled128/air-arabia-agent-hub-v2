@@ -28,6 +28,14 @@ export async function getCategoryById(id: number) {
   });
 }
 
+export async function getCategoryBySlug(slug: string) {
+  return prisma.category.findUnique({
+    where: {
+      slug,
+    },
+  });
+}
+
 export async function createCategory(data: {
   name: string;
   slug: string;

@@ -29,17 +29,19 @@ export default function CategoryRowActions({ id }: Props) {
     <div className="flex gap-3">
       <Link
         href={`/admin/categories/${id}`}
-        className="rounded-lg border p-2 hover:bg-slate-50"
+        className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 font-semibold text-slate-700 hover:bg-slate-50"
       >
         <Pencil size={18} />
+        Edit
       </Link>
 
       <button
         disabled={isPending}
         onClick={handleDelete}
-        className="rounded-lg border p-2 text-red-600 hover:bg-red-50"
+        className="flex items-center gap-2 rounded-lg border border-red-200 px-3 py-2 font-semibold text-red-600 hover:bg-red-50"
       >
         <Trash2 size={18} />
+        Delete
       </button>
     </div>
   );

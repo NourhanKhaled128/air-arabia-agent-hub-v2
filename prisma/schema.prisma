@@ -108,6 +108,16 @@ model Attachment {
   article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
+model Disruption {
+  id          Int      @id @default(autoincrement())
+  airportCode String
+  message     String
+  level       String   @default("Medium")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model Category {
   id          Int      @id @default(autoincrement())
   name        String   @unique
@@ -120,6 +130,18 @@ model Category {
   group       String   @default("Knowledge Base")
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model SidebarLink {
+  id        Int      @id @default(autoincrement())
+  label     String
+  href      String
+  icon      String   @default("Link2")
+  section   String   @default("tools")
+  order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Announcement {
@@ -190,4 +212,26 @@ model AppSetting {
   key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  color       String   @default("bg-slate-100 text-slate-700")
+  permissions String[]
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String
+  email        String   @unique
+  passwordHash String
+  status       String   @default("Active")
+  roleId       Int
+  role         Role     @relation(fields: [roleId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }

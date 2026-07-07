@@ -2,14 +2,12 @@ interface Props {
   author?: string;
   createdAt?: string;
   updatedAt?: string;
-  version?: string;
 }
 
 export default function ArticleMetadataCard({
   author,
   createdAt,
   updatedAt,
-  version,
 }: Props) {
   return (
     <div className="rounded-3xl bg-white p-6 shadow-sm">
@@ -47,16 +45,6 @@ export default function ArticleMetadataCard({
 
           <span className="font-semibold">
             {updatedAt ?? "-"}
-          </span>
-        </div>
-
-        <div className="flex justify-between">
-          <span className="text-slate-500">
-            Version
-          </span>
-
-          <span className="font-semibold">
-            {version ?? "1.0"}
           </span>
         </div>
 

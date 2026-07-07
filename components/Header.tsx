@@ -33,7 +33,11 @@ export default function Header({ articles }: Props) {
 
       article.category.toLowerCase().includes(q) ||
 
-      article.overview.toLowerCase().includes(q)
+      article.overview.toLowerCase().includes(q) ||
+
+      article.keywords.some(k => k.value.toLowerCase().includes(q)) ||
+
+      article.scenarios.some(s => s.situation.toLowerCase().includes(q))
 
     );
 

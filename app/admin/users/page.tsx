@@ -1,82 +1,44 @@
-import { Plus, Pencil, Trash2, Shield, UserCheck } from "lucide-react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminButton from "@/components/admin/AdminButton";
+import AdminStatCard from "@/components/admin/AdminStatCard";
+import AdminBadge from "@/components/admin/AdminBadge";
+import UserRowActions from "@/components/admin/users/UserRowActions";
+import { getUsers } from "@/lib/user-service";
+import { UserCheck, Shield, Users as UsersIcon } from "lucide-react";
 
-const users = [
-  {
-    id: 1,
-    name: "Admin User",
-    email: "admin@airarabia.com",
-    role: "Administrator",
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "Reservations Supervisor",
-    email: "supervisor@airarabia.com",
-    role: "Supervisor",
-    status: "Active",
-  },
-  {
-    id: 3,
-    name: "Agent One",
-    email: "agent@airarabia.com",
-    role: "Agent",
-    status: "Inactive",
-  },
-];
+export default async function UsersPage() {
+  const users = await getUsers();
 
-export default function UsersPage() {
+  const activeCount = users.filter((u) => u.status === "Active").length;
+  const adminCount = users.filter((u) => u.role.name === "Administrator").length;
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
-            Administration
-          </p>
+      <AdminPageHeader
+        title="Users"
+        description="Manage who has access to the Air Arabia admin CMS."
+        actions={
+          <AdminButton href="/admin/users/new">
+            + New User
+          </AdminButton>
+        }
+      />
 
-          <h1 className="mt-2 text-4xl font-bold">
-            Users
-          </h1>
-        </div>
-
-        <button className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white">
-          <Plus size={18} />
-          New User
-        </button>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-4">
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <UserCheck className="mb-3 text-red-700" />
-          <p>Total Users</p>
-          <h2 className="text-3xl font-bold">132</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <Shield className="mb-3 text-blue-700" />
-          <p>Administrators</p>
-          <h2 className="text-3xl font-bold">5</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <p>Supervisors</p>
-          <h2 className="text-3xl font-bold">14</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <p>Agents</p>
-          <h2 className="text-3xl font-bold">113</h2>
-        </div>
+      <div className="grid gap-6 md:grid-cols-3">
+        <AdminStatCard title="Total Users" value={users.length} icon={UsersIcon} />
+        <AdminStatCard title="Active" value={activeCount} icon={UserCheck} color="text-emerald-700" />
+        <AdminStatCard title="Administrators" value={adminCount} icon={Shield} color="text-blue-700" />
       </div>
 
       <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
         <table className="w-full">
           <thead className="bg-slate-50">
-            <tr>
-              <th className="px-6 py-4 text-left">Name</th>
-              <th className="px-6 py-4 text-left">Email</th>
-              <th className="px-6 py-4 text-left">Role</th>
-              <th className="px-6 py-4 text-left">Status</th>
-              <th className="px-6 py-4 text-left">Actions</th>
+            <tr className="text-left text-sm">
+              <th className="px-6 py-4">Name</th>
+              <th className="px-6 py-4">Email</th>
+              <th className="px-6 py-4">Role</th>
+              <th className="px-6 py-4">Status</th>
+              <th className="px-6 py-4">Actions</th>
             </tr>
           </thead>
 
@@ -84,31 +46,28 @@ export default function UsersPage() {
             {users.map((user) => (
               <tr key={user.id} className="border-t">
                 <td className="px-6 py-5 font-semibold">{user.name}</td>
-                <td className="px-6 py-5">{user.email}</td>
-                <td className="px-6 py-5">{user.role}</td>
+                <td className="px-6 py-5 text-slate-600">{user.email}</td>
                 <td className="px-6 py-5">
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                      user.status === "Active"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-slate-200 text-slate-700"
-                    }`}
-                  >
-                    {user.status}
-                  </span>
+                  <AdminBadge color="blue">{user.role.name}</AdminBadge>
                 </td>
                 <td className="px-6 py-5">
-                  <div className="flex gap-2">
-                    <button className="rounded-lg border p-2">
-                      <Pencil size={18} />
-                    </button>
-                    <button className="rounded-lg border p-2">
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+                  <AdminBadge color={user.status === "Active" ? "green" : "gray"}>
+                    {user.status}
+                  </AdminBadge>
+                </td>
+                <td className="px-6 py-5">
+                  <UserRowActions id={user.id} />
                 </td>
               </tr>
             ))}
+
+            {users.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-10 text-center text-slate-500">
+                  No users yet.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

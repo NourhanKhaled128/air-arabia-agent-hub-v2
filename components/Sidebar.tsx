@@ -7,20 +7,14 @@ import { usePathname } from "next/navigation";
 
 import {
   Home,
-  BookOpen,
-  Plane,
-  AlertTriangle,
-  Clock3,
-  Globe,
-  DollarSign,
-  Scale,
-  Timer,
   Search,
   ChevronDown,
   ChevronRight,
   Star,
   Folder,
 } from "lucide-react";
+
+import { getSidebarIcon } from "@/lib/sidebar-icons";
 
 interface SidebarCategory {
   id: number;
@@ -29,53 +23,18 @@ interface SidebarCategory {
   group: string;
 }
 
-interface Props {
-  categories: SidebarCategory[];
+interface SidebarNavLink {
+  id: number;
+  label: string;
+  href: string;
+  icon: string;
 }
 
-const pinnedKnowledgeItems = [
-  { title: "Knowledge", icon: BookOpen, href: "/Knowledge" },
-  {
-    title: "Flight Disruptions",
-    icon: AlertTriangle,
-    href: "/disruptions",
-  },
-];
-
-const toolItems = [
-  {
-  title: "Favorites",
-  icon: Star,
-  href: "/favorites",
-},
-{
-  title: "Recently Viewed",
-  icon: Clock3,
-  href: "/recent",
-},
-  { title: "Time Converter", icon: Clock3, href: "/time-converter" },
-  { title: "Airport Codes", icon: Globe, href: "/airport-codes" },
-  {
-    title: "Currency Converter",
-    icon: DollarSign,
-    href: "/currency-converter",
-  },
-  {
-    title: "Weight Converter",
-    icon: Scale,
-    href: "/weight-converter",
-  },
-  {
-    title: "Flight Duration",
-    icon: Timer,
-    href: "/flight-duration",
-  },
-  {
-    title: "Layover Calculator",
-    icon: Timer,
-    href: "/layover-calculator",
-  },
-];
+interface Props {
+  categories: SidebarCategory[];
+  pinnedLinks: SidebarNavLink[];
+  toolLinks: SidebarNavLink[];
+}
 
 type MenuItem = {
   title: string;
@@ -121,7 +80,15 @@ function MenuSection({
   );
 }
 
-export default function Sidebar({ categories }: Props) {
+function toMenuItems(links: SidebarNavLink[]): MenuItem[] {
+  return links.map((link) => ({
+    title: link.label,
+    href: link.href,
+    icon: getSidebarIcon(link.icon),
+  }));
+}
+
+export default function Sidebar({ categories, pinnedLinks, toolLinks }: Props) {
   const pathname = usePathname();
 
   const [search, setSearch] = useState("");
@@ -206,40 +173,16 @@ export default function Sidebar({ categories }: Props) {
 
             <Star size={15} />
 
-            Favorites
+            Pinned Knowledge
 
           </h3>
 
-          <Link
-            href="/Reservations"
-            className="mb-2 flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-red-50"
-          >
-
-            <Plane size={20} />
-
-            Reservations
-
-          </Link>
-
-          <Link
-            href="/time-converter"
-            className="flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-red-50"
-          >
-
-            <Clock3 size={20} />
-
-            Time Converter
-
-          </Link>
-
-        </div>
-
-        <div className="mb-8">
           <MenuSection
-            items={pinnedKnowledgeItems}
+            items={toMenuItems(pinnedLinks)}
             pathname={pathname}
             search={search}
           />
+
         </div>
 
         {Array.from(groups.entries()).map(([group, items]) => (
@@ -300,7 +243,7 @@ export default function Sidebar({ categories }: Props) {
 
           {toolsOpen && (
             <MenuSection
-              items={toolItems}
+              items={toMenuItems(toolLinks)}
               pathname={pathname}
               search={search}
             />
