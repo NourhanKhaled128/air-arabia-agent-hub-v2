@@ -1,9 +1,9 @@
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
-import { getArticlesByCategory } from "@/lib/article-service";
+import { getArticlesByCategoryName } from "@/lib/article-service";
 
 export default async function ReservationsPage() {
-  const reservationArticles = await getArticlesByCategory("Reservations");
+  const reservationArticles = await getArticlesByCategoryName("Reservations");
 
   return (
     <>

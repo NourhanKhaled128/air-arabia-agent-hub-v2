@@ -18,16 +18,16 @@ export default function AdminPageHeader({
 
       <div>
 
-        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
+        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-brand">
           {badge}
         </p>
 
-        <h1 className="mt-2 text-4xl font-bold">
+        <h1 className="mt-2 text-4xl font-bold dark:text-slate-100">
           {title}
         </h1>
 
         {description && (
-          <p className="mt-3 text-slate-500">
+          <p className="mt-3 text-slate-500 dark:text-slate-400">
             {description}
           </p>
         )}

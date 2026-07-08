@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import {
   createImportantLink,
   deleteImportantLink,
+  reorderImportantLinks,
   updateImportantLink,
 } from "@/lib/important-link-service";
 import { logAction } from "@/lib/audit-service";
@@ -66,6 +67,13 @@ export async function deleteManyImportantLinksAction(ids: number[]) {
   await prisma.importantLink.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "Important Link", null, await currentUserName());
+
+  revalidatePath("/admin/important-links");
+  revalidatePath("/", "layout");
+}
+
+export async function reorderImportantLinksAction(orderedIds: number[]) {
+  await reorderImportantLinks(orderedIds);
 
   revalidatePath("/admin/important-links");
   revalidatePath("/", "layout");

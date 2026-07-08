@@ -14,11 +14,12 @@ import KeywordsSection from "./KeywordsSection";
 import ScenarioSection, { type ScenarioInput } from "./ScenarioSection";
 import PhotosSection, { type PhotoInput } from "./PhotosSection";
 import AttachmentsSection, { type AttachmentInput } from "./AttachmentsSection";
-import UpdatesSection from "./UpdatesSection";
+import UpdatesSection, { type UpdateInput } from "./UpdatesSection";
 
 interface ArticleFormData {
   title: string;
-  category: string;
+  categoryId: number | null;
+  folderId: number | null;
   description: string;
   overview: string;
   author: string;
@@ -33,16 +34,18 @@ interface ArticleFormData {
   scenarios: ScenarioInput[];
   images: PhotoInput[];
   attachments: AttachmentInput[];
+  updates: UpdateInput[];
 }
 
 interface Props {
-  categories?: { name: string }[];
+  categories?: { id: number; name: string; folders?: { id: number; name: string }[] }[];
   dispositionCodes?: { code: string; label: string }[];
 }
 
 const emptyFormData: ArticleFormData = {
   title: "",
-  category: "",
+  categoryId: null,
+  folderId: null,
   description: "",
   overview: "",
   author: "Nourhan Khaled",
@@ -57,6 +60,7 @@ const emptyFormData: ArticleFormData = {
   scenarios: [],
   images: [],
   attachments: [],
+  updates: [],
 };
 
 export default function ArticleForm({ categories = [], dispositionCodes = [] }: Props) {
@@ -64,7 +68,7 @@ export default function ArticleForm({ categories = [], dispositionCodes = [] }: 
 
   const [formData, setFormData] = useState<ArticleFormData>(emptyFormData);
 
-  function updateField(name: string, value: string) {
+  function updateField(name: string, value: string | number | null) {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -173,7 +177,10 @@ export default function ArticleForm({ categories = [], dispositionCodes = [] }: 
         onChange={(attachments) => setFormData((prev) => ({ ...prev, attachments }))}
       />
 
-      <UpdatesSection />
+      <UpdatesSection
+        items={formData.updates}
+        onChange={(updates) => setFormData((prev) => ({ ...prev, updates }))}
+      />
 
       <PublishSection
         loading={loading}

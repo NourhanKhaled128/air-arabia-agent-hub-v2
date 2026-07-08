@@ -43,7 +43,7 @@ export default async function Hero() {
 
             <Link
               href="/Knowledge"
-              className="rounded-xl bg-white px-6 py-3 font-semibold text-red-700 transition hover:bg-red-100"
+              className="rounded-xl bg-white px-6 py-3 font-semibold text-brand transition hover:bg-red-100"
             >
 
               Browse Knowledge
@@ -52,7 +52,7 @@ export default async function Hero() {
 
             <Link
               href="/disruptions"
-              className="rounded-xl border border-white px-6 py-3 font-semibold text-white transition hover:bg-white hover:text-red-700"
+              className="rounded-xl border border-white px-6 py-3 font-semibold text-white transition hover:bg-white hover:text-brand"
             >
 
               Latest Updates

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import {
   createSidebarLink,
   deleteSidebarLink,
+  reorderSidebarLinks,
   updateSidebarLink,
 } from "@/lib/sidebar-service";
 import { logAction } from "@/lib/audit-service";
@@ -56,6 +57,13 @@ export async function deleteSidebarLinkAction(id: number) {
   await deleteSidebarLink(id);
 
   await logAction("Deleted", "Sidebar Link", id, await currentUserName());
+
+  revalidatePath("/admin/sidebar");
+  revalidatePath("/", "layout");
+}
+
+export async function reorderSidebarLinksAction(orderedIds: number[]) {
+  await reorderSidebarLinks(orderedIds);
 
   revalidatePath("/admin/sidebar");
   revalidatePath("/", "layout");

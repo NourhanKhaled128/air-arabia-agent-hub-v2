@@ -25,7 +25,7 @@ export default async function AdminLayout({
 
   return (
     <SidebarPrefsProvider>
-      <div className="min-h-screen bg-slate-100">
+      <div className="min-h-screen bg-slate-100 dark:bg-background">
         <AdminSidebar />
 
         <AdminMain>

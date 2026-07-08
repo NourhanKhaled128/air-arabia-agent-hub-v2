@@ -6,12 +6,9 @@ import {
   Plus,
 } from "lucide-react";
 import { getTrainingCourses } from "@/lib/training-service";
-import { deleteManyTrainingCoursesAction } from "@/app/admin/actions/training-actions";
-import CourseRowActions from "@/components/admin/training/CourseRowActions";
+import TrainingCoursesTable from "@/components/admin/training/TrainingCoursesTable";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
-import AdminBadge from "@/components/admin/AdminBadge";
-import AdminListTable from "@/components/admin/AdminListTable";
 
 export default async function TrainingPage() {
   const courses = await getTrainingCourses();
@@ -44,69 +41,7 @@ export default async function TrainingPage() {
         <AdminStatCard title="Published" value={published} icon={Award} color="text-amber-600" />
       </div>
 
-      <AdminListTable
-        columns={[
-          { key: "title", label: "Course" },
-          { key: "duration", label: "Duration" },
-          { key: "lessons", label: "Lessons" },
-          { key: "passingScore", label: "Passing Score" },
-          { key: "status", label: "Status" },
-        ]}
-        data={courses}
-        searchPlaceholder="Search courses..."
-        searchFn={(course, query) => {
-          const q = query.toLowerCase();
-          return (
-            course.title.toLowerCase().includes(q) ||
-            (course.description ?? "").toLowerCase().includes(q)
-          );
-        }}
-        filters={[
-          {
-            key: "status",
-            label: "Status",
-            options: [
-              { value: "Published", label: "Published" },
-              { value: "Draft", label: "Draft" },
-            ],
-          },
-        ]}
-        filterFn={(course, values) => {
-          if (values.status && course.status !== values.status) return false;
-          return true;
-        }}
-        onDeleteMany={deleteManyTrainingCoursesAction}
-        emptyMessage="No courses yet."
-        renderRow={(course) => (
-          <>
-            <td className="px-6 py-5 font-semibold">
-              {course.title}
-            </td>
-
-            <td className="px-6 py-5">
-              {course.duration ?? "-"}
-            </td>
-
-            <td className="px-6 py-5">
-              {course.lessons.length}
-            </td>
-
-            <td className="px-6 py-5">
-              {course.passingScore != null ? `${course.passingScore}%` : "-"}
-            </td>
-
-            <td className="px-6 py-5">
-              <AdminBadge color={course.status === "Published" ? "green" : "gray"}>
-                {course.status}
-              </AdminBadge>
-            </td>
-
-            <td className="px-6 py-5">
-              <CourseRowActions id={course.id} />
-            </td>
-          </>
-        )}
-      />
+      <TrainingCoursesTable courses={courses} />
     </div>
   );
 }

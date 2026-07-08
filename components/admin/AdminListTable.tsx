@@ -3,6 +3,9 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Search, Trash2 } from "lucide-react";
 import AdminBulkActionsBar from "./AdminBulkActionsBar";
+import AdminPagination from "./AdminPagination";
+
+const PAGE_SIZE = 20;
 
 interface Column {
   key: string;
@@ -42,6 +45,7 @@ export default function AdminListTable<T extends { id: number }>({
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState(false);
+  const [page, setPage] = useState(1);
 
   const filtered = useMemo(() => {
     return data.filter((row) => {
@@ -50,6 +54,18 @@ export default function AdminListTable<T extends { id: number }>({
       return true;
     });
   }, [data, query, filterValues, searchFn, filterFn]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+  const filterSignature = query + "|" + JSON.stringify(filterValues);
+  const [lastFilterSignature, setLastFilterSignature] = useState(filterSignature);
+  if (filterSignature !== lastFilterSignature) {
+    setLastFilterSignature(filterSignature);
+    setPage(1);
+  }
+
+  const safePage = Math.min(page, totalPages);
+  const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const filteredIds = filtered.map((row) => row.id);
   const allSelected = filteredIds.length > 0 && filteredIds.every((id) => selected.has(id));
@@ -184,7 +200,7 @@ export default function AdminListTable<T extends { id: number }>({
           </thead>
 
           <tbody>
-            {filtered.map((row) => (
+            {pageRows.map((row) => (
               <tr key={row.id} className="border-t">
                 <td className="px-6 py-5">
                   <input
@@ -209,6 +225,14 @@ export default function AdminListTable<T extends { id: number }>({
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <AdminPagination
+          currentPage={safePage}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      )}
     </div>
   );
 }

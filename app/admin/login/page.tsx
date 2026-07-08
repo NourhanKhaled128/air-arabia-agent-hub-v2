@@ -13,14 +13,14 @@ export default async function AdminLoginPage({ searchParams }: Props) {
   const { error } = await searchParams;
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4">
-      <div className="w-full max-w-md rounded-3xl bg-white p-10 shadow-xl">
+    <div className="flex min-h-screen items-center justify-center bg-slate-100 dark:bg-background px-4">
+      <div className="w-full max-w-md rounded-3xl bg-white dark:bg-surface p-10 shadow-xl">
 
-        <h1 className="text-3xl font-bold text-red-700">
+        <h1 className="text-3xl font-bold text-brand">
           AIR ARABIA
         </h1>
 
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-slate-500 dark:text-slate-400">
           Content Management Login
         </p>
 
@@ -36,7 +36,7 @@ export default async function AdminLoginPage({ searchParams }: Props) {
               name="email"
               required
               autoFocus
-              className="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-red-600"
+              className="w-full rounded-xl border border-slate-300 dark:border-border-subtle p-3 outline-none focus:border-brand"
             />
           </div>
 
@@ -49,7 +49,7 @@ export default async function AdminLoginPage({ searchParams }: Props) {
               type="password"
               name="password"
               required
-              className="w-full rounded-xl border border-slate-300 p-3 outline-none focus:border-red-600"
+              className="w-full rounded-xl border border-slate-300 dark:border-border-subtle p-3 outline-none focus:border-brand"
             />
           </div>
 
@@ -61,7 +61,7 @@ export default async function AdminLoginPage({ searchParams }: Props) {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+            className="w-full rounded-xl bg-brand px-6 py-3 font-semibold text-white hover:bg-brand-dark"
           >
             Log In
           </button>

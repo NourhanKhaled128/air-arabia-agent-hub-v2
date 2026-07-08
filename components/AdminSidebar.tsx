@@ -87,18 +87,18 @@ export default function AdminSidebar() {
       )}
 
       <aside
-        className={`fixed top-0 z-50 flex h-screen w-72 flex-col border-gray-200 bg-white transition-transform duration-300 ease-in-out ${sideClasses} ${widthClasses} ${mobileTranslate} ${desktopTranslate}`}
+        className={`fixed top-0 z-50 flex h-screen w-72 flex-col border-gray-200 dark:border-border-subtle bg-white dark:bg-surface transition-transform duration-300 ease-in-out ${sideClasses} ${widthClasses} ${mobileTranslate} ${desktopTranslate}`}
       >
 
-        <div className="flex items-center justify-between border-b p-6 lg:p-8">
+        <div className="flex items-center justify-between border-b border-gray-200 dark:border-border-subtle p-6 lg:p-8">
 
           {!collapsed && (
             <div>
-              <h1 className="text-3xl font-bold text-red-700">
+              <h1 className="text-3xl font-bold text-brand">
                 AIR ARABIA
               </h1>
 
-              <p className="mt-1 text-gray-500">
+              <p className="mt-1 text-gray-500 dark:text-slate-400">
                 Content Management
               </p>
             </div>
@@ -106,19 +106,19 @@ export default function AdminSidebar() {
 
           <button
             onClick={closeMobile}
-            className="rounded-lg p-1 hover:bg-gray-100 lg:hidden"
+            className="rounded-lg p-1 hover:bg-gray-100 dark:hover:bg-slate-800 lg:hidden"
           >
             <X size={22} />
           </button>
 
         </div>
 
-        <div className="hidden items-center justify-between gap-2 border-b px-4 py-2 lg:flex">
+        <div className="hidden items-center justify-between gap-2 border-b border-gray-200 dark:border-border-subtle px-4 py-2 lg:flex">
 
           <button
             onClick={toggleCollapsed}
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"
+            className="rounded-lg p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800"
           >
             {collapsed ? (
               dock === "left" ? <ChevronsRight size={18} /> : <ChevronsLeft size={18} />
@@ -131,7 +131,7 @@ export default function AdminSidebar() {
             <button
               onClick={() => setDock(dock === "left" ? "right" : "left")}
               title="Move sidebar to the other side"
-              className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"
+              className="rounded-lg p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800"
             >
               <ArrowLeftRight size={18} />
             </button>
@@ -155,8 +155,8 @@ export default function AdminSidebar() {
                   collapsed ? "justify-center px-0" : ""
                 } ${
                   active
-                    ? "border-l-4 border-red-700 bg-red-50 text-red-700"
-                    : "hover:bg-red-50"
+                    ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand"
+                    : "hover:bg-red-50 dark:hover:bg-red-950/40"
                 }`}
               >
                 <Icon size={20} />
@@ -167,12 +167,12 @@ export default function AdminSidebar() {
 
         </nav>
 
-        <div className="border-t p-5">
+        <div className="border-t border-gray-200 dark:border-border-subtle p-5">
 
           <Link
             href="/"
             title={collapsed ? "Back to Agent Portal" : undefined}
-            className={`flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-gray-100 ${
+            className={`flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-gray-100 dark:hover:bg-slate-800 ${
               collapsed ? "justify-center px-0" : ""
             }`}
           >
@@ -184,7 +184,7 @@ export default function AdminSidebar() {
             <button
               type="submit"
               title={collapsed ? "Logout" : undefined}
-              className={`mt-2 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-red-700 hover:bg-red-50 ${
+              className={`mt-2 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-brand hover:bg-red-50 dark:hover:bg-red-950/40 ${
                 collapsed ? "justify-center px-0" : ""
               }`}
             >

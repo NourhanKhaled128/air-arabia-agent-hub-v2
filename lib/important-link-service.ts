@@ -54,3 +54,11 @@ export async function deleteImportantLink(id: number) {
     where: { id },
   });
 }
+
+export async function reorderImportantLinks(orderedIds: number[]) {
+  await prisma.$transaction(
+    orderedIds.map((id, index) =>
+      prisma.importantLink.update({ where: { id }, data: { order: index } })
+    )
+  );
+}

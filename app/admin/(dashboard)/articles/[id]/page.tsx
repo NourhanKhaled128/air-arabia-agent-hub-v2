@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getArticleById } from "@/lib/article-service";
 import EditArticleForm from "@/components/admin/article/EditArticleForm";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { getCategories } from "@/lib/category-service";
+import { getCategoriesWithFolders } from "@/lib/category-service";
 import { getDispositionCodes } from "@/lib/disposition-service";
 import { getAuditLogsForEntity } from "@/lib/audit-service";
 
@@ -16,9 +16,9 @@ export default async function EditArticlePage({ params }: Props) {
   const { id } = await params;
   const articleId = Number(id);
 
-  const [article, categories, dispositionCodes, updates] = await Promise.all([
+  const [article, categories, dispositionCodes, history] = await Promise.all([
     getArticleById(articleId),
-    getCategories(),
+    getCategoriesWithFolders(),
     getDispositionCodes(),
     getAuditLogsForEntity("Article", articleId),
   ]);
@@ -39,7 +39,7 @@ export default async function EditArticlePage({ params }: Props) {
         article={article}
         categories={categories}
         dispositionCodes={dispositionCodes}
-        updates={updates}
+        history={history}
       />
 
     </div>

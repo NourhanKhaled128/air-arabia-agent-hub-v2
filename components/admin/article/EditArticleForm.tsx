@@ -14,13 +14,14 @@ import KeywordsSection from "./KeywordsSection";
 import ScenarioSection, { type ScenarioInput } from "./ScenarioSection";
 import PhotosSection, { type PhotoInput } from "./PhotosSection";
 import AttachmentsSection, { type AttachmentInput } from "./AttachmentsSection";
-import UpdatesSection from "./UpdatesSection";
+import UpdatesSection, { type UpdateInput } from "./UpdatesSection";
 import ArticleSidebar from "./ArticleSidebar";
 
 interface ArticleWithRelations {
   id: number;
   title: string;
-  category: string;
+  categoryId: number | null;
+  folderId: number | null;
   description: string;
   overview: string;
   author: string;
@@ -37,9 +38,10 @@ interface ArticleWithRelations {
   scenarios: { id: number; situation: string; response: string; images: string[] }[];
   images: { id: number; image: string }[];
   attachments: { id: number; fileName: string; url: string; mimeType: string; size: number }[];
+  updates: { id: number; title: string; content: string }[];
 }
 
-interface Update {
+interface HistoryEntry {
   id: number;
   action: string;
   userName: string;
@@ -48,14 +50,15 @@ interface Update {
 
 interface Props {
   article: ArticleWithRelations;
-  categories?: { name: string }[];
+  categories?: { id: number; name: string; folders?: { id: number; name: string }[] }[];
   dispositionCodes?: { code: string; label: string }[];
-  updates?: Update[];
+  history?: HistoryEntry[];
 }
 
 interface EditFormData {
   title: string;
-  category: string;
+  categoryId: number | null;
+  folderId: number | null;
   description: string;
   overview: string;
   author: string;
@@ -70,12 +73,14 @@ interface EditFormData {
   scenarios: ScenarioInput[];
   images: PhotoInput[];
   attachments: AttachmentInput[];
+  updates: UpdateInput[];
 }
 
 function toFormData(article: ArticleWithRelations): EditFormData {
   return {
     title: article.title,
-    category: article.category,
+    categoryId: article.categoryId,
+    folderId: article.folderId,
     description: article.description,
     overview: article.overview,
     author: article.author,
@@ -128,6 +133,11 @@ function toFormData(article: ArticleWithRelations): EditFormData {
       mimeType: a.mimeType,
       size: a.size,
     })),
+    updates: article.updates.map((u) => ({
+      id: u.id,
+      title: u.title,
+      content: u.content,
+    })),
   };
 }
 
@@ -135,7 +145,7 @@ export default function EditArticleForm({
   article,
   categories = [],
   dispositionCodes = [],
-  updates = [],
+  history = [],
 }: Props) {
 
   const router = useRouter();
@@ -144,7 +154,7 @@ export default function EditArticleForm({
 
   const [form, setForm] = useState<EditFormData>(() => toFormData(article));
 
-  function updateField(name: string, value: string) {
+  function updateField(name: string, value: string | number | null) {
     setForm((prev) => ({
       ...prev,
       [name]: value,
@@ -258,7 +268,11 @@ export default function EditArticleForm({
         onChange={(attachments) => setForm((prev) => ({ ...prev, attachments }))}
       />
 
-      <UpdatesSection updates={updates} />
+      <UpdatesSection
+        items={form.updates}
+        onChange={(updates) => setForm((prev) => ({ ...prev, updates }))}
+        history={history}
+      />
 
       <div className="flex justify-end">
 

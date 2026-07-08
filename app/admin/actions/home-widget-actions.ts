@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import {
   createHomeWidget,
   deleteHomeWidget,
-  moveHomeWidget,
+  reorderHomeWidgets,
   updateHomeWidget,
 } from "@/lib/home-widget-service";
 import { logAction } from "@/lib/audit-service";
@@ -42,8 +42,8 @@ export async function setHomeWidgetSizeAction(id: number, size: string) {
   revalidatePath("/", "layout");
 }
 
-export async function moveHomeWidgetAction(id: number, direction: "up" | "down") {
-  await moveHomeWidget(id, direction);
+export async function reorderHomeWidgetsAction(orderedIds: number[]) {
+  await reorderHomeWidgets(orderedIds);
 
   revalidatePath("/admin/home-widgets");
   revalidatePath("/", "layout");

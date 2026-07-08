@@ -22,7 +22,7 @@ export default async function PortalLayout({ children }: Props) {
 
   return (
     <SidebarPrefsProvider>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-gray-100 dark:bg-background">
 
         <Sidebar
           categories={categories}

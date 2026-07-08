@@ -15,23 +15,31 @@ function slugify(text: string) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const user = await getCurrentAdminUser();
+    const userName = user?.name ?? "System";
 
     const article = await prisma.article.create({
       data: {
         title: body.title,
         slug: `${slugify(body.title)}-${Date.now()}`,
-        category: body.category ?? "",
+        categoryId: body.categoryId ?? null,
+        folderId: body.folderId ?? null,
         description: body.description ?? "",
         overview: body.overview ?? "",
         coverImage: body.coverImage ?? null,
         author: body.author ?? "Unknown",
         status: body.status ?? "Draft",
-        ...buildArticleSectionsCreateData(body),
+        ...buildArticleSectionsCreateData({
+          ...body,
+          updates: (body.updates ?? []).map((item: { title: string; content: string }) => ({
+            ...item,
+            userName,
+          })),
+        }),
       },
     });
 
-    const user = await getCurrentAdminUser();
-    await logAction("Created", "Article", article.id, user?.name ?? "System");
+    await logAction("Created", "Article", article.id, userName);
 
     return NextResponse.json(article);
   } catch (error) {

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Menu, Search } from "lucide-react";
 import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
 import NotificationBell from "./NotificationBell";
+import ThemeToggle from "./ThemeToggle";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
 
 interface Props {
@@ -49,26 +50,26 @@ export default function Header({ articles }: Props) {
 
   return (
 
-    <header className="flex flex-col gap-4 rounded-3xl border border-gray-200 bg-white px-4 py-4 shadow-sm sm:px-8 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
+    <header className="flex flex-col gap-4 rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface px-4 py-4 shadow-sm sm:px-8 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
 
       <div className="flex items-center gap-3">
 
         <button
           onClick={toggleMobileOpen}
-          className="rounded-xl border border-gray-200 p-2 text-gray-700 hover:bg-gray-50 lg:hidden"
+          className="rounded-xl border border-gray-200 dark:border-border-subtle p-2 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-surface-muted lg:hidden"
         >
           <Menu size={22} />
         </button>
 
         <div>
 
-          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 sm:text-3xl">
 
             Welcome back, Nourhan 👋
 
           </h1>
 
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 text-gray-500 dark:text-slate-400">
 
             {today}
 
@@ -84,14 +85,14 @@ export default function Header({ articles }: Props) {
 
           <Search
             size={18}
-            className="absolute left-4 top-4 text-gray-400"
+            className="absolute left-4 top-4 text-gray-400 dark:text-slate-500"
           />
 
           <input
             value={query}
             onChange={(e)=>setQuery(e.target.value)}
             placeholder="Search procedures..."
-            className="w-full rounded-xl border border-gray-300 py-3 pl-12 pr-4 outline-none focus:border-red-700"
+            className="w-full rounded-xl border border-gray-300 dark:border-border-subtle py-3 pl-12 pr-4 outline-none focus:border-brand"
           />
 
           {query && (
@@ -108,11 +109,13 @@ export default function Header({ articles }: Props) {
 
         </div>
 
+        <ThemeToggle />
+
         <NotificationBell />
 
-        <div className="flex items-center gap-3 rounded-xl bg-gray-100 px-4 py-2">
+        <div className="flex items-center gap-3 rounded-xl bg-gray-100 dark:bg-background px-4 py-2">
 
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-700 font-bold text-white">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand font-bold text-white">
 
             N
 
@@ -126,7 +129,7 @@ export default function Header({ articles }: Props) {
 
             </p>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-slate-400">
 
               Reservations Agent
 

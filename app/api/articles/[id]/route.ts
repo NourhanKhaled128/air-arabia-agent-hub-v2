@@ -30,6 +30,8 @@ export async function PUT(
     }
 
     const body = await request.json();
+    const user = await getCurrentAdminUser();
+    const userName = user?.name ?? "System";
 
     const article = await prisma.article.update({
       where: {
@@ -37,18 +39,24 @@ export async function PUT(
       },
       data: {
         title: body.title,
-        category: body.category,
+        categoryId: body.categoryId ?? null,
+        folderId: body.folderId ?? null,
         description: body.description,
         overview: body.overview,
         author: body.author,
         status: body.status,
         coverImage: body.coverImage ?? null,
-        ...buildArticleSectionsReplaceData(body),
+        ...buildArticleSectionsReplaceData({
+          ...body,
+          updates: (body.updates ?? []).map((item: { title: string; content: string }) => ({
+            ...item,
+            userName,
+          })),
+        }),
       },
     });
 
-    const user = await getCurrentAdminUser();
-    await logAction("Updated", "Article", article.id, user?.name ?? "System");
+    await logAction("Updated", "Article", article.id, userName);
 
     return NextResponse.json(article);
 

@@ -7,6 +7,9 @@ import {
   createCategory,
   deleteCategory,
   updateCategory,
+  createCategoryFolder,
+  updateCategoryFolder,
+  deleteCategoryFolder,
 } from "@/lib/category-service";
 import { logAction } from "@/lib/audit-service";
 import { getCurrentAdminUser } from "@/lib/admin-dal";
@@ -71,5 +74,45 @@ export async function deleteManyCategoriesAction(ids: number[]) {
   await logAction("Deleted", "Category", null, await currentUserName());
 
   revalidatePath("/admin/categories");
+  revalidatePath("/", "layout");
+}
+
+export async function createCategoryFolderAction(categoryId: number, name: string) {
+  const folder = await createCategoryFolder({
+    categoryId,
+    name,
+  });
+
+  await logAction("Created", "Category Folder", folder.id, await currentUserName());
+
+  revalidatePath(`/admin/categories/${categoryId}`);
+  revalidatePath("/", "layout");
+}
+
+export async function renameCategoryFolderAction(id: number, categoryId: number, name: string) {
+  await updateCategoryFolder(id, { name });
+
+  await logAction("Updated", "Category Folder", id, await currentUserName());
+
+  revalidatePath(`/admin/categories/${categoryId}`);
+  revalidatePath("/", "layout");
+}
+
+export async function toggleCategoryFolderVisibleAction(id: number, categoryId: number, visible: boolean) {
+  await updateCategoryFolder(id, { visible });
+
+  await logAction("Updated", "Category Folder", id, await currentUserName());
+
+  revalidatePath(`/admin/categories/${categoryId}`);
+  revalidatePath("/", "layout");
+}
+
+export async function deleteCategoryFolderAction(id: number, categoryId: number) {
+  await deleteCategoryFolder(id);
+
+  await logAction("Deleted", "Category Folder", id, await currentUserName());
+
+  revalidatePath(`/admin/categories/${categoryId}`);
+  revalidatePath("/admin/articles");
   revalidatePath("/", "layout");
 }

@@ -1,11 +1,23 @@
 import { prisma } from "@/lib/prisma";
 
+function flattenCategory<T extends { category: { name: string } | null }>(
+  article: T
+): Omit<T, "category"> & { category: string } {
+  const { category, ...rest } = article;
+  return { ...rest, category: category?.name ?? "Uncategorized" };
+}
+
 export async function getAllArticles() {
-  return prisma.article.findMany({
+  const articles = await prisma.article.findMany({
+    include: {
+      category: { select: { name: true } },
+    },
     orderBy: {
       updatedAt: "desc",
     },
   });
+
+  return articles.map(flattenCategory);
 }
 
 export async function getArticleById(
@@ -27,27 +39,35 @@ export async function getArticleById(
       scenarios: true,
       images: true,
       attachments: true,
+      updates: {
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
 }
 
 export async function getTrendingArticles(limit = 4) {
-  return prisma.article.findMany({
+  const articles = await prisma.article.findMany({
+    include: {
+      category: { select: { name: true } },
+    },
     orderBy: {
       viewCount: "desc",
     },
     take: limit,
   });
+
+  return articles.map(flattenCategory);
 }
 
 export async function getArticlesForSearch() {
-  return prisma.article.findMany({
+  const articles = await prisma.article.findMany({
     select: {
       id: true,
       slug: true,
       title: true,
       description: true,
-      category: true,
+      category: { select: { name: true } },
       overview: true,
       keywords: { select: { value: true } },
       scenarios: { select: { situation: true } },
@@ -56,20 +76,35 @@ export async function getArticlesForSearch() {
       updatedAt: "desc",
     },
   });
+
+  return articles.map(flattenCategory);
 }
 
-export async function getArticlesByCategory(category: string) {
-  return prisma.article.findMany({
+export async function getArticlesByCategoryName(name: string) {
+  const category = await prisma.category.findFirst({
+    where: { name: { equals: name, mode: "insensitive" } },
+  });
+
+  if (!category) return [];
+
+  return getArticlesByCategoryId(category.id);
+}
+
+export async function getArticlesByCategoryId(categoryId: number, folderId?: number | null) {
+  const articles = await prisma.article.findMany({
     where: {
-      category: {
-        equals: category,
-        mode: "insensitive",
-      },
+      categoryId,
+      ...(folderId !== undefined ? { folderId } : {}),
+    },
+    include: {
+      category: { select: { name: true } },
     },
     orderBy: {
       updatedAt: "desc",
     },
   });
+
+  return articles.map(flattenCategory);
 }
 
 export async function deleteArticle(
@@ -92,6 +127,7 @@ interface ArticleSectionsInput {
   scenarios?: { situation: string; response: string; images?: string[] }[];
   images?: { url: string }[];
   attachments?: { fileName: string; url: string; mimeType: string; size: number }[];
+  updates?: { title: string; content: string; userName: string }[];
 }
 
 export function buildArticleSectionsCreateData(body: ArticleSectionsInput) {
@@ -155,6 +191,13 @@ export function buildArticleSectionsCreateData(body: ArticleSectionsInput) {
         url: item.url,
         mimeType: item.mimeType,
         size: item.size,
+      })),
+    },
+    updates: {
+      create: (body.updates ?? []).map((item) => ({
+        title: item.title,
+        content: item.content,
+        userName: item.userName,
       })),
     },
   };

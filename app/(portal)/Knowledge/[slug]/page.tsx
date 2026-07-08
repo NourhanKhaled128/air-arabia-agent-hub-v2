@@ -5,7 +5,8 @@ import { Paperclip, Download } from "lucide-react";
 import Breadcrumb from "@/components/Breadcrumb";
 import ArticleCard from "@/components/ArticleCard";
 import { prisma } from "@/lib/prisma";
-import { getArticleById, getArticlesByCategory } from "@/lib/article-service";
+import { getArticleById, getArticlesByCategoryId } from "@/lib/article-service";
+import { getCategoryById } from "@/lib/category-service";
 
 interface Props {
   params: Promise<{
@@ -55,15 +56,22 @@ export default async function ArticlePage({ params }: Props) {
     notFound();
   }
 
-  const relatedArticles = (
-    await getArticlesByCategory(article.category)
-  ).filter((related) => related.id !== article.id);
+  const category = article.categoryId
+    ? await getCategoryById(article.categoryId)
+    : null;
+  const categoryName = category?.name ?? "Uncategorized";
+
+  const relatedArticles = article.categoryId
+    ? (await getArticlesByCategoryId(article.categoryId)).filter(
+        (related) => related.id !== article.id
+      )
+    : [];
 
   return (
     <>
       <div className="mx-auto max-w-5xl space-y-8">
 
-        <Breadcrumb category={article.category} title={article.title} />
+        <Breadcrumb category={categoryName} title={article.title} />
 
         <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
 
@@ -81,7 +89,7 @@ export default async function ArticlePage({ params }: Props) {
           <div className="flex flex-wrap items-center gap-3">
 
             <span className="rounded-full bg-red-100 px-5 py-2 font-semibold text-red-700">
-              {article.category}
+              {categoryName}
             </span>
 
             <span

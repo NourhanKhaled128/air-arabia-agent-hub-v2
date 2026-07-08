@@ -1,12 +1,12 @@
 import Link from "next/link";
 import ArticleForm from "@/components/admin/article/ArticleForm";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { getCategories } from "@/lib/category-service";
+import { getCategoriesWithFolders } from "@/lib/category-service";
 import { getDispositionCodes } from "@/lib/disposition-service";
 
 export default async function NewArticlePage() {
   const [categories, dispositionCodes] = await Promise.all([
-    getCategories(),
+    getCategoriesWithFolders(),
     getDispositionCodes(),
   ]);
 

@@ -11,7 +11,10 @@ model Article {
   id           Int             @id @default(autoincrement())
   title        String
   slug         String          @unique
-  category     String
+  categoryId   Int?
+  category     Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  folderId     Int?
+  folder       CategoryFolder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
   description  String
   overview     String
   coverImage   String?
@@ -29,6 +32,18 @@ model Article {
   references   Reference[]
   scenarios    Scenario[]
   attachments  Attachment[]
+  updates      ArticleUpdate[]
+}
+
+model ArticleUpdate {
+  id        Int      @id @default(autoincrement())
+  articleId Int
+  title     String
+  content   String
+  userName  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model ProcedureStep {
@@ -124,17 +139,31 @@ model Disruption {
 }
 
 model Category {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  slug        String   @unique
+  id          Int              @id @default(autoincrement())
+  name        String           @unique
+  slug        String           @unique
   description String?
   color       String?
   icon        String?
-  visible     Boolean  @default(true)
-  order       Int      @default(0)
-  group       String   @default("Knowledge Base")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  visible     Boolean          @default(true)
+  order       Int              @default(0)
+  group       String           @default("Knowledge Base")
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  articles    Article[]
+  folders     CategoryFolder[]
+}
+
+model CategoryFolder {
+  id         Int      @id @default(autoincrement())
+  categoryId Int
+  name       String
+  order      Int      @default(0)
+  visible    Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  articles   Article[]
 }
 
 model SidebarLink {

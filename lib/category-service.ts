@@ -8,10 +8,29 @@ export async function getCategories() {
   });
 }
 
+export async function getCategoriesWithFolders() {
+  return prisma.category.findMany({
+    include: {
+      folders: {
+        orderBy: { order: "asc" },
+      },
+    },
+    orderBy: {
+      name: "asc",
+    },
+  });
+}
+
 export async function getVisibleCategoriesForSidebar() {
   return prisma.category.findMany({
     where: {
       visible: true,
+    },
+    include: {
+      folders: {
+        where: { visible: true },
+        orderBy: { order: "asc" },
+      },
     },
     orderBy: [
       { group: "asc" },
@@ -82,13 +101,69 @@ export async function deleteCategory(id: number) {
 
 export async function getArticleCountsByCategory() {
   const counts = await prisma.article.groupBy({
-    by: ["category"],
+    by: ["categoryId"],
     _count: {
       _all: true,
     },
   });
 
   return Object.fromEntries(
-    counts.map((row) => [row.category, row._count._all])
-  );
+    counts
+      .filter((row) => row.categoryId !== null)
+      .map((row) => [String(row.categoryId), row._count._all])
+  ) as Record<string, number>;
+}
+
+export async function getCategoryFolders(categoryId: number) {
+  return prisma.categoryFolder.findMany({
+    where: { categoryId },
+    orderBy: { order: "asc" },
+  });
+}
+
+export async function getFolderArticleCounts(categoryId: number) {
+  const counts = await prisma.article.groupBy({
+    by: ["folderId"],
+    where: { categoryId },
+    _count: {
+      _all: true,
+    },
+  });
+
+  return Object.fromEntries(
+    counts
+      .filter((row) => row.folderId !== null)
+      .map((row) => [String(row.folderId), row._count._all])
+  ) as Record<string, number>;
+}
+
+export async function createCategoryFolder(data: {
+  categoryId: number;
+  name: string;
+  order?: number;
+  visible?: boolean;
+}) {
+  return prisma.categoryFolder.create({
+    data,
+  });
+}
+
+export async function updateCategoryFolder(
+  id: number,
+  data: {
+    name?: string;
+    order?: number;
+    visible?: boolean;
+  }
+) {
+  return prisma.categoryFolder.update({
+    where: { id },
+    data,
+  });
+}
+
+export async function deleteCategoryFolder(id: number) {
+  return prisma.categoryFolder.delete({
+    where: { id },
+  });
 }

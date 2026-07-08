@@ -1,7 +1,14 @@
+interface CategoryOption {
+  id: number;
+  name: string;
+  folders?: { id: number; name: string }[];
+}
+
 interface Props {
   data: {
     title: string;
-    category: string;
+    categoryId: number | null;
+    folderId: number | null;
     description: string;
     author: string;
     status?: string;
@@ -10,10 +17,10 @@ interface Props {
 
   updateField: (
     name: string,
-    value: string
+    value: string | number | null
   ) => void;
 
-  categories?: { name: string }[];
+  categories?: CategoryOption[];
 }
 
 export default function ArticleInfo({
@@ -21,6 +28,9 @@ export default function ArticleInfo({
   updateField,
   categories = [],
 }: Props) {
+  const selectedCategory = categories.find((c) => c.id === data.categoryId);
+  const folders = selectedCategory?.folders ?? [];
+
   return (
     <section className="rounded-3xl bg-white p-8 shadow-sm">
 
@@ -54,20 +64,17 @@ export default function ArticleInfo({
           </label>
 
           <select
-            value={data.category}
-            onChange={(e) =>
-              updateField("category", e.target.value)
-            }
+            value={data.categoryId ?? ""}
+            onChange={(e) => {
+              updateField("categoryId", e.target.value ? Number(e.target.value) : null);
+              updateField("folderId", null);
+            }}
             className="w-full rounded-xl border border-gray-300 p-3"
           >
             <option value="">Select Category</option>
 
-            {data.category && !categories.some((c) => c.name === data.category) && (
-              <option value={data.category}>{data.category}</option>
-            )}
-
             {categories.map((category) => (
-              <option key={category.name} value={category.name}>
+              <option key={category.id} value={category.id}>
                 {category.name}
               </option>
             ))}
@@ -77,6 +84,33 @@ export default function ArticleInfo({
         </div>
 
       </div>
+
+      {folders.length > 0 && (
+        <div className="mt-6">
+
+          <label className="mb-2 block font-semibold">
+            Folder (optional)
+          </label>
+
+          <select
+            value={data.folderId ?? ""}
+            onChange={(e) =>
+              updateField("folderId", e.target.value ? Number(e.target.value) : null)
+            }
+            className="w-full rounded-xl border border-gray-300 p-3"
+          >
+            <option value="">No folder (unfiled)</option>
+
+            {folders.map((folder) => (
+              <option key={folder.id} value={folder.id}>
+                {folder.name}
+              </option>
+            ))}
+
+          </select>
+
+        </div>
+      )}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
 

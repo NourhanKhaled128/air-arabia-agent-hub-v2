@@ -59,3 +59,11 @@ export async function deleteSidebarLink(id: number) {
     where: { id },
   });
 }
+
+export async function reorderSidebarLinks(orderedIds: number[]) {
+  await prisma.$transaction(
+    orderedIds.map((id, index) =>
+      prisma.sidebarLink.update({ where: { id }, data: { order: index } })
+    )
+  );
+}

@@ -48,21 +48,10 @@ export async function deleteHomeWidget(id: number) {
   });
 }
 
-export async function moveHomeWidget(id: number, direction: "up" | "down") {
-  const widgets = await prisma.homeWidget.findMany({ orderBy: { order: "asc" } });
-  const index = widgets.findIndex((w) => w.id === id);
-
-  if (index === -1) return;
-
-  const swapIndex = direction === "up" ? index - 1 : index + 1;
-
-  if (swapIndex < 0 || swapIndex >= widgets.length) return;
-
-  const current = widgets[index];
-  const swapWith = widgets[swapIndex];
-
-  await prisma.$transaction([
-    prisma.homeWidget.update({ where: { id: current.id }, data: { order: swapWith.order } }),
-    prisma.homeWidget.update({ where: { id: swapWith.id }, data: { order: current.order } }),
-  ]);
+export async function reorderHomeWidgets(orderedIds: number[]) {
+  await prisma.$transaction(
+    orderedIds.map((id, index) =>
+      prisma.homeWidget.update({ where: { id }, data: { order: index } })
+    )
+  );
 }

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import CategoryForm from "@/components/admin/categories/CategoryForm";
-import { getCategoryById } from "@/lib/category-service";
+import CategoryFoldersManager from "@/components/admin/categories/CategoryFoldersManager";
+import { getCategoryById, getCategoryFolders, getFolderArticleCounts } from "@/lib/category-service";
 import { updateCategoryAction } from "@/app/admin/actions/category-actions";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
@@ -16,7 +17,11 @@ export default async function EditCategoryPage({ params }: Props) {
     notFound();
   }
 
-  const category = await getCategoryById(categoryId);
+  const [category, folders, articleCounts] = await Promise.all([
+    getCategoryById(categoryId),
+    getCategoryFolders(categoryId),
+    getFolderArticleCounts(categoryId),
+  ]);
 
   if (!category) {
     notFound();
@@ -36,6 +41,12 @@ export default async function EditCategoryPage({ params }: Props) {
           category={category}
         />
       </div>
+
+      <CategoryFoldersManager
+        categoryId={categoryId}
+        folders={folders}
+        articleCounts={articleCounts}
+      />
 
     </div>
   );

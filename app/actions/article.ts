@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 export interface CreateArticleData {
   title: string;
-  category: string;
+  categoryId?: number;
   description: string;
   overview: string;
   author: string;
@@ -29,7 +29,7 @@ export async function createArticle(data: CreateArticleData) {
     data: {
       title: data.title,
       slug,
-      category: data.category || "",
+      categoryId: data.categoryId ?? null,
       description: data.description || "",
       overview: data.overview || "",
       author: data.author || "Unknown",

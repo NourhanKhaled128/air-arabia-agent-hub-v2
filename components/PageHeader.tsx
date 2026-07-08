@@ -10,11 +10,11 @@ export default function PageHeader({
   return (
     <div className="mb-10">
 
-      <h1 className="text-6xl font-bold text-red-700">
+      <h1 className="text-6xl font-bold text-brand">
         {title}
       </h1>
 
-      <p className="text-xl text-gray-600 mt-3">
+      <p className="text-xl text-gray-600 dark:text-slate-400 mt-3">
         {subtitle}
       </p>
 
