@@ -1,22 +1,25 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
+import InlineImagesUploader from "./InlineImagesUploader";
 
 export interface DispositionInput {
   id: number;
   code: string;
   content: string;
+  images: string[];
 }
 
 interface Props {
   items: DispositionInput[];
   onChange: (items: DispositionInput[]) => void;
+  dispositionCodes?: { code: string; label: string }[];
 }
 
-export default function DispositionSection({ items, onChange }: Props) {
+export default function DispositionSection({ items, onChange, dispositionCodes = [] }: Props) {
 
   function addItem() {
-    onChange([...items, { id: Date.now(), code: "", content: "" }]);
+    onChange([...items, { id: Date.now(), code: "", content: "", images: [] }]);
   }
 
   function removeItem(id: number) {
@@ -26,6 +29,12 @@ export default function DispositionSection({ items, onChange }: Props) {
   function updateItem(id: number, field: keyof DispositionInput, value: string) {
     onChange(
       items.map(item => (item.id === id ? { ...item, [field]: value } : item))
+    );
+  }
+
+  function updateItemImages(id: number, images: string[]) {
+    onChange(
+      items.map(item => (item.id === id ? { ...item, images } : item))
     );
   }
 
@@ -81,8 +90,19 @@ export default function DispositionSection({ items, onChange }: Props) {
               value={item.code}
               onChange={(e) => updateItem(item.id, "code", e.target.value)}
               placeholder="Disposition Code (Optional)"
+              list={`disposition-codes-${item.id}`}
               className="mb-4 w-full rounded-xl border p-3"
             />
+
+            {dispositionCodes.length > 0 && (
+              <datalist id={`disposition-codes-${item.id}`}>
+                {dispositionCodes.map((d) => (
+                  <option key={d.code} value={d.code}>
+                    {d.label}
+                  </option>
+                ))}
+              </datalist>
+            )}
 
             <textarea
               rows={4}
@@ -90,6 +110,11 @@ export default function DispositionSection({ items, onChange }: Props) {
               onChange={(e) => updateItem(item.id, "content", e.target.value)}
               placeholder="Disposition description..."
               className="w-full rounded-xl border p-4"
+            />
+
+            <InlineImagesUploader
+              images={item.images}
+              onChange={(images) => updateItemImages(item.id, images)}
             />
 
           </div>

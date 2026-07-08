@@ -7,10 +7,12 @@ import {
   Clock,
 } from "lucide-react";
 import { getAnnouncements } from "@/lib/announcement-service";
+import { deleteManyAnnouncementsAction } from "@/app/admin/actions/announcement-actions";
 import AnnouncementRowActions from "@/components/admin/announcement/AnnouncementRowActions";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminBadge from "@/components/admin/AdminBadge";
+import AdminListTable from "@/components/admin/AdminListTable";
 
 type BadgeColor = "red" | "green" | "blue" | "yellow" | "gray";
 
@@ -67,57 +69,79 @@ export default async function AnnouncementsPage() {
         <AdminStatCard title="Drafts" value={drafts} icon={Clock} color="text-slate-700" />
       </div>
 
-      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
-        <table className="w-full">
-          <thead className="bg-slate-50">
-            <tr>
-              <th className="px-6 py-4 text-left">Title</th>
-              <th className="px-6 py-4 text-left">Priority</th>
-              <th className="px-6 py-4 text-left">Status</th>
-              <th className="px-6 py-4 text-left">Audience</th>
-              <th className="px-6 py-4 text-left">Publish</th>
-              <th className="px-6 py-4 text-left">Expiry</th>
-              <th className="px-6 py-4 text-left">Actions</th>
-            </tr>
-          </thead>
+      <AdminListTable
+        columns={[
+          { key: "title", label: "Title" },
+          { key: "priority", label: "Priority" },
+          { key: "status", label: "Status" },
+          { key: "audience", label: "Audience" },
+          { key: "publish", label: "Publish" },
+          { key: "expiry", label: "Expiry" },
+        ]}
+        data={announcements}
+        searchPlaceholder="Search announcements..."
+        searchFn={(item, query) => {
+          const q = query.toLowerCase();
+          return (
+            item.title.toLowerCase().includes(q) ||
+            item.content.toLowerCase().includes(q) ||
+            (item.audience ?? "").toLowerCase().includes(q)
+          );
+        }}
+        filters={[
+          {
+            key: "status",
+            label: "Status",
+            options: [
+              { value: "Published", label: "Published" },
+              { value: "Scheduled", label: "Scheduled" },
+              { value: "Draft", label: "Draft" },
+            ],
+          },
+          {
+            key: "priority",
+            label: "Priority",
+            options: [
+              { value: "Critical", label: "Critical" },
+              { value: "High", label: "High" },
+              { value: "Medium", label: "Medium" },
+              { value: "Low", label: "Low" },
+            ],
+          },
+        ]}
+        filterFn={(item, values) => {
+          if (values.status && item.status !== values.status) return false;
+          if (values.priority && item.priority !== values.priority) return false;
+          return true;
+        }}
+        onDeleteMany={deleteManyAnnouncementsAction}
+        emptyMessage="No announcements yet."
+        renderRow={(item) => (
+          <>
+            <td className="px-6 py-5 font-semibold">{item.title}</td>
 
-          <tbody>
-            {announcements.map((item) => (
-              <tr key={item.id} className="border-t">
-                <td className="px-6 py-5 font-semibold">{item.title}</td>
+            <td className="px-6 py-5">
+              <AdminBadge color={priorityColor[item.priority] ?? "blue"}>
+                {item.priority}
+              </AdminBadge>
+            </td>
 
-                <td className="px-6 py-5">
-                  <AdminBadge color={priorityColor[item.priority] ?? "blue"}>
-                    {item.priority}
-                  </AdminBadge>
-                </td>
+            <td className="px-6 py-5">
+              <AdminBadge color={statusColor[item.status] ?? "gray"}>
+                {item.status}
+              </AdminBadge>
+            </td>
 
-                <td className="px-6 py-5">
-                  <AdminBadge color={statusColor[item.status] ?? "gray"}>
-                    {item.status}
-                  </AdminBadge>
-                </td>
+            <td className="px-6 py-5">{item.audience ?? "-"}</td>
+            <td className="px-6 py-5">{formatDate(item.publishDate)}</td>
+            <td className="px-6 py-5">{formatDate(item.expiryDate)}</td>
 
-                <td className="px-6 py-5">{item.audience ?? "-"}</td>
-                <td className="px-6 py-5">{formatDate(item.publishDate)}</td>
-                <td className="px-6 py-5">{formatDate(item.expiryDate)}</td>
-
-                <td className="px-6 py-5">
-                  <AnnouncementRowActions id={item.id} />
-                </td>
-              </tr>
-            ))}
-
-            {announcements.length === 0 && (
-              <tr>
-                <td colSpan={7} className="px-6 py-10 text-center text-slate-500">
-                  No announcements yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            <td className="px-6 py-5">
+              <AnnouncementRowActions id={item.id} />
+            </td>
+          </>
+        )}
+      />
     </div>
   );
 }

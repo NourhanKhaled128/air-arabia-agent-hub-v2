@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import {
   createDispositionCode,
   updateDispositionCode,
@@ -52,6 +53,15 @@ export async function deleteDispositionCodeAction(id: number) {
   await deleteDispositionCode(id);
 
   await logAction("Deleted", "DispositionCode", id, await currentUserName());
+
+  revalidatePath("/admin/disposition-codes");
+  revalidatePath("/disposition-codes");
+}
+
+export async function deleteManyDispositionCodesAction(ids: number[]) {
+  await prisma.dispositionCode.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "DispositionCode", null, await currentUserName());
 
   revalidatePath("/admin/disposition-codes");
   revalidatePath("/disposition-codes");

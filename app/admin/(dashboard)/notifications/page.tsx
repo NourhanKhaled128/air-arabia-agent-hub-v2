@@ -7,10 +7,12 @@ import {
   FileText,
 } from "lucide-react";
 import { getNotifications } from "@/lib/notification-service";
+import { deleteManyNotificationsAction } from "@/app/admin/actions/notification-actions";
 import NotificationRowActions from "@/components/admin/notification/NotificationRowActions";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminBadge from "@/components/admin/AdminBadge";
+import AdminListTable from "@/components/admin/AdminListTable";
 
 const badgeColor: Record<string, "red" | "green" | "blue" | "yellow" | "gray"> = {
   Sent: "green",
@@ -61,73 +63,66 @@ export default async function NotificationsPage() {
         <AdminStatCard title="Draft" value={drafts} icon={FileText} color="text-slate-700" />
       </div>
 
-      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
+      <AdminListTable
+        columns={[
+          { key: "title", label: "Title" },
+          { key: "audience", label: "Audience" },
+          { key: "status", label: "Status" },
+          { key: "sendDate", label: "Send Date" },
+        ]}
+        data={notifications}
+        searchPlaceholder="Search notifications..."
+        searchFn={(item, query) => {
+          const q = query.toLowerCase();
+          return (
+            item.title.toLowerCase().includes(q) ||
+            item.message.toLowerCase().includes(q) ||
+            (item.audience ?? "").toLowerCase().includes(q)
+          );
+        }}
+        filters={[
+          {
+            key: "status",
+            label: "Status",
+            options: [
+              { value: "Sent", label: "Sent" },
+              { value: "Scheduled", label: "Scheduled" },
+              { value: "Draft", label: "Draft" },
+            ],
+          },
+        ]}
+        filterFn={(item, values) => {
+          if (values.status && item.status !== values.status) return false;
+          return true;
+        }}
+        onDeleteMany={deleteManyNotificationsAction}
+        emptyMessage="No notifications yet."
+        renderRow={(notification) => (
+          <>
+            <td className="px-6 py-5 font-semibold">
+              {notification.title}
+            </td>
 
-        <table className="w-full">
+            <td className="px-6 py-5">
+              {notification.audience ?? "-"}
+            </td>
 
-          <thead className="bg-slate-50">
+            <td className="px-6 py-5">
+              <AdminBadge color={badgeColor[notification.status] ?? "gray"}>
+                {notification.status}
+              </AdminBadge>
+            </td>
 
-            <tr>
+            <td className="px-6 py-5">
+              {formatDateTime(notification.sendDate)}
+            </td>
 
-              <th className="px-6 py-4 text-left">Title</th>
-
-              <th className="px-6 py-4 text-left">Audience</th>
-
-              <th className="px-6 py-4 text-left">Status</th>
-
-              <th className="px-6 py-4 text-left">Send Date</th>
-
-              <th className="px-6 py-4 text-left">Actions</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {notifications.map((notification) => (
-
-              <tr key={notification.id} className="border-t">
-
-                <td className="px-6 py-5 font-semibold">
-                  {notification.title}
-                </td>
-
-                <td className="px-6 py-5">
-                  {notification.audience ?? "-"}
-                </td>
-
-                <td className="px-6 py-5">
-                  <AdminBadge color={badgeColor[notification.status] ?? "gray"}>
-                    {notification.status}
-                  </AdminBadge>
-                </td>
-
-                <td className="px-6 py-5">
-                  {formatDateTime(notification.sendDate)}
-                </td>
-
-                <td className="px-6 py-5">
-                  <NotificationRowActions id={notification.id} />
-                </td>
-
-              </tr>
-
-            ))}
-
-            {notifications.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-6 py-10 text-center text-slate-500">
-                  No notifications yet.
-                </td>
-              </tr>
-            )}
-
-          </tbody>
-
-        </table>
-
-      </div>
+            <td className="px-6 py-5">
+              <NotificationRowActions id={notification.id} />
+            </td>
+          </>
+        )}
+      />
 
     </div>
   );

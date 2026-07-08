@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import {
   createEscalationContact,
   updateEscalationContact,
@@ -54,6 +55,15 @@ export async function deleteEscalationContactAction(id: number) {
   await deleteEscalationContact(id);
 
   await logAction("Deleted", "EscalationContact", id, await currentUserName());
+
+  revalidatePath("/admin/escalation");
+  revalidatePath("/escalation");
+}
+
+export async function deleteManyEscalationContactsAction(ids: number[]) {
+  await prisma.escalationContact.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "EscalationContact", null, await currentUserName());
 
   revalidatePath("/admin/escalation");
   revalidatePath("/escalation");

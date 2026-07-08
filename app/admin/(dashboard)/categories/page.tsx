@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { FolderOpen, Plus, Layers3 } from "lucide-react";
 import { getCategories, getArticleCountsByCategory } from "@/lib/category-service";
+import { deleteManyCategoriesAction } from "@/app/admin/actions/category-actions";
 import CategoryRowActions from "@/components/admin/categories/CategoryRowActions";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminBadge from "@/components/admin/AdminBadge";
+import AdminListTable from "@/components/admin/AdminListTable";
 
 function categoryBadgeColor(color?: string | null): "red" | "green" | "blue" | "yellow" | "gray" {
   if (!color) return "gray";
@@ -47,67 +49,78 @@ export default async function CategoriesPage() {
         <AdminStatCard title="Articles" value={totalArticles} icon={Layers3} color="text-blue-700" />
       </div>
 
-      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
-        <table className="w-full">
-          <thead className="bg-slate-50">
-            <tr className="text-left text-sm">
-              <th className="px-6 py-4">Category</th>
-              <th className="px-6 py-4">Description</th>
-              <th className="px-6 py-4">Articles</th>
-              <th className="px-6 py-4">Group</th>
-              <th className="px-6 py-4">Order</th>
-              <th className="px-6 py-4">Visible</th>
-              <th className="px-6 py-4">Actions</th>
-            </tr>
-          </thead>
+      <AdminListTable
+        columns={[
+          { key: "name", label: "Category" },
+          { key: "description", label: "Description" },
+          { key: "articles", label: "Articles" },
+          { key: "group", label: "Group" },
+          { key: "order", label: "Order" },
+          { key: "visible", label: "Visible" },
+        ]}
+        data={categories}
+        searchPlaceholder="Search categories..."
+        searchFn={(category, query) => {
+          const q = query.toLowerCase();
+          return (
+            category.name.toLowerCase().includes(q) ||
+            (category.description ?? "").toLowerCase().includes(q) ||
+            category.group.toLowerCase().includes(q)
+          );
+        }}
+        filters={[
+          {
+            key: "visible",
+            label: "Visibility",
+            options: [
+              { value: "visible", label: "Visible" },
+              { value: "hidden", label: "Hidden" },
+            ],
+          },
+        ]}
+        filterFn={(category, values) => {
+          if (values.visible === "visible" && !category.visible) return false;
+          if (values.visible === "hidden" && category.visible) return false;
+          return true;
+        }}
+        onDeleteMany={deleteManyCategoriesAction}
+        emptyMessage="No categories yet."
+        renderRow={(category) => (
+          <>
+            <td className="px-6 py-5">
+              <AdminBadge color={categoryBadgeColor(category.color)}>
+                {category.name}
+              </AdminBadge>
+            </td>
 
-          <tbody>
-            {categories.map((category) => (
-              <tr key={category.id} className="border-t">
-                <td className="px-6 py-5">
-                  <AdminBadge color={categoryBadgeColor(category.color)}>
-                    {category.name}
-                  </AdminBadge>
-                </td>
+            <td className="px-6 py-5 text-slate-600">
+              {category.description}
+            </td>
 
-                <td className="px-6 py-5 text-slate-600">
-                  {category.description}
-                </td>
+            <td className="px-6 py-5 font-semibold">
+              {articleCounts[category.name] ?? 0}
+            </td>
 
-                <td className="px-6 py-5 font-semibold">
-                  {articleCounts[category.name] ?? 0}
-                </td>
+            <td className="px-6 py-5 text-slate-600">
+              {category.group}
+            </td>
 
-                <td className="px-6 py-5 text-slate-600">
-                  {category.group}
-                </td>
+            <td className="px-6 py-5 text-slate-600">
+              {category.order}
+            </td>
 
-                <td className="px-6 py-5 text-slate-600">
-                  {category.order}
-                </td>
+            <td className="px-6 py-5">
+              <AdminBadge color={category.visible ? "green" : "gray"}>
+                {category.visible ? "Visible" : "Hidden"}
+              </AdminBadge>
+            </td>
 
-                <td className="px-6 py-5">
-                  <AdminBadge color={category.visible ? "green" : "gray"}>
-                    {category.visible ? "Visible" : "Hidden"}
-                  </AdminBadge>
-                </td>
-
-                <td className="px-6 py-5">
-                  <CategoryRowActions id={category.id} />
-                </td>
-              </tr>
-            ))}
-
-            {categories.length === 0 && (
-              <tr>
-                <td colSpan={7} className="px-6 py-10 text-center text-slate-500">
-                  No categories yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            <td className="px-6 py-5">
+              <CategoryRowActions id={category.id} />
+            </td>
+          </>
+        )}
+      />
     </div>
   );
 }

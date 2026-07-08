@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { prisma } from "@/lib/prisma";
 import {
   parseAirportsWorkbook,
   replaceAirportsFromRows,
@@ -36,4 +37,22 @@ export async function uploadAirportsAction(formData: FormData) {
       error: error instanceof Error ? error.message : "Failed to process the uploaded file.",
     };
   }
+}
+
+export async function deleteAirportAction(id: number) {
+  await prisma.airport.delete({ where: { id } });
+
+  await logAction("Deleted", "Airport", id, await currentUserName());
+
+  revalidatePath("/admin/airport-codes");
+  revalidatePath("/airport-codes");
+}
+
+export async function deleteManyAirportsAction(ids: number[]) {
+  await prisma.airport.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "Airport", null, await currentUserName());
+
+  revalidatePath("/admin/airport-codes");
+  revalidatePath("/airport-codes");
 }

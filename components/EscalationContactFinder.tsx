@@ -17,32 +17,56 @@ interface Props {
 
 export default function EscalationContactFinder({ escalations }: Props) {
   const [query, setQuery] = useState("");
+  const [issueType, setIssueType] = useState("");
+
+  const issueTypeOptions = useMemo(
+    () => Array.from(new Set(escalations.map((e) => e.issueType))).sort(),
+    [escalations]
+  );
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    if (!q) return escalations;
+    return escalations.filter((e) => {
+      if (issueType && e.issueType !== issueType) return false;
 
-    return escalations.filter(
-      (e) =>
+      if (!q) return true;
+
+      return (
         e.issueType.toLowerCase().includes(q) ||
         e.escalateTo.toLowerCase().includes(q) ||
         e.contactInfo.toLowerCase().includes(q)
-    );
-  }, [query, escalations]);
+      );
+    });
+  }, [query, issueType, escalations]);
 
   return (
     <div className="space-y-6">
 
-      <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3">
-        <Search size={18} className="text-gray-500" />
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-1 min-w-[220px] items-center gap-3 rounded-xl border border-gray-300 px-4 py-3">
+          <Search size={18} className="text-gray-500" />
 
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by issue type or contact..."
-          className="w-full bg-transparent outline-none"
-        />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by issue type or contact..."
+            className="w-full bg-transparent outline-none"
+          />
+        </div>
+
+        <select
+          value={issueType}
+          onChange={(e) => setIssueType(e.target.value)}
+          className="rounded-xl border border-gray-300 px-4 py-3"
+        >
+          <option value="">Issue Type: All</option>
+          {issueTypeOptions.map((type) => (
+            <option key={type} value={type}>
+              {type}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">

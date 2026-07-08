@@ -1,12 +1,14 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
+import InlineImagesUploader from "./InlineImagesUploader";
 
 export interface ReferenceInput {
   id: number;
   title: string;
   type: string;
   link: string;
+  images: string[];
 }
 
 interface Props {
@@ -19,7 +21,7 @@ export default function ReferencesSection({ items, onChange }: Props) {
   function addReference() {
     onChange([
       ...items,
-      { id: Date.now(), title: "", type: "Internal SOP", link: "" },
+      { id: Date.now(), title: "", type: "Internal SOP", link: "", images: [] },
     ]);
   }
 
@@ -30,6 +32,12 @@ export default function ReferencesSection({ items, onChange }: Props) {
   function updateReference(id: number, field: keyof ReferenceInput, value: string) {
     onChange(
       items.map(ref => (ref.id === id ? { ...ref, [field]: value } : ref))
+    );
+  }
+
+  function updateReferenceImages(id: number, images: string[]) {
+    onChange(
+      items.map(ref => (ref.id === id ? { ...ref, images } : ref))
     );
   }
 
@@ -116,6 +124,11 @@ export default function ReferencesSection({ items, onChange }: Props) {
               onChange={(e) => updateReference(reference.id, "link", e.target.value)}
               placeholder="Link (optional)"
               className="w-full rounded-xl border p-3"
+            />
+
+            <InlineImagesUploader
+              images={reference.images}
+              onChange={(images) => updateReferenceImages(reference.id, images)}
             />
 
           </div>

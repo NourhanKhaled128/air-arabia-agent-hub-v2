@@ -21,7 +21,25 @@ import RecentActivity from "@/components/RecentActivity";
 
 import UpcomingTraining from "@/components/UpcomingTraining";
 
-export default function HomePage() {
+import ImportantLinks from "@/components/ImportantLinks";
+
+import { getVisibleHomeWidgets } from "@/lib/home-widget-service";
+
+const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
+  quickActions: QuickActions,
+  announcements: Announcements,
+  timeConverter: TimeConverter,
+  favoriteArticles: FavoriteArticles,
+  trendingArticles: TrendingArticles,
+  recentArticles: RecentArticles,
+  recentActivity: RecentActivity,
+  upcomingTraining: UpcomingTraining,
+  importantLinks: ImportantLinks,
+};
+
+export default async function HomePage() {
+
+  const widgets = await getVisibleHomeWidgets();
 
   return (
 
@@ -31,33 +49,24 @@ export default function HomePage() {
 
       <DashboardStats />
 
-      <QuickActions />
-
       <div className="grid gap-8 lg:grid-cols-2">
 
-        <Announcements />
+        {widgets.map((widget) => {
+          const Widget = WIDGET_COMPONENTS[widget.type];
 
-        <TimeConverter />
+          if (!Widget) return null;
 
-      </div>
-
-      <div className="grid gap-8 lg:grid-cols-2">
-
-        <FavoriteArticles />
-
-        <TrendingArticles />
-
-      </div>
-
-      <div className="grid gap-8 lg:grid-cols-2">
-
-        <RecentArticles />
-
-        <RecentActivity />
+          return (
+            <div
+              key={widget.id}
+              className={widget.size === "full" ? "lg:col-span-2" : ""}
+            >
+              <Widget />
+            </div>
+          );
+        })}
 
       </div>
-
-      <UpcomingTraining />
 
     </>
 

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import { createRole, deleteRole, updateRole } from "@/lib/role-service";
 import { logAction } from "@/lib/audit-service";
 import { getCurrentAdminUser } from "@/lib/admin-dal";
@@ -41,6 +42,14 @@ export async function deleteRoleAction(id: number) {
   await deleteRole(id);
 
   await logAction("Deleted", "Role", id, await currentUserName());
+
+  revalidatePath("/admin/roles");
+}
+
+export async function deleteManyRolesAction(ids: number[]) {
+  await prisma.role.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "Role", null, await currentUserName());
 
   revalidatePath("/admin/roles");
 }

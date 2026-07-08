@@ -14,6 +14,7 @@ import KeywordsSection from "./KeywordsSection";
 import ScenarioSection, { type ScenarioInput } from "./ScenarioSection";
 import PhotosSection, { type PhotoInput } from "./PhotosSection";
 import AttachmentsSection, { type AttachmentInput } from "./AttachmentsSection";
+import UpdatesSection from "./UpdatesSection";
 import ArticleSidebar from "./ArticleSidebar";
 
 interface ArticleWithRelations {
@@ -28,18 +29,28 @@ interface ArticleWithRelations {
   createdAt: Date;
   updatedAt: Date;
   procedures: { id: number; title: string | null; content: string; image: string | null }[];
-  dispositions: { id: number; code: string | null; content: string }[];
-  escalations: { id: number; department: string | null; condition: string | null; content: string }[];
-  notes: { id: number; type: string; content: string }[];
-  references: { id: number; title: string; type: string; link: string | null }[];
+  dispositions: { id: number; code: string | null; content: string; images: string[] }[];
+  escalations: { id: number; department: string | null; condition: string | null; content: string; images: string[] }[];
+  notes: { id: number; type: string; content: string; images: string[] }[];
+  references: { id: number; title: string; type: string; link: string | null; images: string[] }[];
   keywords: { id: number; value: string }[];
-  scenarios: { id: number; situation: string; response: string }[];
+  scenarios: { id: number; situation: string; response: string; images: string[] }[];
   images: { id: number; image: string }[];
   attachments: { id: number; fileName: string; url: string; mimeType: string; size: number }[];
 }
 
+interface Update {
+  id: number;
+  action: string;
+  userName: string;
+  createdAt: Date;
+}
+
 interface Props {
   article: ArticleWithRelations;
+  categories?: { name: string }[];
+  dispositionCodes?: { code: string; label: string }[];
+  updates?: Update[];
 }
 
 interface EditFormData {
@@ -80,29 +91,34 @@ function toFormData(article: ArticleWithRelations): EditFormData {
       id: d.id,
       code: d.code ?? "",
       content: d.content,
+      images: d.images,
     })),
     escalations: article.escalations.map((e) => ({
       id: e.id,
       department: e.department ?? "",
       condition: e.condition ?? "",
       content: e.content,
+      images: e.images,
     })),
     notes: article.notes.map((n) => ({
       id: n.id,
       type: n.type,
       content: n.content,
+      images: n.images,
     })),
     references: article.references.map((r) => ({
       id: r.id,
       title: r.title,
       type: r.type,
       link: r.link ?? "",
+      images: r.images,
     })),
     keywords: article.keywords.map((k) => k.value),
     scenarios: article.scenarios.map((s) => ({
       id: s.id,
       situation: s.situation,
       response: s.response,
+      images: s.images,
     })),
     images: article.images.map((i) => ({ id: i.id, url: i.image })),
     attachments: article.attachments.map((a) => ({
@@ -117,6 +133,9 @@ function toFormData(article: ArticleWithRelations): EditFormData {
 
 export default function EditArticleForm({
   article,
+  categories = [],
+  dispositionCodes = [],
+  updates = [],
 }: Props) {
 
   const router = useRouter();
@@ -185,6 +204,7 @@ export default function EditArticleForm({
       <ArticleInfo
         data={form}
         updateField={updateField}
+        categories={categories}
       />
 
       <OverviewSection
@@ -205,6 +225,7 @@ export default function EditArticleForm({
       <DispositionSection
         items={form.dispositions}
         onChange={(dispositions) => setForm((prev) => ({ ...prev, dispositions }))}
+        dispositionCodes={dispositionCodes}
       />
 
       <EscalationSection
@@ -236,6 +257,8 @@ export default function EditArticleForm({
         items={form.attachments}
         onChange={(attachments) => setForm((prev) => ({ ...prev, attachments }))}
       />
+
+      <UpdatesSection updates={updates} />
 
       <div className="flex justify-end">
 

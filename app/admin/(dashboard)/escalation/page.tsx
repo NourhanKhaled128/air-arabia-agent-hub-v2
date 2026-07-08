@@ -3,8 +3,10 @@ import { PhoneCall, CheckCircle2, XCircle, Plus } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminBadge from "@/components/admin/AdminBadge";
+import AdminListTable from "@/components/admin/AdminListTable";
 import EscalationRowActions from "@/components/admin/escalation/EscalationRowActions";
 import { getEscalationContacts } from "@/lib/escalation-service";
+import { deleteManyEscalationContactsAction } from "@/app/admin/actions/escalation-actions";
 
 export default async function EscalationPage() {
   const escalations = await getEscalationContacts();
@@ -36,45 +38,56 @@ export default async function EscalationPage() {
         <AdminStatCard title="Inactive" value={inactive} icon={XCircle} color="text-slate-500" />
       </div>
 
-      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
-        <table className="w-full">
-          <thead className="bg-slate-50">
-            <tr>
-              <th className="px-6 py-4 text-left">Issue Type</th>
-              <th className="px-6 py-4 text-left">Escalate To</th>
-              <th className="px-6 py-4 text-left">Contact Info</th>
-              <th className="px-6 py-4 text-left">Status</th>
-              <th className="px-6 py-4 text-left">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {escalations.map((escalation) => (
-              <tr key={escalation.id} className="border-t">
-                <td className="px-6 py-5 font-semibold">{escalation.issueType}</td>
-                <td className="px-6 py-5">{escalation.escalateTo}</td>
-                <td className="px-6 py-5">{escalation.contactInfo}</td>
-                <td className="px-6 py-5">
-                  <AdminBadge color={escalation.active ? "green" : "gray"}>
-                    {escalation.active ? "Active" : "Inactive"}
-                  </AdminBadge>
-                </td>
-                <td className="px-6 py-5">
-                  <EscalationRowActions id={escalation.id} />
-                </td>
-              </tr>
-            ))}
-
-            {escalations.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-6 py-10 text-center text-slate-500">
-                  No escalation contacts yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <AdminListTable
+        columns={[
+          { key: "issueType", label: "Issue Type" },
+          { key: "escalateTo", label: "Escalate To" },
+          { key: "contactInfo", label: "Contact Info" },
+          { key: "status", label: "Status" },
+        ]}
+        data={escalations}
+        searchPlaceholder="Search escalation contacts..."
+        searchFn={(item, query) => {
+          const q = query.toLowerCase();
+          return (
+            item.issueType.toLowerCase().includes(q) ||
+            item.escalateTo.toLowerCase().includes(q) ||
+            item.contactInfo.toLowerCase().includes(q)
+          );
+        }}
+        filters={[
+          {
+            key: "active",
+            label: "Status",
+            options: [
+              { value: "active", label: "Active" },
+              { value: "inactive", label: "Inactive" },
+            ],
+          },
+        ]}
+        filterFn={(item, values) => {
+          if (values.active === "active" && !item.active) return false;
+          if (values.active === "inactive" && item.active) return false;
+          return true;
+        }}
+        onDeleteMany={deleteManyEscalationContactsAction}
+        emptyMessage="No escalation contacts yet."
+        renderRow={(escalation) => (
+          <>
+            <td className="px-6 py-5 font-semibold">{escalation.issueType}</td>
+            <td className="px-6 py-5">{escalation.escalateTo}</td>
+            <td className="px-6 py-5">{escalation.contactInfo}</td>
+            <td className="px-6 py-5">
+              <AdminBadge color={escalation.active ? "green" : "gray"}>
+                {escalation.active ? "Active" : "Inactive"}
+              </AdminBadge>
+            </td>
+            <td className="px-6 py-5">
+              <EscalationRowActions id={escalation.id} />
+            </td>
+          </>
+        )}
+      />
 
     </div>
   );

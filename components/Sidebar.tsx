@@ -16,6 +16,7 @@ import {
   X,
   Star,
   Folder,
+  ExternalLink,
   type LucideIcon,
 } from "lucide-react";
 
@@ -36,10 +37,18 @@ interface SidebarNavLink {
   icon: string;
 }
 
+interface ImportantLinkItem {
+  id: number;
+  title: string;
+  url: string;
+  icon: string;
+}
+
 interface Props {
   categories: SidebarCategory[];
   pinnedLinks: SidebarNavLink[];
   toolLinks: SidebarNavLink[];
+  importantLinks: ImportantLinkItem[];
 }
 
 type MenuItem = {
@@ -102,7 +111,7 @@ function toMenuItems(links: SidebarNavLink[]): MenuItem[] {
   }));
 }
 
-export default function Sidebar({ categories, pinnedLinks, toolLinks }: Props) {
+export default function Sidebar({ categories, pinnedLinks, toolLinks, importantLinks }: Props) {
   const pathname = usePathname();
 
   const {
@@ -120,6 +129,12 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks }: Props) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
   const [toolsOpen, setToolsOpen] = useState(true);
+
+  const [linksOpen, setLinksOpen] = useState(true);
+
+  const filteredImportantLinks = importantLinks.filter((link) =>
+    link.title.toLowerCase().includes(search.toLowerCase())
+  );
 
   const groups = new Map<string, SidebarCategory[]>();
 
@@ -376,6 +391,76 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks }: Props) {
             )}
 
           </div>
+
+          {/* Important Links */}
+
+          {filteredImportantLinks.length > 0 && (
+            <div className="mb-8">
+
+              {collapsed ? (
+                <>
+                  {filteredImportantLinks.map((link) => {
+                    const Icon = getSidebarIcon(link.icon);
+
+                    return (
+                      <a
+                        key={link.id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={link.title}
+                        className="mb-2 flex items-center justify-center rounded-xl px-0 py-3 text-gray-800 transition-all duration-200 hover:bg-red-50 hover:text-red-700"
+                      >
+                        <Icon size={20} />
+                      </a>
+                    );
+                  })}
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setLinksOpen(!linksOpen)}
+                    className="mb-3 flex w-full items-center justify-between px-4"
+                  >
+
+                    <span className="text-xs font-bold uppercase tracking-widest text-gray-500">
+                      Important Links
+                    </span>
+
+                    {linksOpen ? (
+                      <ChevronDown size={16} />
+                    ) : (
+                      <ChevronRight size={16} />
+                    )}
+
+                  </button>
+
+                  {linksOpen && (
+                    <div>
+                      {filteredImportantLinks.map((link) => {
+                        const Icon = getSidebarIcon(link.icon);
+
+                        return (
+                          <a
+                            key={link.id}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mb-2 flex items-center gap-3 rounded-xl px-4 py-3 text-gray-800 transition-all duration-200 hover:bg-red-50 hover:text-red-700"
+                          >
+                            <Icon size={20} />
+                            <span className="flex-1 truncate font-medium">{link.title}</span>
+                            <ExternalLink size={14} className="shrink-0 text-gray-400" />
+                          </a>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+
+            </div>
+          )}
 
         </div>
 

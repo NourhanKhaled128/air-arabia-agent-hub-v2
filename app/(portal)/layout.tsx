@@ -5,17 +5,19 @@ import { SidebarPrefsProvider } from "@/components/SidebarPrefsProvider";
 import { getArticlesForSearch } from "@/lib/article-service";
 import { getVisibleCategoriesForSidebar } from "@/lib/category-service";
 import { getVisibleSidebarLinksBySection } from "@/lib/sidebar-service";
+import { getVisibleImportantLinks } from "@/lib/important-link-service";
 
 interface Props {
   children: React.ReactNode;
 }
 
 export default async function PortalLayout({ children }: Props) {
-  const [articles, categories, pinnedLinks, toolLinks] = await Promise.all([
+  const [articles, categories, pinnedLinks, toolLinks, importantLinks] = await Promise.all([
     getArticlesForSearch(),
     getVisibleCategoriesForSidebar(),
     getVisibleSidebarLinksBySection("pinned"),
     getVisibleSidebarLinksBySection("tools"),
+    getVisibleImportantLinks(),
   ]);
 
   return (
@@ -26,6 +28,7 @@ export default async function PortalLayout({ children }: Props) {
           categories={categories}
           pinnedLinks={pinnedLinks}
           toolLinks={toolLinks}
+          importantLinks={importantLinks}
         />
 
         <PortalMain>

@@ -22,6 +22,14 @@ export async function deleteArticleAction(id: number) {
   revalidatePath("/admin/articles");
 }
 
+export async function deleteManyArticlesAction(ids: number[]) {
+  await prisma.article.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "Article", null, await currentUserName());
+
+  revalidatePath("/admin/articles");
+}
+
 export async function publishArticleAction(id: number) {
   await prisma.article.update({
     where: {

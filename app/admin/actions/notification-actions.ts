@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import {
   createNotification,
   updateNotification,
@@ -60,6 +61,15 @@ export async function deleteNotificationAction(id: number) {
   await deleteNotification(id);
 
   await logAction("Deleted", "Notification", id, await currentUserName());
+
+  revalidatePath("/admin/notifications");
+  revalidatePath("/", "layout");
+}
+
+export async function deleteManyNotificationsAction(ids: number[]) {
+  await prisma.notification.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "Notification", null, await currentUserName());
 
   revalidatePath("/admin/notifications");
   revalidatePath("/", "layout");

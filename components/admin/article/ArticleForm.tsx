@@ -14,6 +14,7 @@ import KeywordsSection from "./KeywordsSection";
 import ScenarioSection, { type ScenarioInput } from "./ScenarioSection";
 import PhotosSection, { type PhotoInput } from "./PhotosSection";
 import AttachmentsSection, { type AttachmentInput } from "./AttachmentsSection";
+import UpdatesSection from "./UpdatesSection";
 
 interface ArticleFormData {
   title: string;
@@ -32,6 +33,11 @@ interface ArticleFormData {
   scenarios: ScenarioInput[];
   images: PhotoInput[];
   attachments: AttachmentInput[];
+}
+
+interface Props {
+  categories?: { name: string }[];
+  dispositionCodes?: { code: string; label: string }[];
 }
 
 const emptyFormData: ArticleFormData = {
@@ -53,7 +59,7 @@ const emptyFormData: ArticleFormData = {
   attachments: [],
 };
 
-export default function ArticleForm() {
+export default function ArticleForm({ categories = [], dispositionCodes = [] }: Props) {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState<ArticleFormData>(emptyFormData);
@@ -113,6 +119,7 @@ export default function ArticleForm() {
       <ArticleInfo
         data={formData}
         updateField={updateField}
+        categories={categories}
       />
 
       <OverviewSection
@@ -133,6 +140,7 @@ export default function ArticleForm() {
       <DispositionSection
         items={formData.dispositions}
         onChange={(dispositions) => setFormData((prev) => ({ ...prev, dispositions }))}
+        dispositionCodes={dispositionCodes}
       />
 
       <EscalationSection
@@ -164,6 +172,8 @@ export default function ArticleForm() {
         items={formData.attachments}
         onChange={(attachments) => setFormData((prev) => ({ ...prev, attachments }))}
       />
+
+      <UpdatesSection />
 
       <PublishSection
         loading={loading}

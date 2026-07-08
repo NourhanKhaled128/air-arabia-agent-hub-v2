@@ -84,12 +84,12 @@ export async function deleteArticle(
 
 interface ArticleSectionsInput {
   procedures?: { title?: string; content: string; image?: string }[];
-  dispositions?: { code?: string; content: string }[];
-  escalations?: { department?: string; condition?: string; content: string }[];
-  notes?: { type?: string; content: string }[];
-  references?: { title: string; type?: string; link?: string }[];
+  dispositions?: { code?: string; content: string; images?: string[] }[];
+  escalations?: { department?: string; condition?: string; content: string; images?: string[] }[];
+  notes?: { type?: string; content: string; images?: string[] }[];
+  references?: { title: string; type?: string; link?: string; images?: string[] }[];
   keywords?: string[];
-  scenarios?: { situation: string; response: string }[];
+  scenarios?: { situation: string; response: string; images?: string[] }[];
   images?: { url: string }[];
   attachments?: { fileName: string; url: string; mimeType: string; size: number }[];
 }
@@ -108,6 +108,7 @@ export function buildArticleSectionsCreateData(body: ArticleSectionsInput) {
       create: (body.dispositions ?? []).map((item) => ({
         code: item.code || null,
         content: item.content,
+        images: item.images ?? [],
       })),
     },
     escalations: {
@@ -115,12 +116,14 @@ export function buildArticleSectionsCreateData(body: ArticleSectionsInput) {
         department: item.department || null,
         condition: item.condition || null,
         content: item.content,
+        images: item.images ?? [],
       })),
     },
     notes: {
       create: (body.notes ?? []).map((item) => ({
         type: item.type || "Information",
         content: item.content,
+        images: item.images ?? [],
       })),
     },
     references: {
@@ -128,6 +131,7 @@ export function buildArticleSectionsCreateData(body: ArticleSectionsInput) {
         title: item.title,
         type: item.type || "Internal SOP",
         link: item.link || null,
+        images: item.images ?? [],
       })),
     },
     keywords: {
@@ -137,6 +141,7 @@ export function buildArticleSectionsCreateData(body: ArticleSectionsInput) {
       create: (body.scenarios ?? []).map((item) => ({
         situation: item.situation,
         response: item.response,
+        images: item.images ?? [],
       })),
     },
     images: {

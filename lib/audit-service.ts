@@ -28,3 +28,10 @@ export async function getAuditLogs() {
     orderBy: { createdAt: "desc" },
   });
 }
+
+export async function getAuditLogsForEntity(entity: string, entityId: number) {
+  return prisma.auditLog.findMany({
+    where: { entity, entityId },
+    orderBy: { createdAt: "desc" },
+  });
+}

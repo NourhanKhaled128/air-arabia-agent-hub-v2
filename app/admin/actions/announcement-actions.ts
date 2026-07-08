@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import {
   createAnnouncement,
   updateAnnouncement,
@@ -66,6 +67,15 @@ export async function deleteAnnouncementAction(id: number) {
   await deleteAnnouncement(id);
 
   await logAction("Deleted", "Announcement", id, await currentUserName());
+
+  revalidatePath("/admin/announcements");
+  revalidatePath("/", "layout");
+}
+
+export async function deleteManyAnnouncementsAction(ids: number[]) {
+  await prisma.announcement.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "Announcement", null, await currentUserName());
 
   revalidatePath("/admin/announcements");
   revalidatePath("/", "layout");

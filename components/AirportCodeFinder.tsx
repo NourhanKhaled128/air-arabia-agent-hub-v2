@@ -17,34 +17,58 @@ interface Props {
 
 export default function AirportCodeFinder({ airports }: Props) {
   const [query, setQuery] = useState("");
+  const [country, setCountry] = useState("");
+
+  const countryOptions = useMemo(
+    () => Array.from(new Set(airports.map((a) => a.country))).sort(),
+    [airports]
+  );
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    if (!q) return airports;
+    return airports.filter((airport) => {
+      if (country && airport.country !== country) return false;
 
-    return airports.filter(
-      (airport) =>
+      if (!q) return true;
+
+      return (
         airport.code.toLowerCase().includes(q) ||
         airport.city.toLowerCase().includes(q) ||
         airport.airport.toLowerCase().includes(q) ||
         airport.country.toLowerCase().includes(q) ||
         (airport.terminal ?? "").toLowerCase().includes(q)
-    );
-  }, [query, airports]);
+      );
+    });
+  }, [query, country, airports]);
 
   return (
     <div className="space-y-6">
 
-      <div className="flex items-center gap-3 rounded-xl border border-gray-300 px-4 py-3">
-        <Search size={18} className="text-gray-500" />
+      <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-1 min-w-[220px] items-center gap-3 rounded-xl border border-gray-300 px-4 py-3">
+          <Search size={18} className="text-gray-500" />
 
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by code, city, airport, terminal, or country..."
-          className="w-full bg-transparent outline-none"
-        />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by code, city, airport, terminal, or country..."
+            className="w-full bg-transparent outline-none"
+          />
+        </div>
+
+        <select
+          value={country}
+          onChange={(e) => setCountry(e.target.value)}
+          className="rounded-xl border border-gray-300 px-4 py-3"
+        >
+          <option value="">Country: All</option>
+          {countryOptions.map((c) => (
+            <option key={c} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">

@@ -1,12 +1,14 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
+import InlineImagesUploader from "./InlineImagesUploader";
 
 export interface EscalationInput {
   id: number;
   department: string;
   condition: string;
   content: string;
+  images: string[];
 }
 
 interface Props {
@@ -17,7 +19,7 @@ interface Props {
 export default function EscalationSection({ items, onChange }: Props) {
 
   function addItem(){
-    onChange([...items, { id: Date.now(), department: "", condition: "", content: "" }]);
+    onChange([...items, { id: Date.now(), department: "", condition: "", content: "", images: [] }]);
   }
 
   function removeItem(id: number){
@@ -27,6 +29,12 @@ export default function EscalationSection({ items, onChange }: Props) {
   function updateItem(id: number, field: keyof EscalationInput, value: string) {
     onChange(
       items.map(item => (item.id === id ? { ...item, [field]: value } : item))
+    );
+  }
+
+  function updateItemImages(id: number, images: string[]) {
+    onChange(
+      items.map(item => (item.id === id ? { ...item, images } : item))
     );
   }
 
@@ -108,6 +116,11 @@ value={item.content}
 onChange={(e) => updateItem(item.id, "content", e.target.value)}
 placeholder="Escalation instructions..."
 className="w-full rounded-xl border p-4"
+/>
+
+<InlineImagesUploader
+  images={item.images}
+  onChange={(images) => updateItemImages(item.id, images)}
 />
 
 </div>

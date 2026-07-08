@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import {
   createDisruption,
   deleteDisruption,
@@ -54,6 +55,16 @@ export async function deleteDisruptionAction(id: number) {
   await deleteDisruption(id);
 
   await logAction("Deleted", "Disruption", id, await currentUserName());
+
+  revalidatePath("/admin/disruptions");
+  revalidatePath("/disruptions");
+  revalidatePath("/", "layout");
+}
+
+export async function deleteManyDisruptionsAction(ids: number[]) {
+  await prisma.disruption.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "Disruption", null, await currentUserName());
 
   revalidatePath("/admin/disruptions");
   revalidatePath("/disruptions");

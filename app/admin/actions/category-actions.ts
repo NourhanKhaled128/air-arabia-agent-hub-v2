@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import {
   createCategory,
   deleteCategory,
@@ -62,4 +63,13 @@ export async function deleteCategoryAction(id: number) {
   await logAction("Deleted", "Category", id, await currentUserName());
 
   revalidatePath("/admin/categories");
+}
+
+export async function deleteManyCategoriesAction(ids: number[]) {
+  await prisma.category.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "Category", null, await currentUserName());
+
+  revalidatePath("/admin/categories");
+  revalidatePath("/", "layout");
 }

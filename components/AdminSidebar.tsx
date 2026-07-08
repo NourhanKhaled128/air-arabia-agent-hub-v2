@@ -22,6 +22,9 @@ import {
   Plane,
   ClipboardList,
   PhoneCall,
+  Link2,
+  LayoutGrid,
+  Image as ImageIcon,
 } from "lucide-react";
 import { logoutAction } from "@/app/admin/actions/auth-actions";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
@@ -31,12 +34,15 @@ const menu = [
   { title: "Articles", href: "/admin/articles", icon: FileText },
   { title: "Categories", href: "/admin/categories", icon: Folder },
   { title: "Sidebar Links", href: "/admin/sidebar", icon: PanelLeft },
+  { title: "Important Links", href: "/admin/important-links", icon: Link2 },
+  { title: "Home Widgets", href: "/admin/home-widgets", icon: LayoutGrid },
   { title: "Disruptions", href: "/admin/disruptions", icon: AlertTriangle },
   { title: "Announcements", href: "/admin/announcements", icon: Megaphone },
   { title: "Training", href: "/admin/training", icon: GraduationCap },
   { title: "Airport Codes", href: "/admin/airport-codes", icon: Plane },
   { title: "Disposition Codes", href: "/admin/disposition-codes", icon: ClipboardList },
   { title: "Escalation Contacts", href: "/admin/escalation", icon: PhoneCall },
+  { title: "Media Library", href: "/admin/media", icon: ImageIcon },
   { title: "Users", href: "/admin/users", icon: Users },
   { title: "Roles", href: "/admin/roles", icon: Shield },
   { title: "Settings", href: "/admin/settings", icon: Settings },

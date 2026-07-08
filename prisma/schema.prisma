@@ -42,37 +42,41 @@ model ProcedureStep {
 }
 
 model Disposition {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   articleId Int
   code      String?
   content   String
-  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  images    String[] @default([])
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Escalation {
-  id         Int     @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   articleId  Int
   department String?
   condition  String?
   content    String
-  article    Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  images     String[] @default([])
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Note {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   articleId Int
-  type      String  @default("Information")
+  type      String   @default("Information")
   content   String
-  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  images    String[] @default([])
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Reference {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   articleId Int
   title     String
-  type      String  @default("Internal SOP")
+  type      String   @default("Internal SOP")
   link      String?
-  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  images    String[] @default([])
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Keyword {
@@ -90,11 +94,12 @@ model ArticleImage {
 }
 
 model Scenario {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   articleId Int
   situation String
   response  String
-  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  images    String[] @default([])
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Attachment {
@@ -139,6 +144,28 @@ model SidebarLink {
   icon      String   @default("Link2")
   section   String   @default("tools")
   order     Int      @default(0)
+  visible   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ImportantLink {
+  id          Int      @id @default(autoincrement())
+  title       String
+  url         String
+  description String?
+  icon        String   @default("Link2")
+  order       Int      @default(0)
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model HomeWidget {
+  id        Int      @id @default(autoincrement())
+  type      String
+  order     Int      @default(0)
+  size      String   @default("half")
   visible   Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

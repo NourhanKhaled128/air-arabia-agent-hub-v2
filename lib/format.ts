@@ -1,3 +1,9 @@
+export function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export function formatRelativeTime(date: Date) {
   const diffMs = Date.now() - new Date(date).getTime();
   const diffMinutes = Math.floor(diffMs / 60000);

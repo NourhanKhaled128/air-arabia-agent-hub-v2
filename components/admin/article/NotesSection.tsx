@@ -1,11 +1,13 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
+import InlineImagesUploader from "./InlineImagesUploader";
 
 export interface NoteInput {
   id: number;
   type: string;
   content: string;
+  images: string[];
 }
 
 interface Props {
@@ -16,7 +18,7 @@ interface Props {
 export default function NotesSection({ items, onChange }: Props) {
 
   function addNote(){
-    onChange([...items, { id: Date.now(), type: "Information", content: "" }]);
+    onChange([...items, { id: Date.now(), type: "Information", content: "", images: [] }]);
   }
 
   function removeNote(id: number){
@@ -26,6 +28,12 @@ export default function NotesSection({ items, onChange }: Props) {
   function updateNote(id: number, field: keyof NoteInput, value: string) {
     onChange(
       items.map(note => (note.id === id ? { ...note, [field]: value } : note))
+    );
+  }
+
+  function updateNoteImages(id: number, images: string[]) {
+    onChange(
+      items.map(note => (note.id === id ? { ...note, images } : note))
     );
   }
 
@@ -107,6 +115,11 @@ value={note.content}
 onChange={(e) => updateNote(note.id, "content", e.target.value)}
 placeholder="Internal note..."
 className="w-full rounded-xl border p-4"
+/>
+
+<InlineImagesUploader
+  images={note.images}
+  onChange={(images) => updateNoteImages(note.id, images)}
 />
 
 </div>

@@ -1,8 +1,15 @@
 import Link from "next/link";
 import ArticleForm from "@/components/admin/article/ArticleForm";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { getCategories } from "@/lib/category-service";
+import { getDispositionCodes } from "@/lib/disposition-service";
 
-export default function NewArticlePage() {
+export default async function NewArticlePage() {
+  const [categories, dispositionCodes] = await Promise.all([
+    getCategories(),
+    getDispositionCodes(),
+  ]);
+
   return (
     <div className="space-y-8">
 
@@ -19,7 +26,7 @@ export default function NewArticlePage() {
         }
       />
 
-      <ArticleForm />
+      <ArticleForm categories={categories} dispositionCodes={dispositionCodes} />
 
     </div>
   );

@@ -12,11 +12,14 @@ interface Props {
     name: string,
     value: string
   ) => void;
+
+  categories?: { name: string }[];
 }
 
 export default function ArticleInfo({
   data,
   updateField,
+  categories = [],
 }: Props) {
   return (
     <section className="rounded-3xl bg-white p-8 shadow-sm">
@@ -59,15 +62,15 @@ export default function ArticleInfo({
           >
             <option value="">Select Category</option>
 
-            <option>Reservations</option>
-            <option>Refunds</option>
-            <option>Payments</option>
-            <option>Baggage</option>
-            <option>Airport Services</option>
-            <option>Schedules</option>
-            <option>Training</option>
-            <option>AirRewards</option>
-            <option>Policies</option>
+            {data.category && !categories.some((c) => c.name === data.category) && (
+              <option value={data.category}>{data.category}</option>
+            )}
+
+            {categories.map((category) => (
+              <option key={category.name} value={category.name}>
+                {category.name}
+              </option>
+            ))}
 
           </select>
 

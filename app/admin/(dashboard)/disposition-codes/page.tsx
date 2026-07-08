@@ -3,8 +3,10 @@ import { ClipboardList, CheckCircle2, XCircle, Plus } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminBadge from "@/components/admin/AdminBadge";
+import AdminListTable from "@/components/admin/AdminListTable";
 import DispositionRowActions from "@/components/admin/disposition/DispositionRowActions";
 import { getDispositionCodes } from "@/lib/disposition-service";
+import { deleteManyDispositionCodesAction } from "@/app/admin/actions/disposition-actions";
 
 export default async function DispositionCodesPage() {
   const dispositions = await getDispositionCodes();
@@ -36,45 +38,56 @@ export default async function DispositionCodesPage() {
         <AdminStatCard title="Inactive" value={inactive} icon={XCircle} color="text-slate-500" />
       </div>
 
-      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
-        <table className="w-full">
-          <thead className="bg-slate-50">
-            <tr>
-              <th className="px-6 py-4 text-left">Code</th>
-              <th className="px-6 py-4 text-left">Label</th>
-              <th className="px-6 py-4 text-left">Description</th>
-              <th className="px-6 py-4 text-left">Status</th>
-              <th className="px-6 py-4 text-left">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {dispositions.map((disposition) => (
-              <tr key={disposition.id} className="border-t">
-                <td className="px-6 py-5 font-semibold">{disposition.code}</td>
-                <td className="px-6 py-5">{disposition.label}</td>
-                <td className="px-6 py-5 text-slate-500">{disposition.description ?? "-"}</td>
-                <td className="px-6 py-5">
-                  <AdminBadge color={disposition.active ? "green" : "gray"}>
-                    {disposition.active ? "Active" : "Inactive"}
-                  </AdminBadge>
-                </td>
-                <td className="px-6 py-5">
-                  <DispositionRowActions id={disposition.id} />
-                </td>
-              </tr>
-            ))}
-
-            {dispositions.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-6 py-10 text-center text-slate-500">
-                  No disposition codes yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <AdminListTable
+        columns={[
+          { key: "code", label: "Code" },
+          { key: "label", label: "Label" },
+          { key: "description", label: "Description" },
+          { key: "status", label: "Status" },
+        ]}
+        data={dispositions}
+        searchPlaceholder="Search disposition codes..."
+        searchFn={(item, query) => {
+          const q = query.toLowerCase();
+          return (
+            item.code.toLowerCase().includes(q) ||
+            item.label.toLowerCase().includes(q) ||
+            (item.description ?? "").toLowerCase().includes(q)
+          );
+        }}
+        filters={[
+          {
+            key: "active",
+            label: "Status",
+            options: [
+              { value: "active", label: "Active" },
+              { value: "inactive", label: "Inactive" },
+            ],
+          },
+        ]}
+        filterFn={(item, values) => {
+          if (values.active === "active" && !item.active) return false;
+          if (values.active === "inactive" && item.active) return false;
+          return true;
+        }}
+        onDeleteMany={deleteManyDispositionCodesAction}
+        emptyMessage="No disposition codes yet."
+        renderRow={(disposition) => (
+          <>
+            <td className="px-6 py-5 font-semibold">{disposition.code}</td>
+            <td className="px-6 py-5">{disposition.label}</td>
+            <td className="px-6 py-5 text-slate-500">{disposition.description ?? "-"}</td>
+            <td className="px-6 py-5">
+              <AdminBadge color={disposition.active ? "green" : "gray"}>
+                {disposition.active ? "Active" : "Inactive"}
+              </AdminBadge>
+            </td>
+            <td className="px-6 py-5">
+              <DispositionRowActions id={disposition.id} />
+            </td>
+          </>
+        )}
+      />
 
     </div>
   );

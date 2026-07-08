@@ -2,8 +2,10 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminButton from "@/components/admin/AdminButton";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminBadge from "@/components/admin/AdminBadge";
+import AdminListTable from "@/components/admin/AdminListTable";
 import UserRowActions from "@/components/admin/users/UserRowActions";
 import { getUsers } from "@/lib/user-service";
+import { deleteManyUsersAction } from "@/app/admin/actions/user-actions";
 import { UserCheck, Shield, Users as UsersIcon } from "lucide-react";
 
 export default async function UsersPage() {
@@ -11,6 +13,10 @@ export default async function UsersPage() {
 
   const activeCount = users.filter((u) => u.status === "Active").length;
   const adminCount = users.filter((u) => u.role.name === "Administrator").length;
+  const roleOptions = Array.from(new Set(users.map((u) => u.role.name))).map((name) => ({
+    value: name,
+    label: name,
+  }));
 
   return (
     <div className="space-y-8">
@@ -30,47 +36,62 @@ export default async function UsersPage() {
         <AdminStatCard title="Administrators" value={adminCount} icon={Shield} color="text-blue-700" />
       </div>
 
-      <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">
-        <table className="w-full">
-          <thead className="bg-slate-50">
-            <tr className="text-left text-sm">
-              <th className="px-6 py-4">Name</th>
-              <th className="px-6 py-4">Email</th>
-              <th className="px-6 py-4">Role</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="border-t">
-                <td className="px-6 py-5 font-semibold">{user.name}</td>
-                <td className="px-6 py-5 text-slate-600">{user.email}</td>
-                <td className="px-6 py-5">
-                  <AdminBadge color="blue">{user.role.name}</AdminBadge>
-                </td>
-                <td className="px-6 py-5">
-                  <AdminBadge color={user.status === "Active" ? "green" : "gray"}>
-                    {user.status}
-                  </AdminBadge>
-                </td>
-                <td className="px-6 py-5">
-                  <UserRowActions id={user.id} />
-                </td>
-              </tr>
-            ))}
-
-            {users.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-6 py-10 text-center text-slate-500">
-                  No users yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <AdminListTable
+        columns={[
+          { key: "name", label: "Name" },
+          { key: "email", label: "Email" },
+          { key: "role", label: "Role" },
+          { key: "status", label: "Status" },
+        ]}
+        data={users}
+        searchPlaceholder="Search users..."
+        searchFn={(user, query) => {
+          const q = query.toLowerCase();
+          return (
+            user.name.toLowerCase().includes(q) ||
+            user.email.toLowerCase().includes(q)
+          );
+        }}
+        filters={[
+          {
+            key: "status",
+            label: "Status",
+            options: [
+              { value: "Active", label: "Active" },
+              { value: "Inactive", label: "Inactive" },
+            ],
+          },
+          {
+            key: "role",
+            label: "Role",
+            options: roleOptions,
+          },
+        ]}
+        filterFn={(user, values) => {
+          if (values.status && user.status !== values.status) return false;
+          if (values.role && user.role.name !== values.role) return false;
+          return true;
+        }}
+        onDeleteMany={deleteManyUsersAction}
+        emptyMessage="No users yet."
+        renderRow={(user) => (
+          <>
+            <td className="px-6 py-5 font-semibold">{user.name}</td>
+            <td className="px-6 py-5 text-slate-600">{user.email}</td>
+            <td className="px-6 py-5">
+              <AdminBadge color="blue">{user.role.name}</AdminBadge>
+            </td>
+            <td className="px-6 py-5">
+              <AdminBadge color={user.status === "Active" ? "green" : "gray"}>
+                {user.status}
+              </AdminBadge>
+            </td>
+            <td className="px-6 py-5">
+              <UserRowActions id={user.id} />
+            </td>
+          </>
+        )}
+      />
     </div>
   );
 }

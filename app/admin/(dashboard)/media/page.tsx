@@ -1,149 +1,80 @@
-import {
-  ImageIcon,
-  FileText,
-  Upload,
-  Search,
-  Trash2,
-  Download,
-} from "lucide-react";
+import { ImageIcon, FileText } from "lucide-react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminListTable from "@/components/admin/AdminListTable";
+import MediaUploadForm from "@/components/admin/media/MediaUploadForm";
+import MediaRowActions from "@/components/admin/media/MediaRowActions";
+import { getMediaFiles } from "@/lib/media-service";
+import { deleteManyMediaFilesAction } from "@/app/admin/actions/media-actions";
+import { formatFileSize, formatRelativeTime } from "@/lib/format";
 
-const files = [
-  {
-    id: 1,
-    name: "refund-policy.png",
-    type: "Image",
-    size: "1.4 MB",
-    uploaded: "06 Jul 2026",
-  },
-  {
-    id: 2,
-    name: "baggage.pdf",
-    type: "PDF",
-    size: "2.8 MB",
-    uploaded: "05 Jul 2026",
-  },
-  {
-    id: 3,
-    name: "reservation-flow.png",
-    type: "Image",
-    size: "800 KB",
-    uploaded: "04 Jul 2026",
-  },
-];
+export default async function MediaLibraryPage() {
+  const files = await getMediaFiles();
 
-export default function MediaLibraryPage() {
   return (
     <div className="space-y-8">
 
-      <div className="flex items-center justify-between">
+      <AdminPageHeader
+        title="Media Library"
+        description="Upload and manage images and documents."
+      />
 
-        <div>
+      <MediaUploadForm />
 
-          <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
-            Administration
-          </p>
+      <AdminListTable
+        columns={[
+          { key: "name", label: "File" },
+          { key: "type", label: "Type" },
+          { key: "size", label: "Size" },
+          { key: "uploaded", label: "Uploaded" },
+        ]}
+        data={files}
+        searchPlaceholder="Search media..."
+        searchFn={(file, query) => file.name.toLowerCase().includes(query.toLowerCase())}
+        filters={[
+          {
+            key: "type",
+            label: "Type",
+            options: [
+              { value: "image", label: "Images" },
+              { value: "other", label: "Other Files" },
+            ],
+          },
+        ]}
+        filterFn={(file, values) => {
+          const isImage = file.mimeType.startsWith("image/");
+          if (values.type === "image" && !isImage) return false;
+          if (values.type === "other" && isImage) return false;
+          return true;
+        }}
+        onDeleteMany={deleteManyMediaFilesAction}
+        emptyMessage="No files uploaded yet."
+        renderRow={(file) => {
+          const isImage = file.mimeType.startsWith("image/");
 
-          <h1 className="mt-2 text-4xl font-bold">
-            Media Library
-          </h1>
-
-          <p className="mt-3 text-slate-500">
-            Upload and manage images and documents.
-          </p>
-
-        </div>
-
-        <button className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white">
-          <Upload size={18} />
-          Upload Files
-        </button>
-
-      </div>
-
-      <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-        <div className="mb-6 flex items-center gap-3 rounded-xl border px-4 py-3">
-
-          <Search size={18} />
-
-          <input
-            placeholder="Search media..."
-            className="w-full outline-none"
-          />
-
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-
-          <thead className="bg-slate-50">
-
-            <tr>
-
-              <th className="px-6 py-4 text-left">File</th>
-
-              <th className="px-6 py-4 text-left">Type</th>
-
-              <th className="px-6 py-4 text-left">Size</th>
-
-              <th className="px-6 py-4 text-left">Uploaded</th>
-
-              <th className="px-6 py-4 text-left">Actions</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {files.map((file) => (
-
-              <tr key={file.id} className="border-t">
-
-                <td className="px-6 py-5 flex items-center gap-3">
-
-                  {file.type === "Image" ? (
-                    <ImageIcon className="text-red-700" />
+          return (
+            <>
+              <td className="px-6 py-5">
+                <span className="flex items-center gap-3">
+                  {isImage ? (
+                    <ImageIcon className="text-red-700" size={20} />
                   ) : (
-                    <FileText className="text-blue-700" />
+                    <FileText className="text-blue-700" size={20} />
                   )}
-
                   {file.name}
+                </span>
+              </td>
 
-                </td>
+              <td className="px-6 py-5">{isImage ? "Image" : file.mimeType}</td>
+              <td className="px-6 py-5">{formatFileSize(file.size)}</td>
+              <td className="px-6 py-5">{formatRelativeTime(file.uploadedAt)}</td>
 
-                <td className="px-6 py-5">{file.type}</td>
-
-                <td className="px-6 py-5">{file.size}</td>
-
-                <td className="px-6 py-5">{file.uploaded}</td>
-
-                <td className="px-6 py-5">
-
-                  <div className="flex gap-2">
-
-                    <button className="rounded-lg border p-2">
-                      <Download size={18} />
-                    </button>
-
-                    <button className="rounded-lg border p-2">
-                      <Trash2 size={18} />
-                    </button>
-
-                  </div>
-
-                </td>
-
-              </tr>
-
-            ))}
-
-          </tbody>
-
-        </table>
-        </div>
-
-      </div>
+              <td className="px-6 py-5">
+                <MediaRowActions id={file.id} url={file.url} />
+              </td>
+            </>
+          );
+        }}
+      />
 
     </div>
   );

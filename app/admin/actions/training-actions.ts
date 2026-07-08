@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import {
   createTrainingCourse,
   updateTrainingCourse,
@@ -60,6 +61,15 @@ export async function deleteTrainingCourseAction(id: number) {
   await deleteTrainingCourse(id);
 
   await logAction("Deleted", "Training Course", id, await currentUserName());
+
+  revalidatePath("/admin/training");
+  revalidatePath("/", "layout");
+}
+
+export async function deleteManyTrainingCoursesAction(ids: number[]) {
+  await prisma.trainingCourse.deleteMany({ where: { id: { in: ids } } });
+
+  await logAction("Deleted", "Training Course", null, await currentUserName());
 
   revalidatePath("/admin/training");
   revalidatePath("/", "layout");
