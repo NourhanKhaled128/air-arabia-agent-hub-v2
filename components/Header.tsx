@@ -42,7 +42,15 @@ export default function Header({ articles }: Props) {
 
       article.keywords.some(k => k.value.toLowerCase().includes(q)) ||
 
-      article.scenarios.some(s => s.situation.toLowerCase().includes(q))
+      article.scenarios.some(s => s.situation.toLowerCase().includes(q)) ||
+
+      article.procedures.some(p => p.content.toLowerCase().includes(q)) ||
+
+      article.dispositions.some(d => d.content.toLowerCase().includes(q)) ||
+
+      article.escalations.some(e => e.content.toLowerCase().includes(q)) ||
+
+      article.notes.some(n => n.content.toLowerCase().includes(q))
 
     );
 
@@ -100,6 +108,8 @@ export default function Header({ articles }: Props) {
             <SearchDropdown
 
               results={results}
+
+              query={query}
 
               onClose={()=>setQuery("")}
 

@@ -71,6 +71,10 @@ export async function getArticlesForSearch() {
       overview: true,
       keywords: { select: { value: true } },
       scenarios: { select: { situation: true } },
+      procedures: { select: { content: true } },
+      dispositions: { select: { content: true } },
+      escalations: { select: { content: true } },
+      notes: { select: { content: true } },
     },
     orderBy: {
       updatedAt: "desc",

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { findMatchSnippet } from "@/lib/search-utils";
 
 export interface SearchableArticle {
   id: number;
@@ -11,15 +12,59 @@ export interface SearchableArticle {
   overview: string;
   keywords: { value: string }[];
   scenarios: { situation: string }[];
+  procedures: { content: string }[];
+  dispositions: { content: string }[];
+  escalations: { content: string }[];
+  notes: { content: string }[];
 }
 
 interface Props {
   results: SearchableArticle[];
+  query: string;
   onClose: () => void;
+}
+
+function ArticleSnippet({ article, query }: { article: SearchableArticle; query: string }) {
+  const q = query.trim().toLowerCase();
+  const titleMatches = q !== "" && article.title.toLowerCase().includes(q);
+
+  const match = titleMatches
+    ? null
+    : findMatchSnippet(
+        [
+          { source: "description", text: article.description },
+          { source: "overview", text: article.overview },
+          ...article.keywords.map((k) => ({ source: "keyword", text: k.value })),
+          ...article.scenarios.map((s) => ({ source: "scenario", text: s.situation })),
+          ...article.procedures.map((p) => ({ source: "procedure", text: p.content })),
+          ...article.dispositions.map((d) => ({ source: "disposition", text: d.content })),
+          ...article.escalations.map((e) => ({ source: "escalation", text: e.content })),
+          ...article.notes.map((n) => ({ source: "note", text: n.content })),
+        ],
+        query
+      );
+
+  const text = match ? match.snippet : article.description;
+  if (!match) {
+    return <p className="mt-2 text-sm text-gray-600">{text}</p>;
+  }
+
+  const before = text.slice(0, match.matchStart);
+  const highlighted = text.slice(match.matchStart, match.matchStart + match.matchLen);
+  const after = text.slice(match.matchStart + match.matchLen);
+
+  return (
+    <p className="mt-2 text-sm text-gray-600">
+      {before}
+      <mark className="rounded bg-yellow-200 px-0.5 text-gray-900">{highlighted}</mark>
+      {after}
+    </p>
+  );
 }
 
 export default function SearchDropdown({
   results,
+  query,
   onClose,
 }: Props) {
   if (results.length === 0) {
@@ -60,11 +105,7 @@ export default function SearchDropdown({
 
           </div>
 
-          <p className="mt-2 text-sm text-gray-600">
-
-            {article.description}
-
-          </p>
+          <ArticleSnippet article={article} query={query} />
 
         </Link>
 

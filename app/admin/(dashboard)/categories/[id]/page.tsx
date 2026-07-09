@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import CategoryForm from "@/components/admin/categories/CategoryForm";
 import CategoryFoldersManager from "@/components/admin/categories/CategoryFoldersManager";
+import CategoryArticlesManager from "@/components/admin/categories/CategoryArticlesManager";
 import { getCategoryById, getCategoryFolders, getFolderArticleCounts } from "@/lib/category-service";
+import { getArticlesByCategoryId } from "@/lib/article-service";
 import { updateCategoryAction } from "@/app/admin/actions/category-actions";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 
@@ -17,10 +19,11 @@ export default async function EditCategoryPage({ params }: Props) {
     notFound();
   }
 
-  const [category, folders, articleCounts] = await Promise.all([
+  const [category, folders, articleCounts, articles] = await Promise.all([
     getCategoryById(categoryId),
     getCategoryFolders(categoryId),
     getFolderArticleCounts(categoryId),
+    getArticlesByCategoryId(categoryId),
   ]);
 
   if (!category) {
@@ -46,6 +49,12 @@ export default async function EditCategoryPage({ params }: Props) {
         categoryId={categoryId}
         folders={folders}
         articleCounts={articleCounts}
+      />
+
+      <CategoryArticlesManager
+        categoryId={categoryId}
+        articles={articles}
+        folders={folders}
       />
 
     </div>

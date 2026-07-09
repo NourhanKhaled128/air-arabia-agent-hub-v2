@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
 interface Airport {
+  id: number;
   code: string;
   city: string;
   airport: string;
@@ -85,7 +86,7 @@ export default function AirportCodeFinder({ airports }: Props) {
 
           <tbody>
             {results.map((airport) => (
-              <tr key={airport.code} className="border-t border-gray-100">
+              <tr key={airport.id} className="border-t border-gray-100">
                 <td className="px-6 py-4">
                   <span className="rounded-full bg-red-100 px-3 py-1 text-sm font-bold text-red-700">
                     {airport.code}

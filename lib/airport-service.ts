@@ -1,18 +1,48 @@
 import ExcelJS from "exceljs";
 import { prisma } from "@/lib/prisma";
 
-export async function getAirports() {
-  return prisma.airport.findMany({
-    orderBy: { code: "asc" },
-  });
-}
-
 export interface AirportRow {
   code: string;
   city: string;
   airport: string;
   country: string;
   terminal?: string;
+}
+
+interface AirportDedupeFields {
+  code: string;
+  city: string;
+  airport: string;
+  country: string;
+  terminal?: string | null;
+}
+
+function airportDedupeKey(row: AirportDedupeFields) {
+  return [row.code, row.city, row.airport, row.country, row.terminal ?? ""]
+    .map((value) => value.trim().toLowerCase())
+    .join("|");
+}
+
+function dedupeAirportRows<T extends AirportDedupeFields>(rows: T[]): T[] {
+  const seen = new Set<string>();
+  const result: T[] = [];
+
+  for (const row of rows) {
+    const key = airportDedupeKey(row);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(row);
+  }
+
+  return result;
+}
+
+export async function getAirports() {
+  const airports = await prisma.airport.findMany({
+    orderBy: { code: "asc" },
+  });
+
+  return dedupeAirportRows(airports);
 }
 
 export async function replaceAirportsFromRows(rows: AirportRow[]) {
@@ -91,5 +121,5 @@ export async function parseAirportsWorkbook(buffer: ArrayBuffer): Promise<Airpor
     rows.push({ code, city, airport, country, terminal: terminal || undefined });
   });
 
-  return rows;
+  return dedupeAirportRows(rows);
 }

@@ -107,6 +107,17 @@ export async function toggleCategoryFolderVisibleAction(id: number, categoryId: 
   revalidatePath("/", "layout");
 }
 
+export async function reorderCategoryFoldersAction(categoryId: number, orderedIds: number[]) {
+  await Promise.all(
+    orderedIds.map((id, index) => updateCategoryFolder(id, { order: index }))
+  );
+
+  await logAction("Reordered", "Category Folder", categoryId, await currentUserName());
+
+  revalidatePath(`/admin/categories/${categoryId}`);
+  revalidatePath("/", "layout");
+}
+
 export async function deleteCategoryFolderAction(id: number, categoryId: number) {
   await deleteCategoryFolder(id);
 

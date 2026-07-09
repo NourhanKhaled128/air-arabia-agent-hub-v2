@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Eye, EyeOff, FolderPlus, Pencil, Trash2, X, Check } from "lucide-react";
+import { Eye, EyeOff, FolderPlus, GripVertical, Pencil, Trash2, X, Check } from "lucide-react";
 import {
   createCategoryFolderAction,
   deleteCategoryFolderAction,
   renameCategoryFolderAction,
+  reorderCategoryFoldersAction,
   toggleCategoryFolderVisibleAction,
 } from "@/app/admin/actions/category-actions";
+import SortableItemList from "@/components/admin/SortableItemList";
 
 interface Folder {
   id: number;
@@ -26,6 +28,18 @@ export default function CategoryFoldersManager({ categoryId, folders, articleCou
   const [newName, setNewName] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState("");
+  const [order, setOrder] = useState(folders);
+  const [prevFolders, setPrevFolders] = useState(folders);
+  if (folders !== prevFolders) {
+    setPrevFolders(folders);
+    setOrder(folders);
+  }
+
+  function handleReorder(orderedIds: number[]) {
+    const byId = new Map(order.map((f) => [f.id, f]));
+    setOrder(orderedIds.map((id) => byId.get(id)!).filter(Boolean));
+    run(() => reorderCategoryFoldersAction(categoryId, orderedIds));
+  }
 
   function run(action: () => Promise<void>) {
     startTransition(async () => {
@@ -90,17 +104,26 @@ export default function CategoryFoldersManager({ categoryId, folders, articleCou
         </button>
       </div>
 
-      {folders.length === 0 ? (
+      {order.length === 0 ? (
         <p className="text-slate-500">
           No folders yet. Add one above to start organizing articles inside this category.
         </p>
       ) : (
-        <div className="space-y-3">
-          {folders.map((folder) => (
-            <div
-              key={folder.id}
-              className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 p-4"
-            >
+        <SortableItemList
+          items={order}
+          onReorder={handleReorder}
+          renderItem={(folder, drag) => (
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+              <button
+                type="button"
+                {...drag.attributes}
+                {...drag.listeners}
+                className="cursor-grab touch-none rounded-lg p-2 text-slate-400 hover:bg-slate-100 active:cursor-grabbing"
+                title="Drag to reorder"
+              >
+                <GripVertical size={16} />
+              </button>
+
               {editingId === folder.id ? (
                 <input
                   autoFocus
@@ -177,8 +200,8 @@ export default function CategoryFoldersManager({ categoryId, folders, articleCou
                 )}
               </div>
             </div>
-          ))}
-        </div>
+          )}
+        />
       )}
 
     </div>

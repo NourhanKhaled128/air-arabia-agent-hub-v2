@@ -60,6 +60,40 @@ export async function archiveArticleAction(id: number) {
   revalidatePath("/admin/articles");
 }
 
+export async function moveArticleToFolderAction(
+  articleId: number,
+  folderId: number | null,
+  categoryId: number
+) {
+  await prisma.article.update({
+    where: { id: articleId },
+    data: { folderId },
+  });
+
+  await logAction("Moved", "Article", articleId, await currentUserName());
+
+  revalidatePath(`/admin/categories/${categoryId}`);
+  revalidatePath("/admin/articles");
+  revalidatePath("/", "layout");
+}
+
+export async function moveManyArticlesToFolderAction(
+  articleIds: number[],
+  folderId: number | null,
+  categoryId: number
+) {
+  await prisma.article.updateMany({
+    where: { id: { in: articleIds } },
+    data: { folderId },
+  });
+
+  await logAction("Moved", "Article", null, await currentUserName());
+
+  revalidatePath(`/admin/categories/${categoryId}`);
+  revalidatePath("/admin/articles");
+  revalidatePath("/", "layout");
+}
+
 export async function duplicateArticleAction(id: number) {
   const article = await prisma.article.findUnique({
     where: {
