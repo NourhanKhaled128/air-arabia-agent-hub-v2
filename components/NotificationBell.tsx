@@ -17,7 +17,7 @@ export default function NotificationBell() {
 
       <button
         onClick={() => setOpen(!open)}
-        className="relative rounded-xl border p-3 hover:bg-red-50 transition"
+        className="relative rounded-xl border border-gray-200 dark:border-border-subtle p-3 text-gray-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
       >
 
         <Bell className="h-6 w-6" />

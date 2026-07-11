@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { getSentNotifications } from "@/lib/notification-service";
+import { getUnifiedNotifications } from "@/lib/notification-service";
 
 export async function GET() {
-  const notifications = await getSentNotifications();
+  const notifications = await getUnifiedNotifications();
   return NextResponse.json(notifications);
 }

@@ -9,6 +9,8 @@ import QuickActions from "@/components/QuickActions";
 
 import Announcements from "@/components/Announcements";
 
+import DisruptionsWidget from "@/components/DisruptionsWidget";
+
 import TimeConverter from "@/components/TimeConverter";
 
 import BrowseAtoZ from "@/components/BrowseAtoZ";
@@ -28,6 +30,7 @@ import { getVisibleHomeWidgets } from "@/lib/home-widget-service";
 const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   quickActions: QuickActions,
   announcements: Announcements,
+  disruptions: DisruptionsWidget,
   timeConverter: TimeConverter,
   favoriteArticles: BrowseAtoZ,
   trendingArticles: TrendingArticles,

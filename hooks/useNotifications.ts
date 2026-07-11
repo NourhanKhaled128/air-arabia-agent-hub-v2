@@ -4,18 +4,23 @@ import { useEffect, useState } from "react";
 
 const READ_IDS_KEY = "notifications:read-ids";
 
+export type NotificationType = "notification" | "announcement" | "disruption";
+
 interface ApiNotification {
-  id: number;
+  id: string;
+  type: NotificationType;
   title: string;
   message: string;
-  audience: string | null;
+  href: string | null;
   createdAt: string;
 }
 
 export interface Notification {
-  id: number;
+  id: string;
+  type: NotificationType;
   title: string;
   message: string;
+  href: string | null;
   time: string;
   unread: boolean;
 }
@@ -35,7 +40,7 @@ function formatRelativeTime(iso: string) {
   return `${days} days ago`;
 }
 
-function loadReadIds(): number[] {
+function loadReadIds(): string[] {
   try {
     return JSON.parse(localStorage.getItem(READ_IDS_KEY) ?? "[]");
   } catch {
@@ -59,8 +64,10 @@ export default function useNotifications() {
         setNotifications(
           data.map((n) => ({
             id: n.id,
+            type: n.type,
             title: n.title,
             message: n.message,
+            href: n.href,
             time: formatRelativeTime(n.createdAt),
             unread: !readIds.has(n.id),
           }))
