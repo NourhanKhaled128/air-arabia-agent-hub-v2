@@ -1,9 +1,15 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import { Search, Trash2 } from "lucide-react";
+import { Search, Trash2, type LucideIcon } from "lucide-react";
 import AdminBulkActionsBar from "./AdminBulkActionsBar";
 import AdminPagination from "./AdminPagination";
+
+export interface ExtraBulkAction {
+  label: string;
+  icon: LucideIcon;
+  onAction: (ids: number[]) => Promise<void>;
+}
 
 const PAGE_SIZE = 20;
 
@@ -27,6 +33,7 @@ interface Props<T extends { id: number }> {
   filterFn?: (row: T, filterValues: Record<string, string>) => boolean;
   renderRow: (row: T) => ReactNode;
   onDeleteMany: (ids: number[]) => Promise<void>;
+  extraBulkActions?: ExtraBulkAction[];
   emptyMessage?: string;
 }
 
@@ -39,6 +46,7 @@ export default function AdminListTable<T extends { id: number }>({
   filterFn,
   renderRow,
   onDeleteMany,
+  extraBulkActions,
   emptyMessage = "No records found.",
 }: Props<T>) {
   const [query, setQuery] = useState("");
@@ -102,6 +110,21 @@ export default function AdminListTable<T extends { id: number }>({
     } catch (error) {
       console.error(error);
       alert("Bulk delete failed.");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function handleExtraAction(action: ExtraBulkAction) {
+    if (selected.size === 0) return;
+
+    setDeleting(true);
+    try {
+      await action.onAction(Array.from(selected));
+      setSelected(new Set());
+    } catch (error) {
+      console.error(error);
+      alert("Bulk action failed.");
     } finally {
       setDeleting(false);
     }
@@ -171,6 +194,11 @@ export default function AdminListTable<T extends { id: number }>({
         onClear={() => setSelected(new Set())}
         onDelete={handleDeleteSelected}
         deleting={deleting}
+        extraActions={extraBulkActions?.map((action) => ({
+          label: action.label,
+          icon: action.icon,
+          onClick: () => handleExtraAction(action),
+        }))}
       />
 
       <div className="overflow-x-auto rounded-3xl bg-white shadow-sm">

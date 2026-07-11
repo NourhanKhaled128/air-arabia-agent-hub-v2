@@ -1,12 +1,20 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
 import { Trash2, X } from "lucide-react";
+
+export interface BulkAction {
+  label: string;
+  icon: LucideIcon;
+  onClick: () => void;
+}
 
 interface Props {
   count: number;
   onClear: () => void;
   onDelete: () => void;
   deleting?: boolean;
+  extraActions?: BulkAction[];
 }
 
 export default function AdminBulkActionsBar({
@@ -14,6 +22,7 @@ export default function AdminBulkActionsBar({
   onClear,
   onDelete,
   deleting,
+  extraActions,
 }: Props) {
   if (count === 0) return null;
 
@@ -32,6 +41,19 @@ export default function AdminBulkActionsBar({
           <X size={16} />
           Clear
         </button>
+
+        {extraActions?.map((action) => (
+          <button
+            key={action.label}
+            type="button"
+            disabled={deleting}
+            onClick={action.onClick}
+            className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+          >
+            <action.icon size={16} />
+            {action.label}
+          </button>
+        ))}
 
         <button
           type="button"

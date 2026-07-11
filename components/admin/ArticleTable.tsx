@@ -15,6 +15,8 @@ import {
   deleteManyArticlesAction,
   publishArticleAction,
   archiveArticleAction,
+  publishManyArticlesAction,
+  archiveManyArticlesAction,
   duplicateArticleAction,
 } from "@/app/admin/actions/article-actions";
 import AdminListTable from "@/components/admin/AdminListTable";
@@ -96,6 +98,10 @@ export default function ArticleTable({ articles }: Props) {
         return true;
       }}
       onDeleteMany={deleteManyArticlesAction}
+      extraBulkActions={[
+        { label: "Publish Selected", icon: Globe, onAction: publishManyArticlesAction },
+        { label: "Archive Selected", icon: Archive, onAction: archiveManyArticlesAction },
+      ]}
       emptyMessage="No articles yet."
       renderRow={(article) => (
         <>

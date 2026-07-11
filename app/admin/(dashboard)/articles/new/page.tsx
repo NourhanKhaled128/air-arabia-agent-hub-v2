@@ -3,11 +3,13 @@ import ArticleForm from "@/components/admin/article/ArticleForm";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getCategoriesWithFolders } from "@/lib/category-service";
 import { getDispositionCodes } from "@/lib/disposition-service";
+import { getCurrentAdminUser } from "@/lib/admin-dal";
 
 export default async function NewArticlePage() {
-  const [categories, dispositionCodes] = await Promise.all([
+  const [categories, dispositionCodes, currentUser] = await Promise.all([
     getCategoriesWithFolders(),
     getDispositionCodes(),
+    getCurrentAdminUser(),
   ]);
 
   return (
@@ -26,7 +28,11 @@ export default async function NewArticlePage() {
         }
       />
 
-      <ArticleForm categories={categories} dispositionCodes={dispositionCodes} />
+      <ArticleForm
+        categories={categories}
+        dispositionCodes={dispositionCodes}
+        defaultAuthor={currentUser?.name ?? ""}
+      />
 
     </div>
   );

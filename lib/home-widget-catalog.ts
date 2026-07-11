@@ -2,7 +2,7 @@ export const HOME_WIDGET_CATALOG: Record<string, string> = {
   quickActions: "Quick Actions",
   announcements: "Announcements",
   timeConverter: "Time Converter",
-  favoriteArticles: "Favorite Articles",
+  favoriteArticles: "Browse A–Z",
   trendingArticles: "Trending Articles",
   recentArticles: "Recent Articles",
   recentActivity: "Recent Activity",

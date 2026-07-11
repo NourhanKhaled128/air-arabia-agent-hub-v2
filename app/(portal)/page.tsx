@@ -11,7 +11,7 @@ import Announcements from "@/components/Announcements";
 
 import TimeConverter from "@/components/TimeConverter";
 
-import FavoriteArticles from "@/components/FavoriteArticles";
+import BrowseAtoZ from "@/components/BrowseAtoZ";
 
 import TrendingArticles from "@/components/TrendingArticles";
 
@@ -29,7 +29,7 @@ const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   quickActions: QuickActions,
   announcements: Announcements,
   timeConverter: TimeConverter,
-  favoriteArticles: FavoriteArticles,
+  favoriteArticles: BrowseAtoZ,
   trendingArticles: TrendingArticles,
   recentArticles: RecentArticles,
   recentActivity: RecentActivity,

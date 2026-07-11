@@ -8,6 +8,7 @@ import CopyButton from "@/components/CopyButton";
 import PrintButton from "@/components/PrintButton";
 import ArticleFeedback from "@/components/ArticleFeedback";
 import ArticleComments from "@/components/ArticleComments";
+import ArticleViewTracker from "@/components/ArticleViewTracker";
 import { prisma } from "@/lib/prisma";
 import { getArticleById, getArticlesByCategoryId } from "@/lib/article-service";
 import { getCategoryById } from "@/lib/category-service";
@@ -59,11 +60,6 @@ export default async function ArticlePage({ params }: Props) {
     notFound();
   }
 
-  await prisma.article.update({
-    where: { id: summary.id },
-    data: { viewCount: { increment: 1 } },
-  });
-
   const article = await getArticleById(summary.id);
 
   if (!article) {
@@ -85,6 +81,8 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <>
+      <ArticleViewTracker articleId={article.id} />
+
       <div className="mx-auto max-w-5xl space-y-8">
 
         <Breadcrumb category={categoryName} title={article.title} />
@@ -255,7 +253,7 @@ export default async function ArticlePage({ params }: Props) {
           <section>
             <h2 className="mb-4 text-3xl font-bold">Photos</h2>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-              {article.images.map((img) => (
+              {article.images.map((img, index) => (
                 <div
                   key={img.id}
                   className="h-40 overflow-hidden rounded-2xl border border-gray-200 dark:border-border-subtle shadow-sm"
@@ -263,7 +261,7 @@ export default async function ArticlePage({ params }: Props) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={img.image}
-                    alt={article.title}
+                    alt={`${article.title} - photo ${index + 1}`}
                     className="h-full w-full object-cover"
                   />
                 </div>

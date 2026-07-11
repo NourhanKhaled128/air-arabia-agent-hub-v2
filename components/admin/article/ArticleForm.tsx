@@ -40,6 +40,7 @@ interface ArticleFormData {
 interface Props {
   categories?: { id: number; name: string; folders?: { id: number; name: string }[] }[];
   dispositionCodes?: { code: string; label: string }[];
+  defaultAuthor?: string;
 }
 
 const emptyFormData: ArticleFormData = {
@@ -48,7 +49,7 @@ const emptyFormData: ArticleFormData = {
   folderId: null,
   description: "",
   overview: "",
-  author: "Nourhan Khaled",
+  author: "",
   status: "Draft",
   coverImage: "",
   procedures: [],
@@ -63,10 +64,13 @@ const emptyFormData: ArticleFormData = {
   updates: [],
 };
 
-export default function ArticleForm({ categories = [], dispositionCodes = [] }: Props) {
+export default function ArticleForm({ categories = [], dispositionCodes = [], defaultAuthor = "" }: Props) {
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState<ArticleFormData>(emptyFormData);
+  const [formData, setFormData] = useState<ArticleFormData>({
+    ...emptyFormData,
+    author: defaultAuthor,
+  });
 
   function updateField(name: string, value: string | number | null) {
     setFormData((prev) => ({

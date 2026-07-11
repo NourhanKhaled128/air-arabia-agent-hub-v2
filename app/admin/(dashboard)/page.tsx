@@ -27,7 +27,7 @@ const modules = [
   },
   {
     title: "Training",
-    description: "Manage courses, lessons and quizzes.",
+    description: "Manage training courses and lessons.",
     href: "/admin/training",
     color: "bg-emerald-700",
   },

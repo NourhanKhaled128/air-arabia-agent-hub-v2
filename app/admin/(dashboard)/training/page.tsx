@@ -23,7 +23,7 @@ export default async function TrainingPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Training Center"
-        description="Manage training courses, lessons and quizzes."
+        description="Manage training courses and lessons."
         actions={
           <Link
             href="/admin/training/new"

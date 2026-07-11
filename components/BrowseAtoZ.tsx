@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { getAllArticles } from "@/lib/article-service";
 
-export default async function FavoriteArticles() {
+export default async function BrowseAtoZ() {
 
   const articles = await getAllArticles();
-  const favorites = [...articles]
+  const alphabetical = [...articles]
     .sort((a, b) => a.title.localeCompare(b.title))
     .slice(0, 4);
 
   return (
 
-    <section className="h-[390px] rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+    <section className="h-[390px] rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-6 shadow-sm">
 
       <div className="mb-6 flex items-center justify-between">
 
@@ -31,12 +31,12 @@ export default async function FavoriteArticles() {
 
       <div className="space-y-4 overflow-y-auto h-[280px]">
 
-        {favorites.map(article => (
+        {alphabetical.map(article => (
 
           <Link
             key={article.id}
             href={`/Knowledge/${article.slug}`}
-            className="block rounded-2xl border border-gray-100 p-4 transition hover:bg-red-50"
+            className="block rounded-2xl border border-gray-100 dark:border-border-subtle p-4 transition hover:bg-red-50 dark:hover:bg-red-950/40"
           >
 
             <h3 className="font-semibold">
@@ -45,7 +45,7 @@ export default async function FavoriteArticles() {
 
             </h3>
 
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
 
               {article.category}
 

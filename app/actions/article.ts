@@ -18,6 +18,13 @@ function slugify(text: string) {
     .replace(/\s+/g, "-");
 }
 
+export async function incrementArticleViewAction(articleId: number) {
+  await prisma.article.update({
+    where: { id: articleId },
+    data: { viewCount: { increment: 1 } },
+  });
+}
+
 export async function createArticle(data: CreateArticleData) {
   if (!data.title.trim()) {
     throw new Error("Title is required");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, Search } from "lucide-react";
 import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
@@ -30,12 +30,32 @@ export default function Header({ articles }: Props) {
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setDebouncedQuery(query), 200);
+    return () => clearTimeout(timeout);
+  }, [query]);
+
+  useEffect(() => {
+    function handleGlobalKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
 
   const results = useMemo(() => {
 
-    if (!query.trim()) return [];
+    if (!debouncedQuery.trim()) return [];
 
-    const q = query.toLowerCase();
+    const q = debouncedQuery.toLowerCase();
 
     return articles.filter(article =>
 
@@ -61,7 +81,7 @@ export default function Header({ articles }: Props) {
 
     );
 
-  }, [query, articles]);
+  }, [debouncedQuery, articles]);
 
   return (
 
@@ -104,6 +124,7 @@ export default function Header({ articles }: Props) {
           />
 
           <input
+            ref={inputRef}
             value={query}
             onChange={(e)=>setQuery(e.target.value)}
             onKeyDown={(e) => {
@@ -116,8 +137,14 @@ export default function Header({ articles }: Props) {
               }
             }}
             placeholder="Search procedures..."
-            className="w-full rounded-xl border border-gray-300 dark:border-border-subtle py-3 pl-12 pr-4 outline-none focus:border-brand"
+            className="w-full rounded-xl border border-gray-300 dark:border-border-subtle py-3 pl-12 pr-16 outline-none focus:border-brand"
           />
+
+          {!query && (
+            <kbd className="pointer-events-none absolute right-4 top-3.5 hidden rounded-md border border-gray-300 dark:border-border-subtle px-1.5 py-0.5 text-xs text-gray-400 dark:text-slate-500 sm:block">
+              ⌘K
+            </kbd>
+          )}
 
           {query && (
 

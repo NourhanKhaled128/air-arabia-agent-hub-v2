@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getDashboardStats } from "@/lib/dashboard-service";
 
 export default async function Hero() {
@@ -7,10 +8,13 @@ export default async function Hero() {
   return (
     <section className="relative overflow-hidden rounded-3xl">
 
-      <img
+      <Image
         src="/images/plane.jpg"
         alt="Air Arabia"
-        className="absolute inset-0 h-full w-full object-cover"
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
       />
 
       <div className="absolute inset-0 bg-gradient-to-r from-red-900/95 via-red-800/80 to-red-700/40"></div>
@@ -69,7 +73,7 @@ export default async function Hero() {
 
             <h2 className="mb-6 text-2xl font-bold text-white">
 
-              Today's Summary
+              Today&apos;s Summary
 
             </h2>
 

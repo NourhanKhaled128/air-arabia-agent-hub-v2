@@ -60,6 +60,28 @@ export async function archiveArticleAction(id: number) {
   revalidatePath("/admin/articles");
 }
 
+export async function publishManyArticlesAction(ids: number[]) {
+  await prisma.article.updateMany({
+    where: { id: { in: ids } },
+    data: { status: "Published" },
+  });
+
+  await logAction("Published", "Article", null, await currentUserName());
+
+  revalidatePath("/admin/articles");
+}
+
+export async function archiveManyArticlesAction(ids: number[]) {
+  await prisma.article.updateMany({
+    where: { id: { in: ids } },
+    data: { status: "Archived" },
+  });
+
+  await logAction("Archived", "Article", null, await currentUserName());
+
+  revalidatePath("/admin/articles");
+}
+
 export async function moveArticleToFolderAction(
   articleId: number,
   folderId: number | null,

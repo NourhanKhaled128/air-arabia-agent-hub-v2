@@ -44,9 +44,9 @@ export default function DispositionCodeFinder({ dispositions }: Props) {
         />
       </div>
 
-      <div className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+      <div className="max-h-[70vh] overflow-y-auto rounded-3xl border border-gray-200 bg-white shadow-sm">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="sticky top-0 bg-gray-50">
             <tr className="text-left text-sm text-gray-500">
               <th className="px-6 py-4">Code</th>
               <th className="px-6 py-4">Label</th>
