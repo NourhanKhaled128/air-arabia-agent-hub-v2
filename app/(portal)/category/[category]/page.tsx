@@ -25,7 +25,7 @@ export default async function CategoryPage({
   const folderId = folder ? Number(folder) : undefined;
 
   const [categoryArticles, allFolders] = await Promise.all([
-    getArticlesByCategoryId(categoryRow.id, folderId),
+    getArticlesByCategoryId(categoryRow.id, folderId, { publishedOnly: true }),
     getCategoryFolders(categoryRow.id),
   ]);
 

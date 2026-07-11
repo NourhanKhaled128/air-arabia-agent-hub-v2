@@ -1,15 +1,22 @@
 import PageHeader from "@/components/PageHeader";
 import ArticleCard from "@/components/ArticleCard";
 import { getArticlesByCategoryName } from "@/lib/article-service";
+import { sortByModuleNumber } from "@/lib/helpers";
 
 export default async function TrainingArticlesPage() {
-  const trainingArticles = await getArticlesByCategoryName("Training");
+  const trainingArticles = sortByModuleNumber(
+    await getArticlesByCategoryName("Training")
+  );
 
   return (
     <>
       <PageHeader
         title="Training"
-        subtitle="Training manuals, SOPs and onboarding material."
+        subtitle={
+          trainingArticles.length > 0
+            ? `${trainingArticles.length} onboarding modules — work through them in order.`
+            : "Training manuals, SOPs and onboarding material."
+        }
       />
 
       <div className="space-y-6">

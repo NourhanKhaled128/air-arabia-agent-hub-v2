@@ -5,7 +5,7 @@ import ArticleCard from "@/components/ArticleCard";
 import { getAllArticles } from "@/lib/article-service";
 
 export default async function KnowledgePage() {
-  const articles = await getAllArticles();
+  const articles = await getAllArticles({ publishedOnly: true });
 
   return (
     <>

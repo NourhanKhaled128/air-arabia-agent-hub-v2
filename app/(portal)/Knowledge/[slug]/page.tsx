@@ -10,9 +10,10 @@ import ArticleFeedback from "@/components/ArticleFeedback";
 import ArticleComments from "@/components/ArticleComments";
 import ArticleViewTracker from "@/components/ArticleViewTracker";
 import { prisma } from "@/lib/prisma";
-import { getArticleById, getArticlesByCategoryId } from "@/lib/article-service";
+import { getArticleById, getArticlesByCategoryId, getArticlesByCategoryName } from "@/lib/article-service";
 import { getCategoryById } from "@/lib/category-service";
 import { getApprovedCommentsForArticle } from "@/lib/comment-service";
+import { parseModuleNumber, sortByModuleNumber } from "@/lib/helpers";
 
 interface Props {
   params: Promise<{
@@ -66,18 +67,34 @@ export default async function ArticlePage({ params }: Props) {
     notFound();
   }
 
+  if (article.status === "Draft") {
+    notFound();
+  }
+
   const category = article.categoryId
     ? await getCategoryById(article.categoryId)
     : null;
   const categoryName = category?.name ?? "Uncategorized";
 
   const relatedArticles = article.categoryId
-    ? (await getArticlesByCategoryId(article.categoryId)).filter(
-        (related) => related.id !== article.id
-      )
+    ? (
+        await getArticlesByCategoryId(article.categoryId, undefined, { publishedOnly: true })
+      ).filter((related) => related.id !== article.id)
     : [];
 
   const approvedComments = await getApprovedCommentsForArticle(article.id);
+
+  const currentModuleNumber = parseModuleNumber(article.title);
+  let prevModule: { slug: string; title: string } | null = null;
+  let nextModule: { slug: string; title: string } | null = null;
+
+  if (categoryName === "Training" && currentModuleNumber !== null) {
+    const modules = sortByModuleNumber(await getArticlesByCategoryName("Training"));
+    const index = modules.findIndex((m) => m.id === article.id);
+
+    if (index > 0) prevModule = modules[index - 1];
+    if (index >= 0 && index < modules.length - 1) nextModule = modules[index + 1];
+  }
 
   return (
     <>
@@ -137,6 +154,30 @@ export default async function ArticlePage({ params }: Props) {
           </div>
 
         </div>
+
+        {(prevModule || nextModule) && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface px-6 py-4 shadow-sm">
+            {prevModule ? (
+              <Link
+                href={`/Knowledge/${prevModule.slug}`}
+                className="font-semibold text-red-700 dark:text-brand hover:underline"
+              >
+                ← {prevModule.title}
+              </Link>
+            ) : (
+              <span />
+            )}
+
+            {nextModule && (
+              <Link
+                href={`/Knowledge/${nextModule.slug}`}
+                className="font-semibold text-red-700 dark:text-brand hover:underline"
+              >
+                {nextModule.title} →
+              </Link>
+            )}
+          </div>
+        )}
 
         <section className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm">
           <h2 className="mb-4 text-3xl font-bold">Overview</h2>

@@ -3,7 +3,7 @@ import { getAllArticles } from "@/lib/article-service";
 
 export default async function BrowseAtoZ() {
 
-  const articles = await getAllArticles();
+  const articles = await getAllArticles({ publishedOnly: true });
   const alphabetical = [...articles]
     .sort((a, b) => a.title.localeCompare(b.title))
     .slice(0, 4);

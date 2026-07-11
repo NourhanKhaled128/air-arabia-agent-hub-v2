@@ -15,8 +15,9 @@ export async function getTotalArticleViews() {
   return result._sum.viewCount ?? 0;
 }
 
-export async function getAllArticles() {
+export async function getAllArticles(opts?: { publishedOnly?: boolean }) {
   const articles = await prisma.article.findMany({
+    where: opts?.publishedOnly ? { status: "Published" } : undefined,
     include: {
       category: { select: { name: true } },
     },
@@ -56,6 +57,7 @@ export async function getArticleById(
 
 export async function getTrendingArticles(limit = 4) {
   const articles = await prisma.article.findMany({
+    where: { status: "Published" },
     include: {
       category: { select: { name: true } },
     },
@@ -70,6 +72,7 @@ export async function getTrendingArticles(limit = 4) {
 
 export async function getArticlesForSearch() {
   const articles = await prisma.article.findMany({
+    where: { status: "Published" },
     select: {
       id: true,
       slug: true,
@@ -99,14 +102,19 @@ export async function getArticlesByCategoryName(name: string) {
 
   if (!category) return [];
 
-  return getArticlesByCategoryId(category.id);
+  return getArticlesByCategoryId(category.id, undefined, { publishedOnly: true });
 }
 
-export async function getArticlesByCategoryId(categoryId: number, folderId?: number | null) {
+export async function getArticlesByCategoryId(
+  categoryId: number,
+  folderId?: number | null,
+  opts?: { publishedOnly?: boolean }
+) {
   const articles = await prisma.article.findMany({
     where: {
       categoryId,
       ...(folderId !== undefined ? { folderId } : {}),
+      ...(opts?.publishedOnly ? { status: "Published" } : {}),
     },
     include: {
       category: { select: { name: true } },

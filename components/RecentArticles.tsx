@@ -3,7 +3,7 @@ import { getAllArticles } from "@/lib/article-service";
 
 export default async function RecentArticles() {
 
-  const articles = await getAllArticles();
+  const articles = await getAllArticles({ publishedOnly: true });
   const recent = articles.slice(0, 5);
 
   return (
