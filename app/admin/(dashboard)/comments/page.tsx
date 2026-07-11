@@ -1,126 +1,38 @@
-import {
-  MessageCircle,
-  Search,
-  Check,
-  Trash2,
-} from "lucide-react";
+import { MessageCircle, Clock3, CheckCircle2 } from "lucide-react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminStatCard from "@/components/admin/AdminStatCard";
+import CommentsTable from "@/components/admin/comment/CommentsTable";
+import { getComments } from "@/lib/comment-service";
 
-const comments = [
-  {
-    id: 1,
-    article: "Refund Policy",
-    author: "Ahmed Hassan",
-    comment: "Need clarification about vouchers.",
-    date: "06 Jul 2026",
-  },
-  {
-    id: 2,
-    article: "Payments",
-    author: "Sara Ali",
-    comment: "Procedure works correctly.",
-    date: "05 Jul 2026",
-  },
-];
+export default async function CommentsPage() {
+  const comments = await getComments();
 
-export default function CommentsPage() {
+  const pending = comments.filter((c) => c.status === "Pending").length;
+  const approved = comments.filter((c) => c.status === "Approved").length;
+
+  const rows = comments.map((c) => ({
+    id: c.id,
+    articleTitle: c.article.title,
+    authorName: c.authorName,
+    content: c.content,
+    status: c.status,
+    createdAt: c.createdAt,
+  }));
+
   return (
     <div className="space-y-8">
+      <AdminPageHeader
+        title="Comments"
+        description="Notes agents leave on knowledge articles for other agents."
+      />
 
-      <div>
-
-        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
-          Administration
-        </p>
-
-        <h1 className="mt-2 text-4xl font-bold">
-          Comments
-        </h1>
-
+      <div className="grid gap-6 md:grid-cols-3">
+        <AdminStatCard title="Total" value={comments.length} icon={MessageCircle} />
+        <AdminStatCard title="Pending" value={pending} icon={Clock3} color="text-amber-700" />
+        <AdminStatCard title="Approved" value={approved} icon={CheckCircle2} color="text-emerald-700" />
       </div>
 
-      <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-        <div className="mb-6 flex items-center gap-3 rounded-xl border px-4 py-3">
-
-          <Search size={18}/>
-
-          <input
-            className="w-full outline-none"
-            placeholder="Search comments..."
-          />
-
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-
-          <thead className="bg-slate-50">
-
-            <tr>
-
-              <th className="px-6 py-4 text-left">Article</th>
-
-              <th className="px-6 py-4 text-left">Author</th>
-
-              <th className="px-6 py-4 text-left">Comment</th>
-
-              <th className="px-6 py-4 text-left">Date</th>
-
-              <th className="px-6 py-4 text-left">Actions</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {comments.map((comment) => (
-
-              <tr key={comment.id} className="border-t">
-
-                <td className="px-6 py-5">
-                  {comment.article}
-                </td>
-
-                <td className="px-6 py-5">
-                  {comment.author}
-                </td>
-
-                <td className="px-6 py-5">
-                  {comment.comment}
-                </td>
-
-                <td className="px-6 py-5">
-                  {comment.date}
-                </td>
-
-                <td className="px-6 py-5">
-
-                  <div className="flex gap-2">
-
-                    <button className="rounded-lg border p-2">
-                      <Check size={18}/>
-                    </button>
-
-                    <button className="rounded-lg border p-2">
-                      <Trash2 size={18}/>
-                    </button>
-
-                  </div>
-
-                </td>
-
-              </tr>
-
-            ))}
-
-          </tbody>
-
-        </table>
-        </div>
-
-      </div>
-
+      <CommentsTable comments={rows} />
     </div>
   );
 }

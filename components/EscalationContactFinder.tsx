@@ -2,6 +2,18 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import CopyButton from "@/components/CopyButton";
+
+function contactLink(contactInfo: string): string | null {
+  const trimmed = contactInfo.trim();
+
+  if (trimmed.includes("@")) return `mailto:${trimmed}`;
+
+  const digits = trimmed.replace(/[^\d+]/g, "");
+  if (digits.replace(/\D/g, "").length >= 6) return `tel:${digits}`;
+
+  return null;
+}
 
 interface EscalationContact {
   id: number;
@@ -89,7 +101,21 @@ export default function EscalationContactFinder({ escalations }: Props) {
                   </span>
                 </td>
                 <td className="px-6 py-4 font-medium">{e.escalateTo}</td>
-                <td className="px-6 py-4 text-gray-600">{e.contactInfo}</td>
+                <td className="px-6 py-4 text-gray-600">
+                  <div className="flex items-center gap-2">
+                    {contactLink(e.contactInfo) ? (
+                      <a
+                        href={contactLink(e.contactInfo)!}
+                        className="font-medium text-red-700 hover:underline"
+                      >
+                        {e.contactInfo}
+                      </a>
+                    ) : (
+                      <span>{e.contactInfo}</span>
+                    )}
+                    <CopyButton text={e.contactInfo} compact />
+                  </div>
+                </td>
                 <td className="px-6 py-4 text-gray-600">{e.notes ?? "-"}</td>
               </tr>
             ))}

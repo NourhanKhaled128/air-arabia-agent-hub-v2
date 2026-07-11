@@ -13,7 +13,7 @@ title,
 
 return(
 
-<div className="mb-8 text-sm text-gray-500">
+<div className="mb-8 text-sm text-gray-500 dark:text-slate-400">
 
 Home
 
@@ -39,7 +39,7 @@ Knowledge
 
 </span>
 
-<span className="font-semibold text-black">
+<span className="font-semibold text-black dark:text-slate-100">
 
 {title}
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Menu, Search } from "lucide-react";
 import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
 import NotificationBell from "./NotificationBell";
@@ -15,12 +16,18 @@ export default function Header({ articles }: Props) {
 
   const { toggleMobileOpen } = useSidebarPrefs();
 
+  const router = useRouter();
+
   const today = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
   });
+
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   const [query, setQuery] = useState("");
 
@@ -73,7 +80,7 @@ export default function Header({ articles }: Props) {
 
           <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 sm:text-3xl">
 
-            Welcome back, Nourhan 👋
+            {greeting}, Agent 👋
 
           </h1>
 
@@ -99,6 +106,15 @@ export default function Header({ articles }: Props) {
           <input
             value={query}
             onChange={(e)=>setQuery(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setQuery("");
+                e.currentTarget.blur();
+              } else if (e.key === "Enter" && results[0]) {
+                router.push(`/Knowledge/${results[0].slug}`);
+                setQuery("");
+              }
+            }}
             placeholder="Search procedures..."
             className="w-full rounded-xl border border-gray-300 dark:border-border-subtle py-3 pl-12 pr-4 outline-none focus:border-brand"
           />
@@ -123,25 +139,25 @@ export default function Header({ articles }: Props) {
 
         <NotificationBell />
 
-        <div className="flex items-center gap-3 rounded-xl bg-gray-100 dark:bg-background px-4 py-2">
+        <div className="hidden items-center gap-3 rounded-xl bg-gray-100 dark:bg-background px-4 py-2 sm:flex">
 
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand font-bold text-white">
 
-            N
+            AA
 
           </div>
 
-          <div className="hidden sm:block">
+          <div>
 
             <p className="font-semibold">
 
-              Nourhan Khaled
+              Air Arabia Agent Hub
 
             </p>
 
             <p className="text-sm text-gray-500 dark:text-slate-400">
 
-              Reservations Agent
+              Shared shift portal
 
             </p>
 

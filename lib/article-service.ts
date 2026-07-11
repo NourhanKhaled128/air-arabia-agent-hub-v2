@@ -7,6 +7,14 @@ function flattenCategory<T extends { category: { name: string } | null }>(
   return { ...rest, category: category?.name ?? "Uncategorized" };
 }
 
+export async function getTotalArticleViews() {
+  const result = await prisma.article.aggregate({
+    _sum: { viewCount: true },
+  });
+
+  return result._sum.viewCount ?? 0;
+}
+
 export async function getAllArticles() {
   const articles = await prisma.article.findMany({
     include: {

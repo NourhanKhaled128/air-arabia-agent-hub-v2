@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import CopyButton from "@/components/CopyButton";
 
 interface DispositionCode {
   code: string;
@@ -57,9 +58,12 @@ export default function DispositionCodeFinder({ dispositions }: Props) {
             {results.map((d) => (
               <tr key={d.code} className="border-t border-gray-100">
                 <td className="px-6 py-4">
-                  <span className="rounded-full bg-red-100 px-3 py-1 text-sm font-bold text-red-700">
-                    {d.code}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-red-100 px-3 py-1 text-sm font-bold text-red-700">
+                      {d.code}
+                    </span>
+                    <CopyButton text={d.code} compact />
+                  </div>
                 </td>
                 <td className="px-6 py-4 font-medium">{d.label}</td>
                 <td className="px-6 py-4 text-gray-600">{d.description ?? "-"}</td>

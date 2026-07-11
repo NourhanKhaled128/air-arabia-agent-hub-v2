@@ -324,7 +324,7 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search..."
+                placeholder="Filter menu..."
                 className="w-full bg-transparent outline-none text-black dark:text-white"
               />
 
@@ -551,25 +551,25 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
 
         </div>
 
-        {/* User */}
+        {/* Shared shift footer */}
 
         <div className="border-t border-gray-200 dark:border-border-subtle bg-gray-50 dark:bg-surface-muted p-5">
 
           <div className={`flex items-center gap-3 ${collapsed ? "justify-center" : ""}`}>
 
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-bold text-white shadow-md">
-              N
+              AA
             </div>
 
             {!collapsed && (
               <div className="flex-1">
 
                 <p className="font-semibold text-gray-900 dark:text-slate-100">
-                  Nourhan Khaled
+                  Air Arabia Agent Hub
                 </p>
 
                 <p className="text-sm text-gray-500 dark:text-slate-400">
-                  Reservations Agent
+                  Shared shift portal
                 </p>
 
               </div>

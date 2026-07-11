@@ -33,6 +33,8 @@ model Article {
   scenarios    Scenario[]
   attachments  Attachment[]
   updates      ArticleUpdate[]
+  comments     Comment[]
+  feedback     Feedback[]
 }
 
 model ArticleUpdate {
@@ -325,4 +327,25 @@ model EscalationContact {
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
+}
+
+model Comment {
+  id         Int      @id @default(autoincrement())
+  articleId  Int
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  authorName String   @default("Agent")
+  content    String
+  status     String   @default("Pending")
+  createdAt  DateTime @default(now())
+}
+
+model Feedback {
+  id         Int      @id @default(autoincrement())
+  articleId  Int
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  authorName String?
+  helpful    Boolean
+  message    String?
+  status     String   @default("New")
+  createdAt  DateTime @default(now())
 }

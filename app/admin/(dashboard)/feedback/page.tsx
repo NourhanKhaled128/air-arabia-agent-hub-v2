@@ -1,133 +1,41 @@
-import {
-  MessageSquare,
-  CheckCircle2,
-  Clock3,
-  XCircle,
-  Search,
-} from "lucide-react";
+import { MessageSquare, ThumbsUp, ThumbsDown, Clock3 } from "lucide-react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminStatCard from "@/components/admin/AdminStatCard";
+import FeedbackTable from "@/components/admin/feedback/FeedbackTable";
+import { getFeedback } from "@/lib/feedback-service";
 
-const feedback = [
-  {
-    id: 1,
-    article: "Refund Policy",
-    user: "Ahmed Hassan",
-    status: "Pending",
-    date: "06 Jul 2026",
-  },
-  {
-    id: 2,
-    article: "Baggage Rules",
-    user: "Sara Ali",
-    status: "Approved",
-    date: "05 Jul 2026",
-  },
-  {
-    id: 3,
-    article: "Seat Selection",
-    user: "Mohamed Omar",
-    status: "Rejected",
-    date: "04 Jul 2026",
-  },
-];
+export default async function FeedbackPage() {
+  const feedback = await getFeedback();
 
-export default function FeedbackPage() {
+  const helpful = feedback.filter((f) => f.helpful).length;
+  const notHelpful = feedback.filter((f) => !f.helpful).length;
+  const pending = feedback.filter((f) => f.status === "New").length;
+
+  const rows = feedback.map((f) => ({
+    id: f.id,
+    articleTitle: f.article.title,
+    authorName: f.authorName ?? "Anonymous",
+    helpful: f.helpful,
+    message: f.message ?? "",
+    status: f.status,
+    createdAt: f.createdAt,
+  }));
+
   return (
     <div className="space-y-8">
-
-      <div>
-
-        <p className="text-sm font-semibold uppercase tracking-[0.35em] text-red-700">
-          Administration
-        </p>
-
-        <h1 className="mt-2 text-4xl font-bold">
-          Feedback
-        </h1>
-
-      </div>
+      <AdminPageHeader
+        title="Feedback"
+        description={'"Was this helpful?" responses agents leave on knowledge articles.'}
+      />
 
       <div className="grid gap-6 md:grid-cols-4">
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <MessageSquare className="mb-3 text-red-700"/>
-          <p>Total</p>
-          <h2 className="text-3xl font-bold">85</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <Clock3 className="mb-3 text-amber-700"/>
-          <p>Pending</p>
-          <h2 className="text-3xl font-bold">9</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <CheckCircle2 className="mb-3 text-emerald-700"/>
-          <p>Approved</p>
-          <h2 className="text-3xl font-bold">70</h2>
-        </div>
-
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
-          <XCircle className="mb-3 text-red-700"/>
-          <p>Rejected</p>
-          <h2 className="text-3xl font-bold">6</h2>
-        </div>
-
+        <AdminStatCard title="Total" value={feedback.length} icon={MessageSquare} />
+        <AdminStatCard title="Helpful" value={helpful} icon={ThumbsUp} color="text-emerald-700" />
+        <AdminStatCard title="Not Helpful" value={notHelpful} icon={ThumbsDown} color="text-red-700" />
+        <AdminStatCard title="Unreviewed" value={pending} icon={Clock3} color="text-amber-700" />
       </div>
 
-      <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-        <div className="mb-6 flex items-center gap-3 rounded-xl border px-4 py-3">
-
-          <Search size={18}/>
-
-          <input
-            placeholder="Search..."
-            className="w-full outline-none"
-          />
-
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-
-          <thead className="bg-slate-50">
-
-            <tr>
-
-              <th className="px-6 py-4 text-left">Article</th>
-              <th className="px-6 py-4 text-left">User</th>
-              <th className="px-6 py-4 text-left">Status</th>
-              <th className="px-6 py-4 text-left">Date</th>
-
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {feedback.map((item) => (
-
-              <tr key={item.id} className="border-t">
-
-                <td className="px-6 py-5">{item.article}</td>
-
-                <td className="px-6 py-5">{item.user}</td>
-
-                <td className="px-6 py-5">{item.status}</td>
-
-                <td className="px-6 py-5">{item.date}</td>
-
-              </tr>
-
-            ))}
-
-          </tbody>
-
-        </table>
-        </div>
-
-      </div>
-
+      <FeedbackTable feedback={rows} />
     </div>
   );
 }
