@@ -37,6 +37,7 @@ model Article {
   feedback     Feedback[]
   chatTemplates  ChatTemplate[]
   emailTemplates EmailTemplate[]
+  decisionTrees  DecisionTree[]
 }
 
 model ArticleUpdate {
@@ -136,6 +137,40 @@ model EmailTemplate {
   subject   String
   body      String
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model DecisionTree {
+  id              Int            @id @default(autoincrement())
+  title           String
+  slug            String         @unique
+  description     String?
+  topic           String?
+  status          String         @default("Draft")
+  author          String
+  sourceArticleId Int?
+  sourceArticle   Article?       @relation(fields: [sourceArticleId], references: [id], onDelete: SetNull)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  nodes           DecisionNode[]
+}
+
+model DecisionNode {
+  id      Int              @id @default(autoincrement())
+  treeId  Int
+  tree    DecisionTree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
+  type    String
+  text    String
+  order   Int
+  options DecisionOption[] @relation("SourceNode")
+}
+
+model DecisionOption {
+  id           Int          @id @default(autoincrement())
+  nodeId       Int
+  node         DecisionNode @relation("SourceNode", fields: [nodeId], references: [id], onDelete: Cascade)
+  label        String
+  targetNodeId Int?
+  order        Int          @default(0)
 }
 
 model Attachment {

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Paperclip, Download } from "lucide-react";
+import { Paperclip, Download, GitBranch } from "lucide-react";
 
 import Breadcrumb from "@/components/Breadcrumb";
 import ArticleCard from "@/components/ArticleCard";
@@ -14,6 +14,7 @@ import { prisma } from "@/lib/prisma";
 import { getArticleById, getArticlesByCategoryId, getArticlesByCategoryName } from "@/lib/article-service";
 import { getCategoryById } from "@/lib/category-service";
 import { getApprovedCommentsForArticle } from "@/lib/comment-service";
+import { getDecisionTreesForArticle } from "@/lib/decision-tree-service";
 import { parseModuleNumber, sortByModuleNumber } from "@/lib/helpers";
 
 interface Props {
@@ -84,6 +85,7 @@ export default async function ArticlePage({ params }: Props) {
     : [];
 
   const approvedComments = await getApprovedCommentsForArticle(article.id);
+  const relatedDecisionTrees = await getDecisionTreesForArticle(article.id);
 
   const currentModuleNumber = parseModuleNumber(article.title);
   let prevModule: { slug: string; title: string } | null = null;
@@ -155,6 +157,18 @@ export default async function ArticlePage({ params }: Props) {
           </div>
 
         </div>
+
+        {relatedDecisionTrees.length > 0 && (
+          <Link
+            href={`/decision-trees/${relatedDecisionTrees[0].slug}`}
+            className="flex items-center gap-3 rounded-2xl border border-red-200 dark:border-brand/30 bg-red-50 dark:bg-brand/10 px-6 py-4 shadow-sm transition hover:border-red-300"
+          >
+            <GitBranch size={20} className="shrink-0 text-red-700 dark:text-brand" />
+            <span className="font-semibold text-red-700 dark:text-brand">
+              Walk through this as a decision tree: {relatedDecisionTrees[0].title} →
+            </span>
+          </Link>
+        )}
 
         {(prevModule || nextModule) && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface px-6 py-4 shadow-sm">

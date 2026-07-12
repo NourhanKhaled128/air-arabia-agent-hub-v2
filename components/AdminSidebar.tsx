@@ -27,6 +27,7 @@ import {
   Image as ImageIcon,
   MessageCircle,
   MessageSquare,
+  GitBranch,
 } from "lucide-react";
 import { logoutAction } from "@/app/admin/actions/auth-actions";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
@@ -41,6 +42,7 @@ const menu = [
   { title: "Disruptions", href: "/admin/disruptions", icon: AlertTriangle },
   { title: "Announcements", href: "/admin/announcements", icon: Megaphone },
   { title: "Training", href: "/admin/training", icon: GraduationCap },
+  { title: "Decision Trees", href: "/admin/decision-trees", icon: GitBranch },
   { title: "Airport Codes", href: "/admin/airport-codes", icon: Plane },
   { title: "Disposition Codes", href: "/admin/disposition-codes", icon: ClipboardList },
   { title: "Escalation Contacts", href: "/admin/escalation", icon: PhoneCall },

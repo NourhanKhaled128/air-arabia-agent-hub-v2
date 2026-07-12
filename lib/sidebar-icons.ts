@@ -16,6 +16,7 @@ import {
   MapPin,
   ClipboardList,
   PhoneCall,
+  GitBranch,
   type LucideIcon,
 } from "lucide-react";
 
@@ -37,6 +38,7 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   MapPin,
   ClipboardList,
   PhoneCall,
+  GitBranch,
 };
 
 export const SIDEBAR_ICON_KEYS = Object.keys(SIDEBAR_ICONS);
