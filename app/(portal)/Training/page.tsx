@@ -1,5 +1,5 @@
 import PageHeader from "@/components/PageHeader";
-import ArticleCard from "@/components/ArticleCard";
+import TrainingLibrary from "@/components/TrainingLibrary";
 import { getArticlesByCategoryName } from "@/lib/article-service";
 import { sortByModuleNumber } from "@/lib/helpers";
 
@@ -19,14 +19,7 @@ export default async function TrainingArticlesPage() {
         }
       />
 
-      <div className="space-y-6">
-        {trainingArticles.map((article) => (
-          <ArticleCard
-            key={article.id}
-            article={article}
-          />
-        ))}
-      </div>
+      <TrainingLibrary modules={trainingArticles} />
     </>
   );
 }

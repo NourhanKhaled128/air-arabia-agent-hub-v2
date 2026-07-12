@@ -173,6 +173,17 @@ model DecisionOption {
   order        Int          @default(0)
 }
 
+model ExcessBaggageRate {
+  id          Int      @id @default(autoincrement())
+  hub         String
+  section     String
+  region      String?
+  destination String
+  rate        String
+  order       Int      @default(0)
+  updatedAt   DateTime @updatedAt
+}
+
 model Attachment {
   id        Int      @id @default(autoincrement())
   articleId Int

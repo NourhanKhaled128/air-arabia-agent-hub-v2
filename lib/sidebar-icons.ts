@@ -17,6 +17,7 @@ import {
   ClipboardList,
   PhoneCall,
   GitBranch,
+  GraduationCap,
   type LucideIcon,
 } from "lucide-react";
 
@@ -39,6 +40,7 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   ClipboardList,
   PhoneCall,
   GitBranch,
+  GraduationCap,
 };
 
 export const SIDEBAR_ICON_KEYS = Object.keys(SIDEBAR_ICONS);
