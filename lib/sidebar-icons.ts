@@ -18,6 +18,7 @@ import {
   PhoneCall,
   GitBranch,
   GraduationCap,
+  Luggage,
   type LucideIcon,
 } from "lucide-react";
 
@@ -41,6 +42,7 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   PhoneCall,
   GitBranch,
   GraduationCap,
+  Luggage,
 };
 
 export const SIDEBAR_ICON_KEYS = Object.keys(SIDEBAR_ICONS);

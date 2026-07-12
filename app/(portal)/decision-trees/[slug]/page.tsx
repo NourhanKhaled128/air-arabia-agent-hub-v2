@@ -1,8 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDecisionTreeBySlug } from "@/lib/decision-tree-service";
+import { getExcessBaggageRatesByHub } from "@/lib/excess-baggage-service";
 import DecisionTreeWizard from "@/components/DecisionTreeWizard";
 import DecisionTreeDiagram from "@/components/DecisionTreeDiagram";
+
+const EXCESS_BAGGAGE_HUB_BY_SLUG: Record<string, string> = {
+  "g9-excess-baggage-rates-g9": "G9",
+  "3o-excess-baggage-rates-3o": "3O",
+  "9p-excess-baggage-rates-9p": "9P",
+  "e5-excess-baggage-rates-e5": "E5",
+};
 
 interface Props {
   params: Promise<{
@@ -18,6 +26,9 @@ export default async function DecisionTreePage({ params }: Props) {
   if (!tree || tree.status === "Draft") {
     notFound();
   }
+
+  const excessBaggageHub = tree.sourceArticle ? EXCESS_BAGGAGE_HUB_BY_SLUG[tree.sourceArticle.slug] : undefined;
+  const excessBaggageRates = excessBaggageHub ? await getExcessBaggageRatesByHub(excessBaggageHub) : undefined;
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -61,7 +72,11 @@ export default async function DecisionTreePage({ params }: Props) {
         <h2 className="mb-4 text-2xl font-bold text-gray-800 dark:text-slate-100">
           Interactive Walkthrough
         </h2>
-        <DecisionTreeWizard nodes={tree.nodes} />
+        <DecisionTreeWizard
+          nodes={tree.nodes}
+          excessBaggageHub={excessBaggageHub}
+          excessBaggageRates={excessBaggageRates}
+        />
       </section>
 
       <section>

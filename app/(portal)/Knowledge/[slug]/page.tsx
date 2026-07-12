@@ -15,7 +15,16 @@ import { getArticleById, getArticlesByCategoryId, getArticlesByCategoryName } fr
 import { getCategoryById } from "@/lib/category-service";
 import { getApprovedCommentsForArticle } from "@/lib/comment-service";
 import { getDecisionTreesForArticle } from "@/lib/decision-tree-service";
+import { getExcessBaggageRatesByHub } from "@/lib/excess-baggage-service";
+import ExcessBaggageRateFinder from "@/components/excess-baggage/ExcessBaggageRateFinder";
 import { parseModuleNumber, sortByModuleNumber } from "@/lib/helpers";
+
+const EXCESS_BAGGAGE_HUB_BY_SLUG: Record<string, string> = {
+  "g9-excess-baggage-rates-g9": "G9",
+  "3o-excess-baggage-rates-3o": "3O",
+  "9p-excess-baggage-rates-9p": "9P",
+  "e5-excess-baggage-rates-e5": "E5",
+};
 
 interface Props {
   params: Promise<{
@@ -86,6 +95,11 @@ export default async function ArticlePage({ params }: Props) {
 
   const approvedComments = await getApprovedCommentsForArticle(article.id);
   const relatedDecisionTrees = await getDecisionTreesForArticle(article.id);
+
+  const excessBaggageHub = EXCESS_BAGGAGE_HUB_BY_SLUG[article.slug];
+  const excessBaggageRates = excessBaggageHub
+    ? await getExcessBaggageRatesByHub(excessBaggageHub)
+    : [];
 
   const currentModuleNumber = parseModuleNumber(article.title);
   let prevModule: { slug: string; title: string } | null = null;
@@ -198,6 +212,13 @@ export default async function ArticlePage({ params }: Props) {
           <h2 className="mb-4 text-3xl font-bold">Overview</h2>
           <p className="whitespace-pre-wrap text-gray-700 dark:text-slate-300">{article.overview}</p>
         </section>
+
+        {excessBaggageHub && (
+          <section className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm">
+            <h2 className="mb-4 text-3xl font-bold">Rate Finder</h2>
+            <ExcessBaggageRateFinder rates={excessBaggageRates} defaultHub={excessBaggageHub} />
+          </section>
+        )}
 
         {article.procedures.length > 0 && (
           <section>

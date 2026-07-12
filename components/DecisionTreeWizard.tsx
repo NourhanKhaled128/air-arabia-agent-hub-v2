@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { ArrowLeft, RotateCcw } from "lucide-react";
 import CopyButton from "./CopyButton";
+import ExcessBaggageRateFinder, {
+  type ExcessBaggageRateRow,
+} from "./excess-baggage/ExcessBaggageRateFinder";
 
 interface Option {
   id: number;
@@ -19,9 +22,11 @@ interface Node {
 
 interface Props {
   nodes: Node[];
+  excessBaggageHub?: string;
+  excessBaggageRates?: ExcessBaggageRateRow[];
 }
 
-export default function DecisionTreeWizard({ nodes }: Props) {
+export default function DecisionTreeWizard({ nodes, excessBaggageHub, excessBaggageRates }: Props) {
   const rootId = nodes[0]?.id ?? null;
   const [currentId, setCurrentId] = useState<number | null>(rootId);
   const [history, setHistory] = useState<number[]>([]);
@@ -115,11 +120,22 @@ export default function DecisionTreeWizard({ nodes }: Props) {
           </div>
         </>
       ) : (
-        <div className="rounded-xl bg-emerald-50 dark:bg-emerald-500/10 p-5">
-          <div className="mb-3 flex items-start justify-between gap-4">
-            <p className="whitespace-pre-wrap text-gray-800 dark:text-slate-100">{current.text}</p>
-            <CopyButton text={current.text} compact />
+        <div className="space-y-4">
+          <div className="rounded-xl bg-emerald-50 dark:bg-emerald-500/10 p-5">
+            <div className="mb-3 flex items-start justify-between gap-4">
+              <p className="whitespace-pre-wrap text-gray-800 dark:text-slate-100">{current.text}</p>
+              <CopyButton text={current.text} compact />
+            </div>
           </div>
+
+          {excessBaggageHub && excessBaggageRates && (
+            <div className="rounded-xl border border-gray-200 dark:border-border-subtle p-5">
+              <p className="mb-3 text-sm font-semibold text-gray-600 dark:text-slate-300">
+                Need the exact figure? Search the live {excessBaggageHub} rate table:
+              </p>
+              <ExcessBaggageRateFinder rates={excessBaggageRates} defaultHub={excessBaggageHub} compact />
+            </div>
+          )}
         </div>
       )}
     </div>
