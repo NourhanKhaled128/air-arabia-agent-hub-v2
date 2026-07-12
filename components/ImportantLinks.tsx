@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import { getVisibleImportantLinks } from "@/lib/important-link-service";
 import { getSidebarIcon } from "@/lib/sidebar-icons";
+import CopyButton from "@/components/CopyButton";
 
 export default async function ImportantLinks() {
 
@@ -30,29 +31,35 @@ export default async function ImportantLinks() {
           const Icon = getSidebarIcon(link.icon);
 
           return (
-            <a
+            <div
               key={link.id}
-              href={link.url}
-              target="_blank"
-              rel="noopener noreferrer"
               className="flex items-center gap-3 rounded-2xl border border-gray-100 p-4 transition hover:bg-red-50"
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-700">
-                <Icon size={18} />
-              </span>
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-w-0 flex-1 items-center gap-3"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-100 text-red-700">
+                  <Icon size={18} />
+                </span>
 
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate font-semibold">{link.title}</h3>
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate font-semibold">{link.title}</h3>
 
-                {link.description && (
-                  <p className="mt-1 truncate text-sm text-gray-500">
-                    {link.description}
-                  </p>
-                )}
-              </div>
+                  {link.description && (
+                    <p className="mt-1 truncate text-sm text-gray-500">
+                      {link.description}
+                    </p>
+                  )}
+                </div>
 
-              <ExternalLink size={16} className="shrink-0 text-gray-400" />
-            </a>
+                <ExternalLink size={16} className="shrink-0 text-gray-400" />
+              </a>
+
+              <CopyButton text={link.url} compact />
+            </div>
           );
         })}
 

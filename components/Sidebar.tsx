@@ -22,6 +22,7 @@ import {
 
 import { getSidebarIcon } from "@/lib/sidebar-icons";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
+import CopyButton from "@/components/CopyButton";
 
 interface SidebarFolder {
   id: number;
@@ -528,17 +529,23 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
                         const Icon = getSidebarIcon(link.icon);
 
                         return (
-                          <a
+                          <div
                             key={link.id}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mb-2 flex items-center gap-3 rounded-xl px-4 py-3 text-gray-800 dark:text-slate-200 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                            className="mb-2 flex items-center gap-2 rounded-xl px-4 py-3 text-gray-800 dark:text-slate-200 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
                           >
-                            <Icon size={20} />
-                            <span className="flex-1 truncate font-medium">{link.title}</span>
-                            <ExternalLink size={14} className="shrink-0 text-gray-400 dark:text-slate-500" />
-                          </a>
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex min-w-0 flex-1 items-center gap-3"
+                            >
+                              <Icon size={20} />
+                              <span className="flex-1 truncate font-medium">{link.title}</span>
+                              <ExternalLink size={14} className="shrink-0 text-gray-400 dark:text-slate-500" />
+                            </a>
+
+                            <CopyButton text={link.url} compact />
+                          </div>
                         );
                       })}
                     </div>
