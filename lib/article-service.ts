@@ -107,6 +107,25 @@ export async function getArticlesByCategoryName(name: string) {
   return getArticlesByCategoryId(category.id, undefined, { publishedOnly: true });
 }
 
+export async function getArticlesByCategoryAndFolderName(
+  categoryName: string,
+  folderName: string
+) {
+  const category = await prisma.category.findFirst({
+    where: { name: { equals: categoryName, mode: "insensitive" } },
+  });
+
+  if (!category) return [];
+
+  const folder = await prisma.categoryFolder.findFirst({
+    where: { categoryId: category.id, name: { equals: folderName, mode: "insensitive" } },
+  });
+
+  if (!folder) return [];
+
+  return getArticlesByCategoryId(category.id, folder.id, { publishedOnly: true });
+}
+
 export async function getArticlesByCategoryId(
   categoryId: number,
   folderId?: number | null,

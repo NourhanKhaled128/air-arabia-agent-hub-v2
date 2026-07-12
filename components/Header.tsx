@@ -7,6 +7,7 @@ import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
 import NotificationBell from "./NotificationBell";
 import ThemeToggle from "./ThemeToggle";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
+import { matchesAllWords } from "@/lib/search-utils";
 
 interface Props {
   articles: SearchableArticle[];
@@ -55,29 +56,23 @@ export default function Header({ articles }: Props) {
 
     if (!debouncedQuery.trim()) return [];
 
-    const q = debouncedQuery.toLowerCase();
-
     return articles.filter(article =>
 
-      article.title.toLowerCase().includes(q) ||
-
-      article.description.toLowerCase().includes(q) ||
-
-      article.category.toLowerCase().includes(q) ||
-
-      article.overview.toLowerCase().includes(q) ||
-
-      article.keywords.some(k => k.value.toLowerCase().includes(q)) ||
-
-      article.scenarios.some(s => s.situation.toLowerCase().includes(q)) ||
-
-      article.procedures.some(p => p.content.toLowerCase().includes(q)) ||
-
-      article.dispositions.some(d => d.content.toLowerCase().includes(q)) ||
-
-      article.escalations.some(e => e.content.toLowerCase().includes(q)) ||
-
-      article.notes.some(n => n.content.toLowerCase().includes(q))
+      matchesAllWords(
+        [
+          article.title,
+          article.description,
+          article.category,
+          article.overview,
+          ...article.keywords.map(k => k.value),
+          ...article.scenarios.map(s => s.situation),
+          ...article.procedures.map(p => p.content),
+          ...article.dispositions.map(d => d.content),
+          ...article.escalations.map(e => e.content),
+          ...article.notes.map(n => n.content),
+        ],
+        debouncedQuery
+      )
 
     );
 

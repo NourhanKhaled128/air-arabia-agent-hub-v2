@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { findMatchSnippet } from "@/lib/search-utils";
+import type { ReactNode } from "react";
+import { findMatchSnippet, matchesAllWords } from "@/lib/search-utils";
 
 export interface SearchableArticle {
   id: number;
@@ -25,8 +26,7 @@ interface Props {
 }
 
 function ArticleSnippet({ article, query }: { article: SearchableArticle; query: string }) {
-  const q = query.trim().toLowerCase();
-  const titleMatches = q !== "" && article.title.toLowerCase().includes(q);
+  const titleMatches = matchesAllWords([article.title], query);
 
   const match = titleMatches
     ? null
@@ -44,22 +44,27 @@ function ArticleSnippet({ article, query }: { article: SearchableArticle; query:
         query
       );
 
-  const text = match ? match.snippet : article.description;
   if (!match) {
-    return <p className="mt-2 text-sm text-gray-600">{text}</p>;
+    return <p className="mt-2 text-sm text-gray-600">{article.description}</p>;
   }
 
-  const before = text.slice(0, match.matchStart);
-  const highlighted = text.slice(match.matchStart, match.matchStart + match.matchLen);
-  const after = text.slice(match.matchStart + match.matchLen);
+  const { snippet, ranges } = match;
+  const parts: ReactNode[] = [];
+  let cursor = 0;
 
-  return (
-    <p className="mt-2 text-sm text-gray-600">
-      {before}
-      <mark className="rounded bg-yellow-200 px-0.5 text-gray-900">{highlighted}</mark>
-      {after}
-    </p>
-  );
+  ranges.forEach((range, i) => {
+    if (range.start < cursor) return;
+    parts.push(snippet.slice(cursor, range.start));
+    parts.push(
+      <mark key={i} className="rounded bg-yellow-200 px-0.5 text-gray-900">
+        {snippet.slice(range.start, range.start + range.len)}
+      </mark>
+    );
+    cursor = range.start + range.len;
+  });
+  parts.push(snippet.slice(cursor));
+
+  return <p className="mt-2 text-sm text-gray-600">{parts}</p>;
 }
 
 function ResultGroup({
