@@ -7,7 +7,7 @@ import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
 import NotificationBell from "./NotificationBell";
 import ThemeToggle from "./ThemeToggle";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
-import { matchesAllWords } from "@/lib/search-utils";
+import { sortByRelevance } from "@/lib/search-utils";
 
 interface Props {
   articles: SearchableArticle[];
@@ -56,25 +56,18 @@ export default function Header({ articles }: Props) {
 
     if (!debouncedQuery.trim()) return [];
 
-    return articles.filter(article =>
-
-      matchesAllWords(
-        [
-          article.title,
-          article.description,
-          article.category,
-          article.overview,
-          ...article.keywords.map(k => k.value),
-          ...article.scenarios.map(s => s.situation),
-          ...article.procedures.map(p => p.content),
-          ...article.dispositions.map(d => d.content),
-          ...article.escalations.map(e => e.content),
-          ...article.notes.map(n => n.content),
-        ],
-        debouncedQuery
-      )
-
-    );
+    return sortByRelevance(articles, debouncedQuery, (article) => [
+      { text: article.title, weight: 5 },
+      { text: article.keywords.map(k => k.value).join(" "), weight: 4 },
+      { text: article.description, weight: 3 },
+      { text: article.category, weight: 2 },
+      { text: article.overview, weight: 2 },
+      { text: article.scenarios.map(s => s.situation).join(" "), weight: 1 },
+      { text: article.procedures.map(p => p.content).join(" "), weight: 1 },
+      { text: article.dispositions.map(d => d.content).join(" "), weight: 1 },
+      { text: article.escalations.map(e => e.content).join(" "), weight: 1 },
+      { text: article.notes.map(n => n.content).join(" "), weight: 1 },
+    ]);
 
   }, [debouncedQuery, articles]);
 
