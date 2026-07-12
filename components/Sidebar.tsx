@@ -487,6 +487,14 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
 
               {collapsed ? (
                 <>
+                  <Link
+                    href="/important-links"
+                    title="All Important Links"
+                    className="mb-2 flex items-center justify-center rounded-xl px-0 py-3 text-gray-800 dark:text-slate-200 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                  >
+                    <ExternalLink size={20} />
+                  </Link>
+
                   {filteredImportantLinks.map((link) => {
                     const Icon = getSidebarIcon(link.icon);
 
@@ -506,22 +514,28 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
                 </>
               ) : (
                 <>
-                  <button
-                    onClick={() => setLinksOpen(!linksOpen)}
-                    className="mb-3 flex w-full items-center justify-between px-4"
-                  >
+                  <div className="mb-3 flex w-full items-center justify-between px-4">
 
-                    <span className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-slate-400">
+                    <Link
+                      href="/important-links"
+                      className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-slate-400 hover:text-brand"
+                    >
                       Important Links
-                    </span>
+                    </Link>
 
-                    {linksOpen ? (
-                      <ChevronDown size={16} />
-                    ) : (
-                      <ChevronRight size={16} />
-                    )}
+                    <button
+                      onClick={() => setLinksOpen(!linksOpen)}
+                      aria-label={linksOpen ? "Collapse important links" : "Expand important links"}
+                      className="text-gray-500 dark:text-slate-400 hover:text-brand"
+                    >
+                      {linksOpen ? (
+                        <ChevronDown size={16} />
+                      ) : (
+                        <ChevronRight size={16} />
+                      )}
+                    </button>
 
-                  </button>
+                  </div>
 
                   {linksOpen && (
                     <div>
