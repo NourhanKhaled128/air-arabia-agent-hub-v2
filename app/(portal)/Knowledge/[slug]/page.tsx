@@ -7,6 +7,7 @@ import ArticleCard from "@/components/ArticleCard";
 import CopyButton from "@/components/CopyButton";
 import PrintButton from "@/components/PrintButton";
 import ArticleFeedback from "@/components/ArticleFeedback";
+import ArticleTemplateTabs from "@/components/ArticleTemplateTabs";
 import ArticleComments from "@/components/ArticleComments";
 import ArticleViewTracker from "@/components/ArticleViewTracker";
 import { prisma } from "@/lib/prisma";
@@ -225,6 +226,13 @@ export default async function ArticlePage({ params }: Props) {
               ))}
             </div>
           </section>
+        )}
+
+        {(article.chatTemplates.length > 0 || article.emailTemplates.length > 0) && (
+          <ArticleTemplateTabs
+            chatTemplates={article.chatTemplates}
+            emailTemplates={article.emailTemplates}
+          />
         )}
 
         {article.dispositions.length > 0 && (

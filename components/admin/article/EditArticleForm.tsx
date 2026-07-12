@@ -14,6 +14,8 @@ import KeywordsSection from "./KeywordsSection";
 import ScenarioSection, { type ScenarioInput } from "./ScenarioSection";
 import PhotosSection, { type PhotoInput } from "./PhotosSection";
 import AttachmentsSection, { type AttachmentInput } from "./AttachmentsSection";
+import ChatTemplatesSection, { type ChatTemplateInput } from "./ChatTemplatesSection";
+import EmailTemplatesSection, { type EmailTemplateInput } from "./EmailTemplatesSection";
 import UpdatesSection, { type UpdateInput } from "./UpdatesSection";
 import ArticleSidebar from "./ArticleSidebar";
 
@@ -38,6 +40,8 @@ interface ArticleWithRelations {
   scenarios: { id: number; situation: string; response: string; images: string[] }[];
   images: { id: number; image: string }[];
   attachments: { id: number; fileName: string; url: string; mimeType: string; size: number }[];
+  chatTemplates: { id: number; title: string; content: string }[];
+  emailTemplates: { id: number; title: string; subject: string; body: string }[];
   updates: { id: number; title: string; content: string }[];
 }
 
@@ -73,6 +77,8 @@ interface EditFormData {
   scenarios: ScenarioInput[];
   images: PhotoInput[];
   attachments: AttachmentInput[];
+  chatTemplates: ChatTemplateInput[];
+  emailTemplates: EmailTemplateInput[];
   updates: UpdateInput[];
 }
 
@@ -132,6 +138,17 @@ function toFormData(article: ArticleWithRelations): EditFormData {
       url: a.url,
       mimeType: a.mimeType,
       size: a.size,
+    })),
+    chatTemplates: article.chatTemplates.map((c) => ({
+      id: c.id,
+      title: c.title,
+      content: c.content,
+    })),
+    emailTemplates: article.emailTemplates.map((e) => ({
+      id: e.id,
+      title: e.title,
+      subject: e.subject,
+      body: e.body,
     })),
     updates: article.updates.map((u) => ({
       id: u.id,
@@ -266,6 +283,16 @@ export default function EditArticleForm({
       <AttachmentsSection
         items={form.attachments}
         onChange={(attachments) => setForm((prev) => ({ ...prev, attachments }))}
+      />
+
+      <ChatTemplatesSection
+        items={form.chatTemplates}
+        onChange={(chatTemplates) => setForm((prev) => ({ ...prev, chatTemplates }))}
+      />
+
+      <EmailTemplatesSection
+        items={form.emailTemplates}
+        onChange={(emailTemplates) => setForm((prev) => ({ ...prev, emailTemplates }))}
       />
 
       <UpdatesSection

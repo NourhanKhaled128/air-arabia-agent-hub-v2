@@ -35,6 +35,8 @@ model Article {
   updates      ArticleUpdate[]
   comments     Comment[]
   feedback     Feedback[]
+  chatTemplates  ChatTemplate[]
+  emailTemplates EmailTemplate[]
 }
 
 model ArticleUpdate {
@@ -117,6 +119,23 @@ model Scenario {
   response  String
   images    String[] @default([])
   article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model ChatTemplate {
+  id        Int     @id @default(autoincrement())
+  articleId Int
+  title     String
+  content   String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model EmailTemplate {
+  id        Int     @id @default(autoincrement())
+  articleId Int
+  title     String
+  subject   String
+  body      String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
 
 model Attachment {

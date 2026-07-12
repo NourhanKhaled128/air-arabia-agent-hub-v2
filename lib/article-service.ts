@@ -48,6 +48,8 @@ export async function getArticleById(
       scenarios: true,
       images: true,
       attachments: true,
+      chatTemplates: true,
+      emailTemplates: true,
       updates: {
         orderBy: { createdAt: "desc" },
       },
@@ -147,6 +149,8 @@ interface ArticleSectionsInput {
   scenarios?: { situation: string; response: string; images?: string[] }[];
   images?: { url: string }[];
   attachments?: { fileName: string; url: string; mimeType: string; size: number }[];
+  chatTemplates?: { title: string; content: string }[];
+  emailTemplates?: { title: string; subject: string; body: string }[];
   updates?: { title: string; content: string; userName: string }[];
 }
 
@@ -211,6 +215,19 @@ export function buildArticleSectionsCreateData(body: ArticleSectionsInput) {
         url: item.url,
         mimeType: item.mimeType,
         size: item.size,
+      })),
+    },
+    chatTemplates: {
+      create: (body.chatTemplates ?? []).map((item) => ({
+        title: item.title,
+        content: item.content,
+      })),
+    },
+    emailTemplates: {
+      create: (body.emailTemplates ?? []).map((item) => ({
+        title: item.title,
+        subject: item.subject,
+        body: item.body,
       })),
     },
     updates: {

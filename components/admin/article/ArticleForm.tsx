@@ -14,6 +14,8 @@ import KeywordsSection from "./KeywordsSection";
 import ScenarioSection, { type ScenarioInput } from "./ScenarioSection";
 import PhotosSection, { type PhotoInput } from "./PhotosSection";
 import AttachmentsSection, { type AttachmentInput } from "./AttachmentsSection";
+import ChatTemplatesSection, { type ChatTemplateInput } from "./ChatTemplatesSection";
+import EmailTemplatesSection, { type EmailTemplateInput } from "./EmailTemplatesSection";
 import UpdatesSection, { type UpdateInput } from "./UpdatesSection";
 
 interface ArticleFormData {
@@ -34,6 +36,8 @@ interface ArticleFormData {
   scenarios: ScenarioInput[];
   images: PhotoInput[];
   attachments: AttachmentInput[];
+  chatTemplates: ChatTemplateInput[];
+  emailTemplates: EmailTemplateInput[];
   updates: UpdateInput[];
 }
 
@@ -61,6 +65,8 @@ const emptyFormData: ArticleFormData = {
   scenarios: [],
   images: [],
   attachments: [],
+  chatTemplates: [],
+  emailTemplates: [],
   updates: [],
 };
 
@@ -179,6 +185,16 @@ export default function ArticleForm({ categories = [], dispositionCodes = [], de
       <AttachmentsSection
         items={formData.attachments}
         onChange={(attachments) => setFormData((prev) => ({ ...prev, attachments }))}
+      />
+
+      <ChatTemplatesSection
+        items={formData.chatTemplates}
+        onChange={(chatTemplates) => setFormData((prev) => ({ ...prev, chatTemplates }))}
+      />
+
+      <EmailTemplatesSection
+        items={formData.emailTemplates}
+        onChange={(emailTemplates) => setFormData((prev) => ({ ...prev, emailTemplates }))}
       />
 
       <UpdatesSection
