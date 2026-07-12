@@ -43,6 +43,25 @@ async function seedReferenceToolLinks() {
   console.log("Seeded disposition/escalation sidebar links.");
 }
 
+async function seedCustomerSupportLink() {
+  const existing = await prisma.sidebarLink.findFirst({
+    where: { href: "/CustomerSupport" },
+  });
+  if (existing) return;
+
+  await prisma.sidebarLink.create({
+    data: {
+      label: "Customer Support",
+      href: "/CustomerSupport",
+      icon: "MessageSquare",
+      section: "pinned",
+      order: 3,
+    },
+  });
+
+  console.log("Seeded Customer Support sidebar link.");
+}
+
 async function seedQuickActions() {
   const count = await prisma.sidebarLink.count({
     where: { section: "quickActions" },
@@ -217,6 +236,7 @@ async function seedRolesAndAdmin() {
 async function main() {
   await seedSidebarLinks();
   await seedReferenceToolLinks();
+  await seedCustomerSupportLink();
   await seedQuickActions();
   await seedDisruptions();
   await seedNotifications();
