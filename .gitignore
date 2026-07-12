@@ -45,3 +45,4 @@ next-env.d.ts
 # reference material, too large for GitHub's 100MB limit
 PPT/*.zip
 Files/*.zip
+Files/**/*.pptx

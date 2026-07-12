@@ -236,6 +236,16 @@ export default async function ArticlePage({ params }: Props) {
                     <CopyButton text={step.content} compact />
                   </div>
                   <p className="whitespace-pre-wrap text-gray-700 dark:text-slate-300">{step.content}</p>
+                  {step.image && (
+                    <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 dark:border-border-subtle">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={step.image}
+                        alt={`Step ${step.stepNo}${step.title ? `: ${step.title}` : ""}`}
+                        className="w-full object-contain"
+                      />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
