@@ -62,6 +62,45 @@ async function seedCustomerSupportLink() {
   console.log("Seeded Customer Support sidebar link.");
 }
 
+async function seedCustomerSupportTeamSection() {
+  const existingCategory = await prisma.category.findUnique({
+    where: { name: "Customer Support Team" },
+  });
+
+  if (!existingCategory) {
+    await prisma.category.create({
+      data: {
+        name: "Customer Support Team",
+        slug: "customer-support-team",
+        description: "Resources and procedures for the customer support team.",
+        color: "bg-red-100 text-red-700",
+        icon: "Folder",
+        visible: true,
+        order: 8,
+        group: "Knowledge Base",
+      },
+    });
+    console.log("Seeded Customer Support Team category.");
+  }
+
+  const existingLink = await prisma.sidebarLink.findFirst({
+    where: { href: "/CustomerSupportTeam" },
+  });
+
+  if (!existingLink) {
+    await prisma.sidebarLink.create({
+      data: {
+        label: "Customer Support Team",
+        href: "/CustomerSupportTeam",
+        icon: "PhoneCall",
+        section: "pinned",
+        order: 4,
+      },
+    });
+    console.log("Seeded Customer Support Team sidebar link.");
+  }
+}
+
 async function seedQuickActions() {
   const count = await prisma.sidebarLink.count({
     where: { section: "quickActions" },
@@ -237,6 +276,7 @@ async function main() {
   await seedSidebarLinks();
   await seedReferenceToolLinks();
   await seedCustomerSupportLink();
+  await seedCustomerSupportTeamSection();
   await seedQuickActions();
   await seedDisruptions();
   await seedNotifications();
