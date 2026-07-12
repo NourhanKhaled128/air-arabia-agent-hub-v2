@@ -16,14 +16,22 @@ interface DecisionTreeWithNodes {
     id: number;
     type: string;
     text: string;
+    image: string | null;
     order: number;
-    options: { id: number; label: string; targetNodeId: number | null; order: number }[];
+    options: {
+      id: number;
+      label: string;
+      targetNodeId: number | null;
+      targetTreeId: number | null;
+      order: number;
+    }[];
   }[];
 }
 
 interface Props {
   tree: DecisionTreeWithNodes;
   articles?: { id: number; title: string }[];
+  trees?: { id: number; title: string; slug: string }[];
 }
 
 interface EditFormData {
@@ -48,16 +56,18 @@ function toFormData(tree: DecisionTreeWithNodes): EditFormData {
       id: node.id,
       type: node.type as "question" | "outcome",
       text: node.text,
+      image: node.image ?? "",
       options: node.options.map((opt) => ({
         id: opt.id,
         label: opt.label,
         targetId: opt.targetNodeId,
+        targetTreeId: opt.targetTreeId,
       })),
     })),
   };
 }
 
-export default function EditDecisionTreeForm({ tree, articles = [] }: Props) {
+export default function EditDecisionTreeForm({ tree, articles = [], trees = [] }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState<EditFormData>(() => toFormData(tree));
@@ -84,10 +94,12 @@ export default function EditDecisionTreeForm({ tree, articles = [] }: Props) {
             clientKey: node.id,
             type: node.type,
             text: node.text,
+            image: node.image,
             order: index,
             options: node.options.map((opt) => ({
               label: opt.label,
               targetClientKey: opt.targetId,
+              targetTreeId: opt.targetTreeId,
             })),
           })),
         }),
@@ -183,6 +195,8 @@ export default function EditDecisionTreeForm({ tree, articles = [] }: Props) {
       <NodeEditor
         nodes={form.nodes}
         onChange={(nodes) => setForm((prev) => ({ ...prev, nodes }))}
+        trees={trees}
+        currentTreeId={tree.id}
       />
 
       <div className="flex justify-end">

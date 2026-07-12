@@ -140,18 +140,19 @@ model EmailTemplate {
 }
 
 model DecisionTree {
-  id              Int            @id @default(autoincrement())
+  id              Int              @id @default(autoincrement())
   title           String
-  slug            String         @unique
+  slug            String           @unique
   description     String?
   topic           String?
-  status          String         @default("Draft")
+  status          String           @default("Draft")
   author          String
   sourceArticleId Int?
-  sourceArticle   Article?       @relation(fields: [sourceArticleId], references: [id], onDelete: SetNull)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  sourceArticle   Article?         @relation(fields: [sourceArticleId], references: [id], onDelete: SetNull)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   nodes           DecisionNode[]
+  incomingLinks   DecisionOption[] @relation("TargetTree")
 }
 
 model DecisionNode {
@@ -160,17 +161,20 @@ model DecisionNode {
   tree    DecisionTree     @relation(fields: [treeId], references: [id], onDelete: Cascade)
   type    String
   text    String
+  image   String?
   order   Int
   options DecisionOption[] @relation("SourceNode")
 }
 
 model DecisionOption {
-  id           Int          @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   nodeId       Int
-  node         DecisionNode @relation("SourceNode", fields: [nodeId], references: [id], onDelete: Cascade)
+  node         DecisionNode  @relation("SourceNode", fields: [nodeId], references: [id], onDelete: Cascade)
   label        String
   targetNodeId Int?
-  order        Int          @default(0)
+  targetTreeId Int?
+  targetTree   DecisionTree? @relation("TargetTree", fields: [targetTreeId], references: [id], onDelete: SetNull)
+  order        Int           @default(0)
 }
 
 model ExcessBaggageRate {

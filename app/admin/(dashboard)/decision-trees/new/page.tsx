@@ -3,11 +3,13 @@ import DecisionTreeForm from "@/components/admin/decision-tree/DecisionTreeForm"
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getAllArticles } from "@/lib/article-service";
 import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getAllDecisionTreesForLinking } from "@/lib/decision-tree-service";
 
 export default async function NewDecisionTreePage() {
-  const [articles, currentUser] = await Promise.all([
+  const [articles, currentUser, trees] = await Promise.all([
     getAllArticles(),
     getCurrentAdminUser(),
+    getAllDecisionTreesForLinking(),
   ]);
 
   return (
@@ -27,6 +29,7 @@ export default async function NewDecisionTreePage() {
 
       <DecisionTreeForm
         articles={articles.map((a) => ({ id: a.id, title: a.title }))}
+        trees={trees}
         defaultAuthor={currentUser?.name ?? ""}
       />
     </div>

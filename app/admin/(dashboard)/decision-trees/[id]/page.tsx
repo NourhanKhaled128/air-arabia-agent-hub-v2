@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getDecisionTreeById } from "@/lib/decision-tree-service";
+import { getDecisionTreeById, getAllDecisionTreesForLinking } from "@/lib/decision-tree-service";
 import EditDecisionTreeForm from "@/components/admin/decision-tree/EditDecisionTreeForm";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getAllArticles } from "@/lib/article-service";
@@ -14,9 +14,10 @@ export default async function EditDecisionTreePage({ params }: Props) {
   const { id } = await params;
   const treeId = Number(id);
 
-  const [tree, articles] = await Promise.all([
+  const [tree, articles, trees] = await Promise.all([
     getDecisionTreeById(treeId),
     getAllArticles(),
+    getAllDecisionTreesForLinking(),
   ]);
 
   if (!tree) {
@@ -33,6 +34,7 @@ export default async function EditDecisionTreePage({ params }: Props) {
       <EditDecisionTreeForm
         tree={tree}
         articles={articles.map((a) => ({ id: a.id, title: a.title }))}
+        trees={trees}
       />
     </div>
   );

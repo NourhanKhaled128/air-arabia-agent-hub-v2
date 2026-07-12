@@ -5,8 +5,9 @@ export interface DecisionTreeNodeInput {
   clientKey: number;
   type: "question" | "outcome";
   text: string;
+  image?: string | null;
   order: number;
-  options: { label: string; targetClientKey: number | null }[];
+  options: { label: string; targetClientKey: number | null; targetTreeId?: number | null }[];
 }
 
 export interface DecisionTreeInput {
@@ -42,7 +43,7 @@ export async function getDecisionTreeById(id: number) {
     include: {
       nodes: {
         orderBy: { order: "asc" },
-        include: { options: { orderBy: { order: "asc" } } },
+        include: { options: { orderBy: { order: "asc" }, include: { targetTree: { select: { id: true, title: true, slug: true } } } } },
       },
     },
   });
@@ -55,9 +56,16 @@ export async function getDecisionTreeBySlug(slug: string) {
       sourceArticle: { select: { id: true, slug: true, title: true } },
       nodes: {
         orderBy: { order: "asc" },
-        include: { options: { orderBy: { order: "asc" } } },
+        include: { options: { orderBy: { order: "asc" }, include: { targetTree: { select: { id: true, title: true, slug: true } } } } },
       },
     },
+  });
+}
+
+export async function getAllDecisionTreesForLinking() {
+  return prisma.decisionTree.findMany({
+    select: { id: true, title: true, slug: true },
+    orderBy: { title: "asc" },
   });
 }
 
@@ -122,6 +130,7 @@ async function insertNodesAndOptionsTx(
         treeId,
         type: node.type,
         text: node.text,
+        image: node.image || null,
         order: node.order,
       },
     });
@@ -141,6 +150,7 @@ async function insertNodesAndOptionsTx(
           nodeId,
           label: option.label,
           targetNodeId,
+          targetTreeId: option.targetTreeId ?? null,
           order: index,
         },
       });

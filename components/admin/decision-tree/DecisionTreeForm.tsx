@@ -14,6 +14,7 @@ interface DecisionTreeFormData {
 
 interface Props {
   articles?: { id: number; title: string }[];
+  trees?: { id: number; title: string; slug: string }[];
   defaultAuthor?: string;
 }
 
@@ -23,10 +24,10 @@ const emptyFormData: DecisionTreeFormData = {
   topic: "",
   status: "Draft",
   sourceArticleId: null,
-  nodes: [{ id: Date.now(), type: "question", text: "", options: [] }],
+  nodes: [{ id: Date.now(), type: "question", text: "", image: "", options: [] }],
 };
 
-export default function DecisionTreeForm({ articles = [], defaultAuthor = "" }: Props) {
+export default function DecisionTreeForm({ articles = [], trees = [], defaultAuthor = "" }: Props) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<DecisionTreeFormData>(emptyFormData);
 
@@ -56,10 +57,12 @@ export default function DecisionTreeForm({ articles = [], defaultAuthor = "" }: 
             clientKey: node.id,
             type: node.type,
             text: node.text,
+            image: node.image,
             order: index,
             options: node.options.map((opt) => ({
               label: opt.label,
               targetClientKey: opt.targetId,
+              targetTreeId: opt.targetTreeId,
             })),
           })),
         }),
@@ -158,6 +161,7 @@ export default function DecisionTreeForm({ articles = [], defaultAuthor = "" }: 
       <NodeEditor
         nodes={formData.nodes}
         onChange={(nodes) => setFormData((prev) => ({ ...prev, nodes }))}
+        trees={trees}
       />
 
       <section className="rounded-3xl bg-white p-8 shadow-sm">

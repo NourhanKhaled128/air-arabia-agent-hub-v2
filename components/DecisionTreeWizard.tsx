@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, RotateCcw } from "lucide-react";
 import CopyButton from "./CopyButton";
 import ExcessBaggageRateFinder, {
@@ -11,12 +12,14 @@ interface Option {
   id: number;
   label: string;
   targetNodeId: number | null;
+  targetTree?: { id: number; title: string; slug: string } | null;
 }
 
 interface Node {
   id: number;
   type: string;
   text: string;
+  image?: string | null;
   options: Option[];
 }
 
@@ -27,6 +30,7 @@ interface Props {
 }
 
 export default function DecisionTreeWizard({ nodes, excessBaggageHub, excessBaggageRates }: Props) {
+  const router = useRouter();
   const rootId = nodes[0]?.id ?? null;
   const [currentId, setCurrentId] = useState<number | null>(rootId);
   const [history, setHistory] = useState<number[]>([]);
@@ -35,6 +39,12 @@ export default function DecisionTreeWizard({ nodes, excessBaggageHub, excessBagg
 
   function choose(option: Option) {
     if (currentId === null) return;
+
+    if (option.targetNodeId === null && option.targetTree) {
+      router.push(`/decision-trees/${option.targetTree.slug}`);
+      return;
+    }
+
     setHistory((prev) => [...prev, currentId]);
     setCurrentId(option.targetNodeId);
   }
@@ -107,6 +117,13 @@ export default function DecisionTreeWizard({ nodes, excessBaggageHub, excessBagg
             {current.text}
           </h3>
 
+          {current.image && (
+            <div className="mb-5 overflow-hidden rounded-xl border border-gray-200 dark:border-border-subtle">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={current.image} alt="" className="w-full object-contain" />
+            </div>
+          )}
+
           <div className="flex flex-wrap gap-3">
             {current.options.map((option) => (
               <button
@@ -115,6 +132,7 @@ export default function DecisionTreeWizard({ nodes, excessBaggageHub, excessBagg
                 className="rounded-xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface px-5 py-3 font-semibold text-gray-800 dark:text-slate-200 hover:border-red-400 hover:bg-red-50 dark:hover:bg-brand/10"
               >
                 {option.label}
+                {option.targetNodeId === null && option.targetTree ? " →" : ""}
               </button>
             ))}
           </div>
@@ -128,12 +146,35 @@ export default function DecisionTreeWizard({ nodes, excessBaggageHub, excessBagg
             </div>
           </div>
 
+          {current.image && (
+            <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-border-subtle">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={current.image} alt="" className="w-full object-contain" />
+            </div>
+          )}
+
           {excessBaggageHub && excessBaggageRates && (
             <div className="rounded-xl border border-gray-200 dark:border-border-subtle p-5">
               <p className="mb-3 text-sm font-semibold text-gray-600 dark:text-slate-300">
                 Need the exact figure? Search the live {excessBaggageHub} rate table:
               </p>
               <ExcessBaggageRateFinder rates={excessBaggageRates} defaultHub={excessBaggageHub} compact />
+            </div>
+          )}
+
+          {current.options.filter((o) => o.targetTree).length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              {current.options
+                .filter((o) => o.targetTree)
+                .map((option) => (
+                  <button
+                    key={option.id}
+                    onClick={() => choose(option)}
+                    className="rounded-xl border border-red-200 dark:border-brand/30 bg-red-50 dark:bg-brand/10 px-5 py-3 font-semibold text-red-700 dark:text-brand hover:bg-red-100 dark:hover:bg-brand/20"
+                  >
+                    {option.label || `Continue to: ${option.targetTree!.title}`} →
+                  </button>
+                ))}
             </div>
           )}
         </div>

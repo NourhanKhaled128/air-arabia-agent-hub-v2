@@ -7,23 +7,29 @@ export interface DecisionOptionInput {
   id: number;
   label: string;
   targetId: number | null;
+  targetTreeId: number | null;
 }
 
 export interface DecisionNodeInput {
   id: number;
   type: "question" | "outcome";
   text: string;
+  image: string;
   options: DecisionOptionInput[];
 }
 
 interface Props {
   nodes: DecisionNodeInput[];
   onChange: (nodes: DecisionNodeInput[]) => void;
+  trees?: { id: number; title: string; slug: string }[];
+  currentTreeId?: number;
 }
 
-export default function NodeEditor({ nodes, onChange }: Props) {
+export default function NodeEditor({ nodes, onChange, trees = [], currentTreeId }: Props) {
+  const otherTrees = trees.filter((t) => t.id !== currentTreeId);
+
   function addNode() {
-    onChange([...nodes, { id: Date.now(), type: "question", text: "", options: [] }]);
+    onChange([...nodes, { id: Date.now(), type: "question", text: "", image: "", options: [] }]);
   }
 
   function removeNode(id: number) {
@@ -47,10 +53,28 @@ export default function NodeEditor({ nodes, onChange }: Props) {
     onChange(
       nodes.map((node) =>
         node.id === nodeId
-          ? { ...node, options: [...node.options, { id: Date.now(), label: "", targetId: null }] }
+          ? {
+              ...node,
+              options: [
+                ...node.options,
+                { id: Date.now(), label: "", targetId: null, targetTreeId: null },
+              ],
+            }
           : node
       )
     );
+  }
+
+  async function uploadNodeImage(nodeId: number, file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/upload", { method: "POST", body: formData });
+    const result = await response.json();
+
+    if (response.ok) {
+      updateNode(nodeId, { image: result.url });
+    }
   }
 
   function updateOption(nodeId: number, optionId: number, patch: Partial<DecisionOptionInput>) {
@@ -172,9 +196,38 @@ export default function NodeEditor({ nodes, onChange }: Props) {
                 className="w-full rounded-xl border p-4"
               />
 
-              {node.type === "question" && (
-                <div className="mt-4 space-y-3">
-                  <p className="text-sm font-semibold text-gray-600">Options</p>
+              <div className="mt-4">
+                <label className="mb-2 block text-sm font-semibold text-gray-600">
+                  Node image (optional)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) uploadNodeImage(node.id, file);
+                  }}
+                />
+                {node.image && (
+                  <img
+                    src={node.image}
+                    alt=""
+                    className="mt-3 h-32 rounded-xl border object-cover"
+                  />
+                )}
+              </div>
+
+              <div className="mt-4 space-y-3">
+                <p className="text-sm font-semibold text-gray-600">
+                  {node.type === "question" ? "Options" : "Continue to (optional)"}
+                </p>
+                {node.type === "outcome" && (
+                  <p className="text-xs text-gray-500">
+                    Use this if resolving this outcome naturally continues into another
+                    process — e.g. &quot;Case created, also need to reschedule?&quot; → jump
+                    to the Flight Rescheduling tree.
+                  </p>
+                )}
 
                   {node.options.map((option) => (
                     <div key={option.id} className="flex items-center gap-2">
@@ -184,27 +237,52 @@ export default function NodeEditor({ nodes, onChange }: Props) {
                         onChange={(e) =>
                           updateOption(node.id, option.id, { label: e.target.value })
                         }
-                        placeholder="Option label, e.g. Under 40 inch"
+                        placeholder={
+                          node.type === "question"
+                            ? "Option label, e.g. Under 40 inch"
+                            : "Label, e.g. Also reschedule the flight"
+                        }
                         className="flex-1 rounded-xl border p-3"
                       />
 
+                      {node.type === "question" && (
+                        <select
+                          value={option.targetId ?? ""}
+                          onChange={(e) =>
+                            updateOption(node.id, option.id, {
+                              targetId: e.target.value ? Number(e.target.value) : null,
+                              targetTreeId: e.target.value ? null : option.targetTreeId,
+                            })
+                          }
+                          className="w-56 rounded-xl border p-3"
+                        >
+                          <option value="">— leads to node… —</option>
+                          {nodes
+                            .filter((n) => n.id !== node.id)
+                            .map((n) => (
+                              <option key={n.id} value={n.id}>
+                                {nodePreview(n, nodes.findIndex((x) => x.id === n.id))}
+                              </option>
+                            ))}
+                        </select>
+                      )}
+
                       <select
-                        value={option.targetId ?? ""}
+                        value={option.targetTreeId ?? ""}
                         onChange={(e) =>
                           updateOption(node.id, option.id, {
-                            targetId: e.target.value ? Number(e.target.value) : null,
+                            targetTreeId: e.target.value ? Number(e.target.value) : null,
+                            targetId: e.target.value ? null : option.targetId,
                           })
                         }
-                        className="w-64 rounded-xl border p-3"
+                        className="w-56 rounded-xl border p-3"
                       >
-                        <option value="">— leads to… —</option>
-                        {nodes
-                          .filter((n) => n.id !== node.id)
-                          .map((n) => (
-                            <option key={n.id} value={n.id}>
-                              {nodePreview(n, nodes.findIndex((x) => x.id === n.id))}
-                            </option>
-                          ))}
+                        <option value="">— or jump to tree… —</option>
+                        {otherTrees.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.title}
+                          </option>
+                        ))}
                       </select>
 
                       <button type="button" onClick={() => removeOption(node.id, option.id)}>
@@ -219,10 +297,9 @@ export default function NodeEditor({ nodes, onChange }: Props) {
                     className="flex items-center gap-1 text-sm font-semibold text-red-700"
                   >
                     <Plus size={14} />
-                    Add option
+                    {node.type === "question" ? "Add option" : "Add continuation"}
                   </button>
                 </div>
-              )}
             </div>
           );
         }}

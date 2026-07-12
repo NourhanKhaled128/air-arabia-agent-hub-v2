@@ -2,17 +2,34 @@ interface Option {
   id: number;
   label: string;
   targetNodeId: number | null;
+  targetTree?: { id: number; title: string; slug: string } | null;
 }
 
 interface Node {
   id: number;
   type: string;
   text: string;
+  image?: string | null;
   options: Option[];
 }
 
 interface Props {
   nodes: Node[];
+}
+
+function renderTarget(option: Option, nodesById: Map<number, Node>, visited: Set<number>) {
+  if (option.targetNodeId === null && option.targetTree) {
+    return (
+      <a
+        href={`/decision-trees/${option.targetTree.slug}`}
+        className="inline-block rounded-lg border border-red-200 dark:border-brand/30 bg-red-50 dark:bg-brand/10 px-3 py-2 text-sm font-semibold text-red-700 dark:text-brand hover:underline"
+      >
+        → Continue to: {option.targetTree.title}
+      </a>
+    );
+  }
+
+  return renderNode(option.targetNodeId, nodesById, visited);
 }
 
 function renderNode(nodeId: number | null, nodesById: Map<number, Node>, visited: Set<number>) {
@@ -36,9 +53,20 @@ function renderNode(nodeId: number | null, nodesById: Map<number, Node>, visited
   const nextVisited = new Set(visited).add(nodeId);
 
   if (node.type === "outcome") {
+    const continuations = node.options.filter((o) => o.targetTree);
+
     return (
-      <div className="rounded-xl bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm text-gray-800 dark:text-slate-100">
-        {node.text}
+      <div className="space-y-2">
+        <div className="rounded-xl bg-emerald-50 dark:bg-emerald-500/10 px-4 py-3 text-sm text-gray-800 dark:text-slate-100">
+          {node.text}
+          {node.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={node.image} alt="" className="mt-2 h-20 rounded-lg border object-cover" />
+          )}
+        </div>
+        {continuations.map((option) => (
+          <div key={option.id}>{renderTarget(option, nodesById, nextVisited)}</div>
+        ))}
       </div>
     );
   }
@@ -53,7 +81,7 @@ function renderNode(nodeId: number | null, nodesById: Map<number, Node>, visited
             <span className="mb-1.5 inline-block rounded-full bg-red-100 dark:bg-brand/10 px-3 py-1 text-xs font-semibold text-red-700 dark:text-brand">
               {option.label}
             </span>
-            {renderNode(option.targetNodeId, nodesById, nextVisited)}
+            {renderTarget(option, nodesById, nextVisited)}
           </div>
         ))}
       </div>
