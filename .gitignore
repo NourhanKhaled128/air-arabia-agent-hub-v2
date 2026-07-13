@@ -50,3 +50,6 @@ Files/**/*.pptx
 # stray portable Node.js distribution (belongs one level up, outside the repo)
 /node-v24.18.0-win-x64/
 /node-v24.18.0-win-x64.zip
+
+# database backups (contain real data, never commit)
+/backups/
