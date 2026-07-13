@@ -32,7 +32,7 @@ interface ArticleWithRelations {
   createdAt: Date;
   updatedAt: Date;
   procedures: { id: number; title: string | null; content: string; image: string | null }[];
-  dispositions: { id: number; code: string | null; content: string; images: string[] }[];
+  dispositions: { id: number; category: string | null; code: string | null; content: string; scenario: string | null; images: string[] }[];
   escalations: { id: number; department: string | null; condition: string | null; content: string; images: string[] }[];
   notes: { id: number; type: string; content: string; images: string[] }[];
   references: { id: number; title: string; type: string; link: string | null; images: string[] }[];
@@ -55,7 +55,7 @@ interface HistoryEntry {
 interface Props {
   article: ArticleWithRelations;
   categories?: { id: number; name: string; folders?: { id: number; name: string }[] }[];
-  dispositionCodes?: { code: string; label: string }[];
+  dispositionCodes?: { code: string; label: string; category?: string | null }[];
   history?: HistoryEntry[];
 }
 
@@ -100,8 +100,10 @@ function toFormData(article: ArticleWithRelations): EditFormData {
     })),
     dispositions: article.dispositions.map((d) => ({
       id: d.id,
+      category: d.category ?? "",
       code: d.code ?? "",
       content: d.content,
+      scenario: d.scenario ?? "",
       images: d.images,
     })),
     escalations: article.escalations.map((e) => ({

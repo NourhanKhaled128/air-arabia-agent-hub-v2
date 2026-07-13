@@ -10,6 +10,7 @@ interface Disposition {
   code: string;
   label: string;
   description: string | null;
+  scenario: string | null;
   category: string | null;
   active: boolean;
 }
@@ -28,10 +29,11 @@ export default function DispositionCodesTable({ dispositions }: Props) {
   return (
     <AdminListTable
       columns={[
-        { key: "category", label: "Category" },
-        { key: "code", label: "Code" },
+        { key: "category", label: "Main" },
+        { key: "code", label: "Sub" },
         { key: "label", label: "Label" },
-        { key: "description", label: "Description" },
+        { key: "description", label: "Descrip" },
+        { key: "scenario", label: "Scenario" },
         { key: "status", label: "Status" },
       ]}
       data={dispositions}
@@ -42,7 +44,8 @@ export default function DispositionCodesTable({ dispositions }: Props) {
           item.code.toLowerCase().includes(q) ||
           item.label.toLowerCase().includes(q) ||
           (item.category ?? "").toLowerCase().includes(q) ||
-          (item.description ?? "").toLowerCase().includes(q)
+          (item.description ?? "").toLowerCase().includes(q) ||
+          (item.scenario ?? "").toLowerCase().includes(q)
         );
       }}
       filters={[
@@ -73,7 +76,8 @@ export default function DispositionCodesTable({ dispositions }: Props) {
           <td className="px-6 py-5 text-slate-500">{disposition.category ?? "-"}</td>
           <td className="px-6 py-5 font-semibold">{disposition.code}</td>
           <td className="px-6 py-5">{disposition.label}</td>
-          <td className="px-6 py-5 text-slate-500">{disposition.description ?? "-"}</td>
+          <td className="px-6 py-5 text-slate-500 max-w-xs truncate">{disposition.description ?? "-"}</td>
+          <td className="px-6 py-5 text-slate-500 max-w-xs truncate">{disposition.scenario ?? "-"}</td>
           <td className="px-6 py-5">
             <AdminBadge color={disposition.active ? "green" : "gray"}>
               {disposition.active ? "Active" : "Inactive"}

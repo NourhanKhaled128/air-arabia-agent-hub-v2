@@ -8,6 +8,7 @@ interface DispositionCode {
   code: string;
   label: string;
   description: string | null;
+  scenario: string | null;
   category: string | null;
 }
 
@@ -30,7 +31,8 @@ export default function DispositionCodeFinder({ dispositions }: Props) {
         d.code.toLowerCase().includes(q) ||
         d.label.toLowerCase().includes(q) ||
         (d.category ?? "").toLowerCase().includes(q) ||
-        (d.description ?? "").toLowerCase().includes(q)
+        (d.description ?? "").toLowerCase().includes(q) ||
+        (d.scenario ?? "").toLowerCase().includes(q)
     );
   }, [query, dispositions]);
 
@@ -105,8 +107,9 @@ export default function DispositionCodeFinder({ dispositions }: Props) {
                 <table className="w-full">
                   <thead className="border-t border-gray-100 bg-gray-50/50">
                     <tr className="text-left text-sm text-gray-500">
-                      <th className="px-6 py-3">Subtype</th>
-                      <th className="px-6 py-3">Call Scenario</th>
+                      <th className="px-6 py-3">Sub</th>
+                      <th className="px-6 py-3">Descrip</th>
+                      <th className="px-6 py-3">Scenario</th>
                       <th className="px-6 py-3" />
                     </tr>
                   </thead>
@@ -120,8 +123,9 @@ export default function DispositionCodeFinder({ dispositions }: Props) {
                           </span>
                         </td>
                         <td className="px-6 py-4 text-gray-600">{d.description ?? "-"}</td>
+                        <td className="px-6 py-4 text-gray-600">{d.scenario ?? "-"}</td>
                         <td className="px-6 py-4 text-right">
-                          <CopyButton text={`${d.label}: ${d.description ?? ""}`} compact />
+                          <CopyButton text={`${category} — ${d.label}: ${d.description ?? ""}${d.scenario ? ` (${d.scenario})` : ""}`} compact />
                         </td>
                       </tr>
                     ))}

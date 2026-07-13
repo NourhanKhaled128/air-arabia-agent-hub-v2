@@ -43,7 +43,7 @@ interface ArticleFormData {
 
 interface Props {
   categories?: { id: number; name: string; folders?: { id: number; name: string }[] }[];
-  dispositionCodes?: { code: string; label: string }[];
+  dispositionCodes?: { code: string; label: string; category?: string | null }[];
   defaultAuthor?: string;
 }
 

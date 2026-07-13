@@ -231,7 +231,7 @@ export async function getRecentArticleChanges(limit = 15) {
 
 interface ArticleSectionsInput {
   procedures?: { title?: string; content: string; image?: string }[];
-  dispositions?: { code?: string; content: string; images?: string[] }[];
+  dispositions?: { category?: string; code?: string; content: string; scenario?: string; images?: string[] }[];
   escalations?: { department?: string; condition?: string; content: string; images?: string[] }[];
   notes?: { type?: string; content: string; images?: string[] }[];
   references?: { title: string; type?: string; link?: string; images?: string[] }[];
@@ -256,8 +256,10 @@ export function buildArticleSectionsCreateData(body: ArticleSectionsInput) {
     },
     dispositions: {
       create: (body.dispositions ?? []).map((item) => ({
+        category: item.category || null,
         code: item.code || null,
         content: item.content,
+        scenario: item.scenario || null,
         images: item.images ?? [],
       })),
     },

@@ -6,6 +6,7 @@ interface DispositionCode {
   code: string;
   label: string;
   description: string | null;
+  scenario?: string | null;
   category?: string | null;
   active: boolean;
 }
@@ -28,7 +29,7 @@ export default function DispositionComposer({
 
       <AdminInput
         name="category"
-        label="Category (Type)"
+        label="Main (Category)"
         placeholder="e.g. New booking, Complaint, Baggage..."
         defaultValue={disposition?.category ?? ""}
         list="disposition-categories"
@@ -46,7 +47,7 @@ export default function DispositionComposer({
 
         <AdminInput
           name="code"
-          label="Code"
+          label="Sub (Code)"
           placeholder="e.g. RSLVD"
           defaultValue={disposition?.code}
           required
@@ -74,9 +75,16 @@ export default function DispositionComposer({
 
       <AdminTextarea
         name="description"
-        label="Description"
+        label="Descrip (Description)"
         placeholder="When should champions use this code?"
         defaultValue={disposition?.description ?? ""}
+      />
+
+      <AdminTextarea
+        name="scenario"
+        label="Scenario"
+        placeholder="A concrete example call — e.g. 'A passenger asks...'"
+        defaultValue={disposition?.scenario ?? ""}
       />
 
       <div className="flex justify-end">

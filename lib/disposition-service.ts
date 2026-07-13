@@ -5,6 +5,7 @@ export interface DispositionCodeRow {
   code: string;
   label: string;
   description?: string;
+  scenario?: string;
   category?: string;
   active: boolean;
 }
@@ -42,6 +43,7 @@ export async function createDispositionCode(data: {
   code: string;
   label: string;
   description?: string;
+  scenario?: string;
   category?: string;
   active: boolean;
 }) {
@@ -54,6 +56,7 @@ export async function updateDispositionCode(
     code: string;
     label: string;
     description: string;
+    scenario: string;
     category: string;
     active: boolean;
   }>
@@ -84,10 +87,11 @@ export async function replaceDispositionCodesFromRows(rows: DispositionCodeRow[]
 const REQUIRED_COLUMNS = ["code", "label"] as const;
 
 const COLUMN_ALIASES: Record<string, string[]> = {
-  category: ["category", "type"],
-  code: ["code", "subtype"],
+  category: ["category", "type", "main"],
+  code: ["code", "subtype", "sub"],
   label: ["label", "subtype", "name"],
-  description: ["description", "call scenario", "scenario"],
+  description: ["description", "call scenario", "descrip"],
+  scenario: ["scenario", "real scenario", "example scenario"],
   active: ["active", "status"],
 };
 
@@ -147,7 +151,7 @@ export async function parseDispositionCodesWorkbook(buffer: ArrayBuffer): Promis
   const missing = REQUIRED_COLUMNS.filter((col) => !(col in columnIndex));
   if (missing.length > 0) {
     throw new Error(
-      `Could not find a header row with the required column(s): ${missing.join(", ")}. Expected a header row (within the first ${MAX_HEADER_SEARCH_ROWS} rows) with: code (or Subtype), label (or Subtype/Name) — category/type, description/call scenario, and active are optional.`
+      `Could not find a header row with the required column(s): ${missing.join(", ")}. Expected a header row (within the first ${MAX_HEADER_SEARCH_ROWS} rows) with: code (or Subtype), label (or Subtype/Name) — category/main/type, description/call scenario, scenario, and active are optional.`
     );
   }
 
@@ -164,17 +168,21 @@ export async function parseDispositionCodesWorkbook(buffer: ArrayBuffer): Promis
     const description = columnIndex.description
       ? String(row.getCell(columnIndex.description).value ?? "").trim()
       : "";
+    const scenario = columnIndex.scenario
+      ? String(row.getCell(columnIndex.scenario).value ?? "").trim()
+      : "";
     const active = columnIndex.active
       ? parseActive(row.getCell(columnIndex.active).value)
       : true;
 
-    if (!code && !label && !category && !description) return;
+    if (!code && !label && !category && !description && !scenario) return;
 
     rows.push({
       code,
       label,
       category: category || undefined,
       description: description || undefined,
+      scenario: scenario || undefined,
       active,
     });
   });

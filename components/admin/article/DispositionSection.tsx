@@ -6,21 +6,26 @@ import { uploadFile, pastedImageFile } from "@/lib/upload-client";
 
 export interface DispositionInput {
   id: number;
+  category: string;
   code: string;
   content: string;
+  scenario: string;
   images: string[];
 }
 
 interface Props {
   items: DispositionInput[];
   onChange: (items: DispositionInput[]) => void;
-  dispositionCodes?: { code: string; label: string }[];
+  dispositionCodes?: { code: string; label: string; category?: string | null }[];
 }
 
 export default function DispositionSection({ items, onChange, dispositionCodes = [] }: Props) {
+  const categoryOptions = Array.from(
+    new Set(dispositionCodes.map((d) => d.category).filter((c): c is string => Boolean(c)))
+  ).sort();
 
   function addItem() {
-    onChange([...items, { id: Date.now(), code: "", content: "", images: [] }]);
+    onChange([...items, { id: Date.now(), category: "", code: "", content: "", scenario: "", images: [] }]);
   }
 
   function removeItem(id: number) {
@@ -98,13 +103,33 @@ export default function DispositionSection({ items, onChange, dispositionCodes =
 
             </div>
 
-            <input
-              value={item.code}
-              onChange={(e) => updateItem(item.id, "code", e.target.value)}
-              placeholder="Disposition Code (Optional)"
-              list={`disposition-codes-${item.id}`}
-              className="mb-4 w-full rounded-xl border p-3"
-            />
+            <div className="mb-4 grid gap-4 md:grid-cols-2">
+
+              <input
+                value={item.category}
+                onChange={(e) => updateItem(item.id, "category", e.target.value)}
+                placeholder="Main (Category) — e.g. Complaint, Baggage..."
+                list={`disposition-categories-${item.id}`}
+                className="w-full rounded-xl border p-3"
+              />
+
+              <input
+                value={item.code}
+                onChange={(e) => updateItem(item.id, "code", e.target.value)}
+                placeholder="Sub (Code, optional)"
+                list={`disposition-codes-${item.id}`}
+                className="w-full rounded-xl border p-3"
+              />
+
+            </div>
+
+            {categoryOptions.length > 0 && (
+              <datalist id={`disposition-categories-${item.id}`}>
+                {categoryOptions.map((category) => (
+                  <option key={category} value={category} />
+                ))}
+              </datalist>
+            )}
 
             {dispositionCodes.length > 0 && (
               <datalist id={`disposition-codes-${item.id}`}>
@@ -117,11 +142,19 @@ export default function DispositionSection({ items, onChange, dispositionCodes =
             )}
 
             <textarea
-              rows={4}
+              rows={3}
               value={item.content}
               onChange={(e) => updateItem(item.id, "content", e.target.value)}
               onPaste={(e) => handlePaste(item.id, e)}
-              placeholder="Disposition description... (paste a screenshot to attach it)"
+              placeholder="Descrip — when should champions use this? (paste a screenshot to attach it)"
+              className="mb-4 w-full rounded-xl border p-4"
+            />
+
+            <textarea
+              rows={3}
+              value={item.scenario}
+              onChange={(e) => updateItem(item.id, "scenario", e.target.value)}
+              placeholder="Scenario — a concrete example call, e.g. 'A passenger asks...'"
               className="w-full rounded-xl border p-4"
             />
 

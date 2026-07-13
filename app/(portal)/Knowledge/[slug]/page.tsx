@@ -302,17 +302,43 @@ export default async function ArticlePage({ params }: Props) {
         {article.dispositions.length > 0 && (
           <section className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm">
             <h2 className="mb-4 text-3xl font-bold">Disposition</h2>
-            <ul className="space-y-3 text-gray-700 dark:text-slate-300">
+            <div className="space-y-4">
               {article.dispositions.map((item) => (
-                <li key={item.id} className="flex items-center justify-between gap-4">
-                  <span>
-                    {item.code && <span className="font-semibold">{item.code}: </span>}
-                    {item.content}
-                  </span>
-                  <CopyButton text={item.code ? `${item.code}: ${item.content}` : item.content} compact />
-                </li>
+                <div
+                  key={item.id}
+                  className="rounded-2xl border border-gray-100 dark:border-border-subtle p-5"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      {item.category && (
+                        <span className="rounded-full bg-gray-100 dark:bg-background px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400">
+                          {item.category}
+                        </span>
+                      )}
+                      {item.code && (
+                        <span className="rounded-full bg-red-100 px-3 py-1 text-sm font-bold text-red-700">
+                          {item.code}
+                        </span>
+                      )}
+                    </div>
+                    <CopyButton
+                      text={[item.category, item.code, item.content, item.scenario].filter(Boolean).join(" — ")}
+                      compact
+                    />
+                  </div>
+
+                  {item.content && (
+                    <p className="mt-3 text-gray-700 dark:text-slate-300">{item.content}</p>
+                  )}
+
+                  {item.scenario && (
+                    <p className="mt-2 text-sm italic text-gray-500 dark:text-slate-400">
+                      Scenario: {item.scenario}
+                    </p>
+                  )}
+                </div>
               ))}
-            </ul>
+            </div>
           </section>
         )}
 
