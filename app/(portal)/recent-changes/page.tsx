@@ -1,9 +1,11 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
 import { getRecentArticleChanges } from "@/lib/article-service";
 import { getCategoryBadgeClasses } from "@/lib/helpers";
+import { isSidebarLinkEnabled } from "@/lib/sidebar-service";
 
 const ACTION_LABELS: Record<string, string> = {
   Created: "New article",
@@ -12,6 +14,8 @@ const ACTION_LABELS: Record<string, string> = {
 };
 
 export default async function RecentChangesPage() {
+  if (!(await isSidebarLinkEnabled("/recent-changes"))) notFound();
+
   const changes = await getRecentArticleChanges(20);
 
   return (

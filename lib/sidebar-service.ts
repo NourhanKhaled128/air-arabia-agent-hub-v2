@@ -18,6 +18,19 @@ export async function getVisibleSidebarLinksBySection(section: string) {
   });
 }
 
+/**
+ * Whether a champion-facing page should be reachable, based on its registered
+ * Sidebar Link's `visible` flag. A page with no matching Sidebar Link (e.g.
+ * Knowledge/Training, which aren't nav-toggleable) is always enabled. This is
+ * what lets an admin fully disable one of the "Champion Tools" pages I added
+ * (Glossary, Quick Reference, Recent Changes, Practice Mode) — hiding the nav
+ * link also blocks direct URL access, not just the sidebar entry.
+ */
+export async function isSidebarLinkEnabled(href: string): Promise<boolean> {
+  const link = await prisma.sidebarLink.findFirst({ where: { href } });
+  return link ? link.visible : true;
+}
+
 export async function getSidebarLinkById(id: number) {
   return prisma.sidebarLink.findUnique({
     where: { id },

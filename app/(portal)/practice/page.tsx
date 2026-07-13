@@ -1,10 +1,14 @@
 export const dynamic = "force-dynamic";
 
+import { notFound } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
 import PracticeDeck from "@/components/PracticeDeck";
 import { getRandomScenariosForPractice } from "@/lib/article-service";
+import { isSidebarLinkEnabled } from "@/lib/sidebar-service";
 
 export default async function PracticePage() {
+  if (!(await isSidebarLinkEnabled("/practice"))) notFound();
+
   const scenarios = await getRandomScenariosForPractice();
 
   return (
