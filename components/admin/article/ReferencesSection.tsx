@@ -2,6 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import InlineImagesUploader from "./InlineImagesUploader";
+import { uploadFile, pastedImageFile } from "@/lib/upload-client";
 
 export interface ReferenceInput {
   id: number;
@@ -39,6 +40,17 @@ export default function ReferencesSection({ items, onChange }: Props) {
     onChange(
       items.map(ref => (ref.id === id ? { ...ref, images } : ref))
     );
+  }
+
+  async function handlePaste(id: number, e: React.ClipboardEvent) {
+    const file = pastedImageFile(e);
+    if (!file) return;
+    e.preventDefault();
+    const url = await uploadFile(file);
+    if (url) {
+      const ref = items.find((r) => r.id === id);
+      if (ref) updateReferenceImages(id, [...ref.images, url]);
+    }
   }
 
   return (
@@ -102,7 +114,8 @@ export default function ReferencesSection({ items, onChange }: Props) {
             <input
               value={reference.title}
               onChange={(e) => updateReference(reference.id, "title", e.target.value)}
-              placeholder="Reference Title"
+              onPaste={(e) => handlePaste(reference.id, e)}
+              placeholder="Reference Title (paste a screenshot to attach it)"
               className="mb-4 w-full rounded-xl border p-3"
             />
 

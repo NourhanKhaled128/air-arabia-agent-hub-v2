@@ -1,6 +1,7 @@
 "use client";
 
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, ImageIcon } from "lucide-react";
+import { uploadFile, pastedImageFile } from "@/lib/upload-client";
 
 export interface ProcedureStepInput {
   id: number;
@@ -36,18 +37,15 @@ export default function ProcedureSection({ items, onChange }: Props) {
   }
 
   async function uploadImage(id: number, file: File) {
-    const formData = new FormData();
-    formData.append("file", file);
+    const url = await uploadFile(file);
+    if (url) updateStep(id, "image", url);
+  }
 
-    const response = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-      updateStep(id, "image", result.url);
+  async function handlePaste(id: number, e: React.ClipboardEvent) {
+    const file = pastedImageFile(e);
+    if (file) {
+      e.preventDefault();
+      await uploadImage(id, file);
     }
   }
 
@@ -120,17 +118,21 @@ export default function ProcedureSection({ items, onChange }: Props) {
               rows={6}
               value={step.content}
               onChange={(e) => updateStep(step.id, "content", e.target.value)}
-              placeholder="Describe the procedure..."
+              onPaste={(e) => handlePaste(step.id, e)}
+              placeholder="Describe the procedure... (paste a screenshot directly to attach it)"
               className="w-full rounded-xl border border-gray-300 p-4"
             />
 
             <div className="mt-5">
 
-              <label className="mb-2 block font-semibold">
-
+              <label className="mb-2 flex items-center gap-2 font-semibold">
+                <ImageIcon size={16} className="text-red-700" />
                 Step Image
-
               </label>
+
+              <p className="mb-2 text-sm text-gray-500">
+                Paste a screenshot into the text above, or choose a file:
+              </p>
 
               <input
                 type="file"

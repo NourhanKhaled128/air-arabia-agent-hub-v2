@@ -2,6 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import InlineImagesUploader from "./InlineImagesUploader";
+import { uploadFile, pastedImageFile } from "@/lib/upload-client";
 
 export interface NoteInput {
   id: number;
@@ -35,6 +36,17 @@ export default function NotesSection({ items, onChange }: Props) {
     onChange(
       items.map(note => (note.id === id ? { ...note, images } : note))
     );
+  }
+
+  async function handlePaste(id: number, e: React.ClipboardEvent) {
+    const file = pastedImageFile(e);
+    if (!file) return;
+    e.preventDefault();
+    const url = await uploadFile(file);
+    if (url) {
+      const note = items.find((n) => n.id === id);
+      if (note) updateNoteImages(id, [...note.images, url]);
+    }
   }
 
   return(
@@ -113,7 +125,8 @@ className="mb-4 w-full rounded-xl border p-3"
 rows={5}
 value={note.content}
 onChange={(e) => updateNote(note.id, "content", e.target.value)}
-placeholder="Internal note..."
+onPaste={(e) => handlePaste(note.id, e)}
+placeholder="Internal note... (paste a screenshot to attach it)"
 className="w-full rounded-xl border p-4"
 />
 

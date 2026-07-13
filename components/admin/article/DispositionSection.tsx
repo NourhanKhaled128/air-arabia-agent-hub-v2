@@ -2,6 +2,7 @@
 
 import { Plus, Trash2 } from "lucide-react";
 import InlineImagesUploader from "./InlineImagesUploader";
+import { uploadFile, pastedImageFile } from "@/lib/upload-client";
 
 export interface DispositionInput {
   id: number;
@@ -36,6 +37,17 @@ export default function DispositionSection({ items, onChange, dispositionCodes =
     onChange(
       items.map(item => (item.id === id ? { ...item, images } : item))
     );
+  }
+
+  async function handlePaste(id: number, e: React.ClipboardEvent) {
+    const file = pastedImageFile(e);
+    if (!file) return;
+    e.preventDefault();
+    const url = await uploadFile(file);
+    if (url) {
+      const item = items.find((i) => i.id === id);
+      if (item) updateItemImages(id, [...item.images, url]);
+    }
   }
 
   return (
@@ -108,7 +120,8 @@ export default function DispositionSection({ items, onChange, dispositionCodes =
               rows={4}
               value={item.content}
               onChange={(e) => updateItem(item.id, "content", e.target.value)}
-              placeholder="Disposition description..."
+              onPaste={(e) => handlePaste(item.id, e)}
+              placeholder="Disposition description... (paste a screenshot to attach it)"
               className="w-full rounded-xl border p-4"
             />
 
