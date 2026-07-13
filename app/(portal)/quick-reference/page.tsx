@@ -4,11 +4,13 @@ import { notFound } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
 import PrintButton from "@/components/PrintButton";
 import QuickReferenceTabs from "@/components/QuickReferenceTabs";
-import { QUICK_REFERENCE_HUBS } from "@/lib/quick-reference-data";
+import { getQuickReferenceHubs } from "@/lib/quick-reference-service";
 import { isSidebarLinkEnabled } from "@/lib/sidebar-service";
 
 export default async function QuickReferencePage() {
   if (!(await isSidebarLinkEnabled("/quick-reference"))) notFound();
+
+  const hubs = await getQuickReferenceHubs();
 
   return (
     <>
@@ -20,7 +22,7 @@ export default async function QuickReferencePage() {
         <PrintButton />
       </div>
 
-      <QuickReferenceTabs hubs={QUICK_REFERENCE_HUBS} />
+      <QuickReferenceTabs hubs={hubs} />
     </>
   );
 }

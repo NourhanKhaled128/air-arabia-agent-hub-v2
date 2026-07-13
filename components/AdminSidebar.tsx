@@ -29,6 +29,8 @@ import {
   MessageSquare,
   GitBranch,
   Luggage,
+  BookOpen,
+  ListChecks,
 } from "lucide-react";
 import { logoutAction } from "@/app/admin/actions/auth-actions";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
@@ -46,6 +48,8 @@ const menu = [
   { title: "Decision Trees", href: "/admin/decision-trees", icon: GitBranch },
   { title: "Airport Codes", href: "/admin/airport-codes", icon: Plane },
   { title: "Excess Baggage Rates", href: "/admin/excess-baggage-rates", icon: Luggage },
+  { title: "Glossary", href: "/admin/glossary", icon: BookOpen },
+  { title: "Quick Reference", href: "/admin/quick-reference", icon: ListChecks },
   { title: "Disposition Codes", href: "/admin/disposition-codes", icon: ClipboardList },
   { title: "Escalation Contacts", href: "/admin/escalation", icon: PhoneCall },
   { title: "Media Library", href: "/admin/media", icon: ImageIcon },
