@@ -11,13 +11,13 @@ import ArticleTemplateTabs from "@/components/ArticleTemplateTabs";
 import ArticleComments from "@/components/ArticleComments";
 import ArticleViewTracker from "@/components/ArticleViewTracker";
 import { prisma } from "@/lib/prisma";
-import { getArticleById, getArticlesByCategoryId, getArticlesByCategoryName } from "@/lib/article-service";
+import { getArticleById, getArticlesByCategoryId } from "@/lib/article-service";
 import { getCategoryById } from "@/lib/category-service";
 import { getApprovedCommentsForArticle } from "@/lib/comment-service";
 import { getDecisionTreesForArticle } from "@/lib/decision-tree-service";
 import { getExcessBaggageRatesByHub } from "@/lib/excess-baggage-service";
 import ExcessBaggageRateFinder from "@/components/excess-baggage/ExcessBaggageRateFinder";
-import { parseModuleNumber, sortByModuleNumber } from "@/lib/helpers";
+import { sortByModuleNumber } from "@/lib/helpers";
 
 const EXCESS_BAGGAGE_HUB_BY_SLUG: Record<string, string> = {
   "g9-excess-baggage-rates-g9": "G9",
@@ -87,11 +87,11 @@ export default async function ArticlePage({ params }: Props) {
     : null;
   const categoryName = category?.name ?? "Uncategorized";
 
-  const relatedArticles = article.categoryId
-    ? (
-        await getArticlesByCategoryId(article.categoryId, undefined, { publishedOnly: true })
-      ).filter((related) => related.id !== article.id)
+  const categoryArticles = article.categoryId
+    ? await getArticlesByCategoryId(article.categoryId, undefined, { publishedOnly: true })
     : [];
+
+  const relatedArticles = categoryArticles.filter((related) => related.id !== article.id);
 
   const approvedComments = await getApprovedCommentsForArticle(article.id);
   const relatedDecisionTrees = await getDecisionTreesForArticle(article.id);
@@ -101,16 +101,15 @@ export default async function ArticlePage({ params }: Props) {
     ? await getExcessBaggageRatesByHub(excessBaggageHub)
     : [];
 
-  const currentModuleNumber = parseModuleNumber(article.title);
   let prevModule: { slug: string; title: string } | null = null;
   let nextModule: { slug: string; title: string } | null = null;
 
-  if (categoryName === "Training" && currentModuleNumber !== null) {
-    const modules = sortByModuleNumber(await getArticlesByCategoryName("Training"));
-    const index = modules.findIndex((m) => m.id === article.id);
+  if (article.categoryId) {
+    const siblings = sortByModuleNumber(categoryArticles);
+    const index = siblings.findIndex((a) => a.id === article.id);
 
-    if (index > 0) prevModule = modules[index - 1];
-    if (index >= 0 && index < modules.length - 1) nextModule = modules[index + 1];
+    if (index > 0) prevModule = siblings[index - 1];
+    if (index >= 0 && index < siblings.length - 1) nextModule = siblings[index + 1];
   }
 
   return (

@@ -11,6 +11,6 @@ export function sortByModuleNumber<T extends { title: string }>(articles: T[]): 
     if (aNum !== null && bNum !== null) return aNum - bNum;
     if (aNum !== null) return -1;
     if (bNum !== null) return 1;
-    return 0;
+    return a.title.localeCompare(b.title);
   });
 }
