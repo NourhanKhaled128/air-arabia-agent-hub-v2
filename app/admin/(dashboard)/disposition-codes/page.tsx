@@ -3,6 +3,7 @@ import { ClipboardList, CheckCircle2, XCircle, Plus } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import DispositionCodesTable from "@/components/admin/disposition/DispositionCodesTable";
+import DispositionUploadForm from "@/components/admin/disposition/DispositionUploadForm";
 import { getDispositionCodes } from "@/lib/disposition-service";
 
 export default async function DispositionCodesPage() {
@@ -17,7 +18,7 @@ export default async function DispositionCodesPage() {
 
       <AdminPageHeader
         title="Disposition Codes"
-        description="Manage the call-outcome codes champions select after each call."
+        description="Manage the call-outcome codes champions select after each call. Upload an Excel sheet to replace the entire list."
         actions={
           <Link
             href="/admin/disposition-codes/new"
@@ -33,6 +34,10 @@ export default async function DispositionCodesPage() {
         <AdminStatCard title="Total" value={total} icon={ClipboardList} />
         <AdminStatCard title="Active" value={active} icon={CheckCircle2} color="text-emerald-700" />
         <AdminStatCard title="Inactive" value={inactive} icon={XCircle} color="text-slate-500" />
+      </div>
+
+      <div className="rounded-3xl bg-white p-8 shadow-sm">
+        <DispositionUploadForm />
       </div>
 
       <DispositionCodesTable dispositions={dispositions} />

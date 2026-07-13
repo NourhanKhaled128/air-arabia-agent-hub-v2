@@ -7,6 +7,8 @@ import {
   createDispositionCode,
   updateDispositionCode,
   deleteDispositionCode,
+  parseDispositionCodesWorkbook,
+  replaceDispositionCodesFromRows,
 } from "@/lib/disposition-service";
 import { logAction } from "@/lib/audit-service";
 import { getCurrentAdminUser } from "@/lib/admin-dal";
@@ -67,4 +69,29 @@ export async function deleteManyDispositionCodesAction(ids: number[]) {
 
   revalidatePath("/admin/disposition-codes");
   revalidatePath("/disposition-codes");
+}
+
+export async function uploadDispositionCodesAction(formData: FormData) {
+  const file = formData.get("file");
+
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Please choose an .xlsx or .xls file to upload." };
+  }
+
+  try {
+    const buffer = await file.arrayBuffer();
+    const rows = await parseDispositionCodesWorkbook(buffer);
+    await replaceDispositionCodesFromRows(rows);
+
+    await logAction("Uploaded", "DispositionCode", null, await currentUserName());
+
+    revalidatePath("/admin/disposition-codes");
+    revalidatePath("/disposition-codes");
+
+    return { success: true, count: rows.length };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Failed to process the uploaded file.",
+    };
+  }
 }
