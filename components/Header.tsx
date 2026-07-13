@@ -77,7 +77,7 @@ export default function Header({ articles }: Props) {
       { text: article.notes.map(n => n.content).join(" "), weight: 1 },
     ]);
 
-  }, [debouncedQuery, articles]);
+  }, [debouncedQuery, articles, hubFilter]);
 
   return (
 

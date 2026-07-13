@@ -34,7 +34,7 @@ export default function PracticeDeck({ scenarios }: Props) {
     return (
       <div className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-10 text-center shadow-sm">
         <p className="text-xl font-bold text-gray-900 dark:text-slate-100">
-          That's the deck — {scenarios.length} scenarios done.
+          That&apos;s the deck — {scenarios.length} scenarios done.
         </p>
         <button
           onClick={() => {
