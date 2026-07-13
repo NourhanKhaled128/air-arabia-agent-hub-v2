@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Paperclip, Download, GitBranch } from "lucide-react";
+import { Paperclip, Download, GitBranch, AlertTriangle } from "lucide-react";
 
 import Breadcrumb from "@/components/Breadcrumb";
 import ArticleCard from "@/components/ArticleCard";
@@ -20,6 +20,7 @@ import { getDecisionTreesForArticle } from "@/lib/decision-tree-service";
 import { getExcessBaggageRatesByHub } from "@/lib/excess-baggage-service";
 import ExcessBaggageRateFinder from "@/components/excess-baggage/ExcessBaggageRateFinder";
 import { sortByModuleNumber, getCategoryBadgeClasses } from "@/lib/helpers";
+import { findConfusablePointer } from "@/lib/confusable-pairs";
 
 const EXCESS_BAGGAGE_HUB_BY_SLUG: Record<string, string> = {
   "g9-excess-baggage-rates-g9": "G9",
@@ -97,6 +98,7 @@ export default async function ArticlePage({ params }: Props) {
 
   const approvedComments = await getApprovedCommentsForArticle(article.id);
   const relatedDecisionTrees = await getDecisionTreesForArticle(article.id);
+  const confusablePointer = findConfusablePointer(article.slug);
 
   const excessBaggageHub = EXCESS_BAGGAGE_HUB_BY_SLUG[article.slug];
   const excessBaggageRates = excessBaggageHub
@@ -186,6 +188,19 @@ export default async function ArticlePage({ params }: Props) {
               Walk through this as a decision tree: {relatedDecisionTrees[0].title} →
             </span>
           </Link>
+        )}
+
+        {confusablePointer && (
+          <div className="flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 px-6 py-4 shadow-sm">
+            <AlertTriangle size={20} className="mt-0.5 shrink-0 text-amber-700 dark:text-amber-400" />
+            <p className="text-amber-900 dark:text-amber-200">
+              <span className="font-bold">Don&apos;t confuse this with: </span>
+              {confusablePointer.note}{" "}
+              <Link href={`/Knowledge/${confusablePointer.targetSlug}`} className="font-semibold underline">
+                See {confusablePointer.targetTitle} →
+              </Link>
+            </p>
+          </div>
         )}
 
         {(prevModule || nextModule) && (
@@ -336,14 +351,24 @@ export default async function ArticlePage({ params }: Props) {
         {article.notes.length > 0 && (
           <section className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm">
             <h2 className="mb-4 text-3xl font-bold">Notes</h2>
-            <ul className="list-disc space-y-2 pl-6 text-gray-700 dark:text-slate-300">
-              {article.notes.map((item) => (
-                <li key={item.id}>
-                  <span className="font-semibold">{item.type}: </span>
-                  {item.content}
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-3">
+              {article.notes.map((item) =>
+                item.type === "Warning" ? (
+                  <div
+                    key={item.id}
+                    className="flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30 p-4 text-amber-900 dark:text-amber-200"
+                  >
+                    <AlertTriangle size={20} className="mt-0.5 shrink-0" />
+                    <p><span className="font-bold">Warning: </span>{item.content}</p>
+                  </div>
+                ) : (
+                  <p key={item.id} className="pl-1 text-gray-700 dark:text-slate-300">
+                    <span className="font-semibold">{item.type}: </span>
+                    {item.content}
+                  </p>
+                )
+              )}
+            </div>
           </section>
         )}
 
