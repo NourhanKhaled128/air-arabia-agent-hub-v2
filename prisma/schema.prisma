@@ -64,8 +64,10 @@ model ProcedureStep {
 model Disposition {
   id        Int      @id @default(autoincrement())
   articleId Int
+  category  String?
   code      String?
   content   String
+  scenario  String?
   images    String[] @default([])
   article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 }
@@ -382,6 +384,7 @@ model DispositionCode {
   code        String
   label       String
   description String?
+  scenario    String?
   category    String?
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
