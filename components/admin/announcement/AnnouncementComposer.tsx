@@ -43,7 +43,7 @@ export default function AnnouncementComposer({
         label="Audience"
         defaultValue={announcement?.audience ?? "all"}
         options={[
-          { label: "All Agents", value: "all" },
+          { label: "All Champions", value: "all" },
           { label: "Reservations", value: "reservation" },
           { label: "Airport", value: "airport" },
           { label: "Finance", value: "finance" },

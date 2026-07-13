@@ -85,7 +85,7 @@ export default function ChatTemplatesSection({ items, onChange }: Props) {
               rows={4}
               value={item.content}
               onChange={(e) => updateItem(item.id, "content", e.target.value)}
-              placeholder="Message the agent can paste into chat..."
+              placeholder="Message the champion can paste into chat..."
               className="w-full rounded-xl border p-4"
             />
 

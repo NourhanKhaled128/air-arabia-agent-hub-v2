@@ -15,8 +15,8 @@ export default async function SidebarLinksPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader
-        title="Agent Sidebar"
-        description="Manage the Pinned Knowledge, Agent Tools, and Quick Actions links shown in the agent portal. Drag to reorder within a section."
+        title="Champion Sidebar"
+        description="Manage the Pinned Knowledge, Champion Tools, and Quick Actions links shown in the champion portal. Drag to reorder within a section."
         actions={
           <AdminButton href="/admin/sidebar/new">
             + New Link
@@ -27,7 +27,7 @@ export default async function SidebarLinksPage() {
       <div className="grid gap-6 md:grid-cols-4">
         <AdminStatCard title="Total Links" value={links.length} icon={PanelLeft} />
         <AdminStatCard title="Pinned Knowledge" value={pinnedCount} icon={Pin} color="text-blue-700" />
-        <AdminStatCard title="Agent Tools" value={toolsCount} icon={Wrench} color="text-emerald-700" />
+        <AdminStatCard title="Champion Tools" value={toolsCount} icon={Wrench} color="text-emerald-700" />
         <AdminStatCard title="Quick Actions" value={quickActionsCount} icon={Zap} color="text-amber-700" />
       </div>
 

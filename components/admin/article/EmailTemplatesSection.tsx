@@ -94,7 +94,7 @@ export default function EmailTemplatesSection({ items, onChange }: Props) {
               rows={6}
               value={item.body}
               onChange={(e) => updateItem(item.id, "body", e.target.value)}
-              placeholder="Email body the agent can send to the customer..."
+              placeholder="Email body the champion can send to the customer..."
               className="w-full rounded-xl border p-4"
             />
 

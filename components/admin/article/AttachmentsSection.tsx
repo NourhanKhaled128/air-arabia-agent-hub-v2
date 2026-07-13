@@ -63,7 +63,7 @@ export default function AttachmentsSection({ items, onChange }: Props) {
       </div>
 
       <p className="mb-6 text-gray-500">
-        Upload supporting documents for agents.
+        Upload supporting documents for champions.
       </p>
 
       <label className="flex cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 p-8 hover:border-red-700">

@@ -23,7 +23,7 @@ export default async function AnnouncementsPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Announcements"
-        description="Create, schedule and manage announcements for all agents."
+        description="Create, schedule and manage announcements for all champions."
         actions={
           <Link
             href="/admin/announcements/new"

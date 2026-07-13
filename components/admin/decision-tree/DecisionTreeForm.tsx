@@ -108,7 +108,7 @@ export default function DecisionTreeForm({ articles = [], trees = [], defaultAut
               rows={2}
               value={formData.description}
               onChange={(e) => updateField("description", e.target.value)}
-              placeholder="One line describing what this tree helps the agent decide."
+              placeholder="One line describing what this tree helps the champion decide."
               className="w-full rounded-xl border p-4"
             />
           </div>

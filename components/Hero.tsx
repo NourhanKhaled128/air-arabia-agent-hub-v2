@@ -31,7 +31,7 @@ export default async function Hero() {
 
           <h1 className="mt-5 text-4xl font-bold text-white">
 
-            Air Arabia Agent Hub
+            Air Arabia Champion Hub
 
           </h1>
 

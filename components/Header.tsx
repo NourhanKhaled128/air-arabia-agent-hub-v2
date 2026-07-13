@@ -32,6 +32,12 @@ export default function Header({ articles }: Props) {
 
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [hubFilter, setHubFilter] = useState("");
+
+  const hubOptions = useMemo(
+    () => Array.from(new Set(articles.map((a) => a.category))).sort(),
+    [articles]
+  );
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -56,7 +62,9 @@ export default function Header({ articles }: Props) {
 
     if (!debouncedQuery.trim()) return [];
 
-    return sortByRelevance(articles, debouncedQuery, (article) => [
+    const pool = hubFilter ? articles.filter((a) => a.category === hubFilter) : articles;
+
+    return sortByRelevance(pool, debouncedQuery, (article) => [
       { text: article.title, weight: 5 },
       { text: article.keywords.map(k => k.value).join(" "), weight: 4 },
       { text: article.description, weight: 3 },
@@ -88,7 +96,7 @@ export default function Header({ articles }: Props) {
 
           <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 sm:text-3xl">
 
-            {greeting}, Agent 👋
+            {greeting}, Champion 👋
 
           </h1>
 
@@ -103,6 +111,18 @@ export default function Header({ articles }: Props) {
       </div>
 
       <div className="flex items-center gap-3 sm:gap-5">
+
+        <select
+          value={hubFilter}
+          onChange={(e) => setHubFilter(e.target.value)}
+          title="Filter search by hub"
+          className="hidden rounded-xl border border-gray-300 dark:border-border-subtle bg-white dark:bg-surface py-3 px-3 text-sm outline-none focus:border-brand sm:block"
+        >
+          <option value="">All Hubs</option>
+          {hubOptions.map((hub) => (
+            <option key={hub} value={hub}>{hub}</option>
+          ))}
+        </select>
 
         <div className="relative w-full sm:w-72 lg:w-96">
 
@@ -166,7 +186,7 @@ export default function Header({ articles }: Props) {
 
             <p className="font-semibold">
 
-              Air Arabia Agent Hub
+              Air Arabia Champion Hub
 
             </p>
 

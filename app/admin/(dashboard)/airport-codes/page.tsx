@@ -18,7 +18,7 @@ export default async function AdminAirportCodesPage() {
 
       <AdminPageHeader
         title="Airport Codes"
-        description="Manage the airport code reference list shown to agents. Upload an Excel sheet to replace the entire list."
+        description="Manage the airport code reference list shown to champions. Upload an Excel sheet to replace the entire list."
       />
 
       <div className="grid gap-6 md:grid-cols-2">

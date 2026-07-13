@@ -161,6 +161,74 @@ export async function deleteArticle(
   });
 }
 
+/** A shuffled batch of real scenarios (situation/response) from published articles, for practice/role-play mode. */
+export async function getRandomScenariosForPractice(count = 10) {
+  const articles = await prisma.article.findMany({
+    where: { status: "Published", scenarios: { some: {} } },
+    select: {
+      title: true,
+      slug: true,
+      category: { select: { name: true } },
+      scenarios: { select: { situation: true, response: true } },
+    },
+  });
+
+  const all = articles.flatMap((a) =>
+    a.scenarios.map((s) => ({
+      situation: s.situation,
+      response: s.response,
+      articleTitle: a.title,
+      articleSlug: a.slug,
+      category: a.category?.name ?? "Uncategorized",
+    }))
+  );
+
+  for (let i = all.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [all[i], all[j]] = [all[j], all[i]];
+  }
+
+  return all.slice(0, count);
+}
+
+/** Recent Published-article Created/Updated audit events, resolved to their current title/slug/category — for a shift-change digest. */
+export async function getRecentArticleChanges(limit = 15) {
+  const logs = await prisma.auditLog.findMany({
+    where: { entity: "Article", action: { in: ["Created", "Updated", "Published"] } },
+    orderBy: { createdAt: "desc" },
+    take: limit * 3,
+  });
+
+  const ids = Array.from(new Set(logs.map((l) => l.entityId).filter((id): id is number => id !== null)));
+
+  const articles = await prisma.article.findMany({
+    where: { id: { in: ids }, status: "Published" },
+    include: { category: { select: { name: true } } },
+  });
+  const byId = new Map(articles.map((a) => [a.id, a]));
+
+  const seen = new Set<number>();
+  const results: { action: string; userName: string; createdAt: Date; article: { title: string; slug: string; category: string } }[] = [];
+
+  for (const log of logs) {
+    if (log.entityId === null || seen.has(log.entityId)) continue;
+    const article = byId.get(log.entityId);
+    if (!article) continue;
+
+    seen.add(log.entityId);
+    results.push({
+      action: log.action,
+      userName: log.userName,
+      createdAt: log.createdAt,
+      article: { title: article.title, slug: article.slug, category: article.category?.name ?? "Uncategorized" },
+    });
+
+    if (results.length >= limit) break;
+  }
+
+  return results;
+}
+
 interface ArticleSectionsInput {
   procedures?: { title?: string; content: string; image?: string }[];
   dispositions?: { code?: string; content: string; images?: string[] }[];

@@ -23,7 +23,7 @@ export default function GlobalError({
         This page hit an unexpected error
       </h1>
       <p className="max-w-md text-gray-500 dark:text-slate-400">
-        Try again, or head back to the Agent Hub if the problem continues.
+        Try again, or head back to the Champion Hub if the problem continues.
       </p>
       <div className="mt-2 flex gap-3">
         <button
@@ -36,7 +36,7 @@ export default function GlobalError({
           href="/"
           className="rounded-xl border border-gray-300 dark:border-border-subtle px-6 py-3 font-semibold text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-surface-muted"
         >
-          Back to Agent Hub
+          Back to Champion Hub
         </Link>
       </div>
     </div>

@@ -39,7 +39,7 @@ export default function ArticleComments({ articleId, slug, comments }: Props) {
 
   return (
     <section className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm">
-      <h2 className="mb-4 text-3xl font-bold">Notes from other agents</h2>
+      <h2 className="mb-4 text-3xl font-bold">Notes from other Champions</h2>
 
       {comments.length > 0 ? (
         <ul className="mb-6 space-y-4">
@@ -61,7 +61,7 @@ export default function ArticleComments({ articleId, slug, comments }: Props) {
         </ul>
       ) : (
         <p className="mb-6 text-gray-500 dark:text-slate-400">
-          No notes yet. Be the first to add one for other agents.
+          No notes yet. Be the first to add one for other Champions.
         </p>
       )}
 
@@ -74,7 +74,7 @@ export default function ArticleComments({ articleId, slug, comments }: Props) {
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            placeholder="Add a note or tip for other agents..."
+            placeholder="Add a note or tip for other Champions..."
             rows={3}
             className="w-full rounded-xl border border-gray-300 dark:border-border-subtle bg-transparent p-4 outline-none focus:border-brand"
           />

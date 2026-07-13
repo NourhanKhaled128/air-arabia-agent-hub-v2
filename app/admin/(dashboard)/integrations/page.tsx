@@ -6,7 +6,7 @@ export default function IntegrationsPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Integrations"
-        description="No third-party services are connected to the Agent Hub yet."
+        description="No third-party services are connected to the Champion Hub yet."
       />
 
       <NotAvailableNotice message="No external integrations (cloud storage, email, analytics, etc.) are configured for this application yet." />

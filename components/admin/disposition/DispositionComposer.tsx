@@ -56,7 +56,7 @@ export default function DispositionComposer({
       <AdminTextarea
         name="description"
         label="Description"
-        placeholder="When should agents use this code?"
+        placeholder="When should champions use this code?"
         defaultValue={disposition?.description ?? ""}
       />
 

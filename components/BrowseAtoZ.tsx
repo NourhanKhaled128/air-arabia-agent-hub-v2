@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllArticles } from "@/lib/article-service";
+import { getCategoryBadgeClasses } from "@/lib/helpers";
 
 export default async function BrowseAtoZ() {
 
@@ -45,11 +46,9 @@ export default async function BrowseAtoZ() {
 
             </h3>
 
-            <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
-
+            <span className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-semibold ${getCategoryBadgeClasses(article.category)}`}>
               {article.category}
-
-            </p>
+            </span>
 
           </Link>
 

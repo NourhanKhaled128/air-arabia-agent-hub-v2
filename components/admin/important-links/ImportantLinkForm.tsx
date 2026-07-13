@@ -76,7 +76,7 @@ export default function ImportantLinkForm({
           defaultChecked={link?.visible ?? true}
           className="h-5 w-5 rounded border-gray-300"
         />
-        Show on agent portal
+        Show on champion portal
       </label>
 
       <AdminButton>{submitLabel}</AdminButton>

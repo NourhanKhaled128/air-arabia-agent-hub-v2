@@ -96,7 +96,7 @@ export default function CategoryForm({
           defaultChecked={category?.visible ?? true}
           className="h-5 w-5 rounded border-gray-300"
         />
-        Show in agent sidebar
+        Show in champion sidebar
       </label>
 
       <button

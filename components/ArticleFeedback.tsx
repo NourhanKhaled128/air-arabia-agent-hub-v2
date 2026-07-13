@@ -51,7 +51,7 @@ export default function ArticleFeedback({ articleId, slug }: Props) {
   }
 
   return (
-    <section className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm">
+    <section id="feedback" className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm scroll-mt-6">
       <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-slate-100">
         Was this article helpful?
       </h2>

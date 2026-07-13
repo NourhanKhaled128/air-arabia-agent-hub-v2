@@ -87,7 +87,7 @@ export default function ScenarioSection({ items, onChange }: Props) {
               rows={3}
               value={item.situation}
               onChange={(e) => updateItem(item.id, "situation", e.target.value)}
-              placeholder="Example situation the agent might encounter..."
+              placeholder="Example situation the champion might encounter..."
               className="mb-4 w-full rounded-xl border p-4"
             />
 

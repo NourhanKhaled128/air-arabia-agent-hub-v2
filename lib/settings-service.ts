@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 
 export const SETTINGS_DEFAULTS: Record<string, string> = {
-  appName: "Air Arabia Agent Hub",
-  appUrl: "https://airarabia-agenthub.local",
-  appDescription: "Internal knowledge portal for Air Arabia contact center agents.",
+  appName: "Air Arabia Champion Hub",
+  appUrl: "https://airarabia-championhub.local",
+  appDescription: "Internal knowledge portal for Air Arabia contact center champions.",
   primaryColor: "#C8102E",
   secondaryColor: "#1F2937",
   companyName: "Air Arabia",

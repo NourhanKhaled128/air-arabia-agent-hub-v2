@@ -17,7 +17,7 @@ export default async function EscalationPage() {
 
       <AdminPageHeader
         title="Escalation Contacts"
-        description="Manage who agents should escalate each issue type to."
+        description="Manage who champions should escalate each issue type to."
         actions={
           <Link
             href="/admin/escalation/new"

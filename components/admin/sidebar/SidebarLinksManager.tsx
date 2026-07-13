@@ -23,7 +23,7 @@ interface Props {
 
 const SECTION_LABELS: Record<string, string> = {
   pinned: "Pinned Knowledge",
-  tools: "Agent Tools",
+  tools: "Champion Tools",
   quickActions: "Quick Actions",
 };
 

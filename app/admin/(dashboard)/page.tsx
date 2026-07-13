@@ -21,7 +21,7 @@ const modules = [
   },
   {
     title: "Announcements",
-    description: "Publish announcements for all agents.",
+    description: "Publish announcements for all champions.",
     href: "/admin/announcements",
     color: "bg-amber-600",
   },
@@ -39,7 +39,7 @@ const modules = [
   },
   {
     title: "Settings",
-    description: "Configure the Agent Hub platform.",
+    description: "Configure the Champion Hub platform.",
     href: "/admin/settings",
     color: "bg-slate-700",
   },
@@ -78,7 +78,7 @@ export default async function AdminDashboard() {
           </p>
 
           <h1 className="mt-2 text-4xl font-bold text-slate-900">
-            Air Arabia Agent Hub
+            Air Arabia Champion Hub
           </h1>
 
           <p className="mt-3 max-w-3xl text-slate-500">

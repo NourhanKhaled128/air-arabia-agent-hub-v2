@@ -9,7 +9,7 @@ export default async function ImportantLinksPage() {
     <>
       <PageHeader
         title="Important Links"
-        subtitle="Every quick-access link agents need, in one place."
+        subtitle="Every quick-access link champions need, in one place."
       />
 
       <ImportantLinksFull links={links} />

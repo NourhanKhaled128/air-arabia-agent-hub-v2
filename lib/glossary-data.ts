@@ -1,0 +1,26 @@
+import type { GlossaryEntry } from "@/components/GlossaryFinder";
+
+export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
+  { term: "PNR", definition: "Passenger Name Record — the booking reference identifying a passenger's reservation.", category: "Booking" },
+  { term: "CNF forced", definition: "A booking marked confirmed while a payment link is still pending — if unpaid, cancellation charges apply.", category: "Booking" },
+  { term: "SSR", definition: "Special Service Request — how ancillaries like wheelchair assistance are booked on a PNR.", category: "Booking" },
+  { term: "VFR", definition: "Visa-Change booking — a same-day return ticket booked specifically for a visa run. Can only be handled at an Air Arabia office, never over the phone.", category: "Booking" },
+  { term: "OTB", definition: "Ok to Board — a message required for passengers travelling from India, Pakistan or Bangladesh to the UAE on a UAE visa copy.", category: "Booking" },
+  { term: "T&Cs", definition: "Terms & Conditions — the fare bundle's fine print (modification/cancellation rules, fees, cut-offs).", category: "Booking" },
+  { term: "DS Form", definition: "Used on 3O to action a free, clear-cut name correction (e.g. a simple spelling fix) directly, no manager approval needed.", category: "Case Management" },
+  { term: "SP case", definition: "Used on 3O for name corrections that need documentation (marriage certificate, passport proof) before actioning.", category: "Case Management" },
+  { term: "NOC", definition: "No Objection Certificate — e.g. the police station NOC required for transporting a deceased passenger.", category: "Case Management" },
+  { term: "CNIC", definition: "Computerized National Identity Card — Pakistan's national ID, required alongside a death certificate for dead body transport.", category: "Case Management" },
+  { term: "Accel Aero", definition: "The booking system — flight search, ticketing, modification and cancellation all happen here.", category: "Systems" },
+  { term: "Sprinklr", definition: "Case management system — used to receive calls and raise cases for name changes, discounts, holidays, payment issues and complaints.", category: "Systems" },
+  { term: "Caesar", definition: "Used to confirm whether a flight time change is planned or unplanned — each hub (G9, 3L, 3O, E5, 9P) has its own link.", category: "Systems" },
+  { term: "Teams", definition: "Internal escalation channel for anything urgent or same-day that needs another team's attention.", category: "Systems" },
+  { term: "MORAFIQ", definition: "The registration system behind Abu Dhabi Home Check-in — an agent visits the passenger's location to check them in and collect baggage.", category: "Systems" },
+  { term: "G9", definition: "Air Arabia's Sharjah / Ras Al Khaimah hub.", category: "Hubs" },
+  { term: "3L", definition: "Air Arabia Abu Dhabi hub.", category: "Hubs" },
+  { term: "3O", definition: "Air Arabia Maroc — the Morocco hub.", category: "Hubs" },
+  { term: "9P", definition: "Fly Jinnah — the Pakistan hub.", category: "Hubs" },
+  { term: "E5", definition: "Air Arabia Egypt hub.", category: "Hubs" },
+  { term: "Basic / Value / Ultimate", definition: "The three fare bundle tiers used across hubs — Basic charges baggage/seat/meal separately with the tightest change window; Ultimate is the most flexible with the biggest allowance and included priority check-in.", category: "Fares" },
+  { term: "AirRewards", definition: "Air Arabia's loyalty programme — 5% back as points on tickets/baggage, 10% on seat/meal/insurance/airport services, nothing on taxes.", category: "Fares" },
+];

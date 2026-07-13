@@ -16,7 +16,7 @@ export default function GlobalNotFound() {
         href="/"
         className="mt-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
       >
-        Back to Agent Hub
+        Back to Champion Hub
       </Link>
     </div>
   );

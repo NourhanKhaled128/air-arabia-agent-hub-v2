@@ -25,7 +25,7 @@ export default async function FeedbackPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Feedback"
-        description={'"Was this helpful?" responses agents leave on knowledge articles.'}
+        description={'"Was this helpful?" responses champions leave on knowledge articles.'}
       />
 
       <div className="grid gap-6 md:grid-cols-4">

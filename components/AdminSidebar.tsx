@@ -179,13 +179,13 @@ export default function AdminSidebar() {
 
           <Link
             href="/"
-            title={collapsed ? "Back to Agent Portal" : undefined}
+            title={collapsed ? "Back to Champion Portal" : undefined}
             className={`flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-gray-100 dark:hover:bg-slate-800 ${
               collapsed ? "justify-center px-0" : ""
             }`}
           >
             <Home size={20} />
-            {!collapsed && "Back to Agent Portal"}
+            {!collapsed && "Back to Champion Portal"}
           </Link>
 
           <form action={logoutAction}>

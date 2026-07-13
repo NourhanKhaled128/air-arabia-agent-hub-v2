@@ -50,7 +50,7 @@ export default function SidebarLinkForm({
           defaultValue={link?.section ?? "tools"}
           options={[
             { label: "Pinned Knowledge", value: "pinned" },
-            { label: "Agent Tools", value: "tools" },
+            { label: "Champion Tools", value: "tools" },
             { label: "Quick Actions", value: "quickActions" },
           ]}
         />
@@ -79,7 +79,7 @@ export default function SidebarLinkForm({
           defaultChecked={link?.visible ?? true}
           className="h-5 w-5 rounded border-gray-300"
         />
-        Show in agent sidebar
+        Show in champion sidebar
       </label>
 
       <AdminButton>{submitLabel}</AdminButton>

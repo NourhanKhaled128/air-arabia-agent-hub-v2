@@ -16,7 +16,7 @@ export default async function NewDecisionTreePage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Create Decision Tree"
-        description="Build an interactive, click-through decision flow for agents."
+        description="Build an interactive, click-through decision flow for champions."
         actions={
           <Link
             href="/admin/decision-trees"

@@ -23,7 +23,7 @@ export default async function CommentsPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Comments"
-        description="Notes agents leave on knowledge articles for other agents."
+        description="Notes champions leave on knowledge articles for other champions."
       />
 
       <div className="grid gap-6 md:grid-cols-3">

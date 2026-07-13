@@ -435,7 +435,7 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
             </div>
           ))}
 
-          {/* Agent Tools */}
+          {/* Champion Tools */}
 
           <div className="mb-8">
 
@@ -455,7 +455,7 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
                 >
 
                   <span className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-slate-400">
-                    Agent Tools
+                    Champion Tools
                   </span>
 
                   {toolsOpen ? (
@@ -586,7 +586,7 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
               <div className="flex-1">
 
                 <p className="font-semibold text-gray-900 dark:text-slate-100">
-                  Air Arabia Agent Hub
+                  Air Arabia Champion Hub
                 </p>
 
                 <p className="text-sm text-gray-500 dark:text-slate-400">

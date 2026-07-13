@@ -17,7 +17,7 @@ export default async function DispositionCodesPage() {
 
       <AdminPageHeader
         title="Disposition Codes"
-        description="Manage the call-outcome codes agents select after each call."
+        description="Manage the call-outcome codes champions select after each call."
         actions={
           <Link
             href="/admin/disposition-codes/new"

@@ -19,7 +19,7 @@ import { getApprovedCommentsForArticle } from "@/lib/comment-service";
 import { getDecisionTreesForArticle } from "@/lib/decision-tree-service";
 import { getExcessBaggageRatesByHub } from "@/lib/excess-baggage-service";
 import ExcessBaggageRateFinder from "@/components/excess-baggage/ExcessBaggageRateFinder";
-import { sortByModuleNumber } from "@/lib/helpers";
+import { sortByModuleNumber, getCategoryBadgeClasses } from "@/lib/helpers";
 
 const EXCESS_BAGGAGE_HUB_BY_SLUG: Record<string, string> = {
   "g9-excess-baggage-rates-g9": "G9",
@@ -139,7 +139,7 @@ export default async function ArticlePage({ params }: Props) {
 
             <div className="flex flex-wrap items-center gap-3">
 
-              <span className="rounded-full bg-red-100 px-5 py-2 font-semibold text-red-700">
+              <span className={`rounded-full px-5 py-2 font-semibold ${getCategoryBadgeClasses(categoryName)}`}>
                 {categoryName}
               </span>
 
@@ -165,10 +165,13 @@ export default async function ArticlePage({ params }: Props) {
             {article.description}
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 border-t border-gray-100 dark:border-border-subtle pt-6 text-sm text-gray-500 dark:text-slate-400">
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-gray-100 dark:border-border-subtle pt-6 text-sm text-gray-500 dark:text-slate-400">
             <span>By {article.author}</span>
-            <span>Updated {formatDate(article.updatedAt)}</span>
+            <span>Last verified {formatDate(article.updatedAt)}</span>
             <span>{article.viewCount} views</span>
+            <a href="#feedback" className="font-semibold text-red-700 dark:text-brand hover:underline">
+              Spot something outdated? Let us know →
+            </a>
           </div>
 
         </div>

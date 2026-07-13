@@ -22,7 +22,7 @@ export default async function AdminSettingsPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="System Settings"
-        description="Configure your Air Arabia Agent Hub platform."
+        description="Configure your Air Arabia Champion Hub platform."
       />
 
       <form action={saveSettingsAction} className="space-y-8">

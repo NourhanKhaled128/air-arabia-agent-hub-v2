@@ -14,7 +14,7 @@ export default async function ImportantLinksPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Important Links"
-        description="Curate the important links shown to agents in the sidebar and on the home page. Drag to reorder."
+        description="Curate the important links shown to champions in the sidebar and on the home page. Drag to reorder."
         actions={
           <AdminButton href="/admin/important-links/new">
             + New Link

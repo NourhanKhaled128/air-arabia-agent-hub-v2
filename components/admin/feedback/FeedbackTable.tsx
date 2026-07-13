@@ -24,7 +24,7 @@ export default function FeedbackTable({ feedback }: Props) {
     <AdminListTable
       columns={[
         { key: "article", label: "Article" },
-        { key: "author", label: "Agent" },
+        { key: "author", label: "Champion" },
         { key: "helpful", label: "Helpful?" },
         { key: "message", label: "Message" },
         { key: "status", label: "Status" },

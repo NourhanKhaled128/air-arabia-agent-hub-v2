@@ -119,7 +119,7 @@ export default function NodeEditor({ nodes, onChange, trees = [], currentTreeId 
           <h2 className="text-2xl font-bold">Nodes</h2>
           <p className="mt-1 text-sm text-gray-500">
             The first node is the tree&apos;s starting question. Question nodes branch via
-            options; Outcome nodes are the final resolution the agent lands on.
+            options; Outcome nodes are the final resolution the champion lands on.
           </p>
         </div>
 
@@ -190,8 +190,8 @@ export default function NodeEditor({ nodes, onChange, trees = [], currentTreeId 
                 onChange={(e) => updateNode(node.id, { text: e.target.value })}
                 placeholder={
                   node.type === "question"
-                    ? "The question the agent should ask, e.g. \"What's the TV's screen size?\""
-                    : "The resolution / disposition text the agent lands on."
+                    ? "The question the champion should ask, e.g. \"What's the TV's screen size?\""
+                    : "The resolution / disposition text the champion lands on."
                 }
                 className="w-full rounded-xl border p-4"
               />

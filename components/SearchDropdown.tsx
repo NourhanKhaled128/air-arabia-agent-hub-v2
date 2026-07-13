@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { findMatchSnippet, matchesAllWords } from "@/lib/search-utils";
+import { getCategoryBadgeClasses } from "@/lib/helpers";
 
 export interface SearchableArticle {
   id: number;
@@ -98,7 +99,7 @@ function ResultGroup({
               {article.title}
             </h3>
 
-            <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${getCategoryBadgeClasses(article.category)}`}>
               {article.category}
             </span>
           </div>

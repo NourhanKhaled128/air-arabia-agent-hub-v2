@@ -7,7 +7,7 @@ export default function Footer() {
         <div>
 
           <h2 className="font-bold text-black">
-            Air Arabia Agent Hub
+            Air Arabia Champion Hub
           </h2>
 
           <p className="text-gray-700">

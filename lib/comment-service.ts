@@ -22,7 +22,7 @@ export async function createComment(data: {
   return prisma.comment.create({
     data: {
       articleId: data.articleId,
-      authorName: data.authorName?.trim() || "Agent",
+      authorName: data.authorName?.trim() || "Champion",
       content: data.content,
     },
   });

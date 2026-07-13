@@ -69,7 +69,7 @@ export default function EscalationComposer({
       <AdminTextarea
         name="notes"
         label="Notes"
-        placeholder="Any extra context for agents..."
+        placeholder="Any extra context for champions..."
         defaultValue={escalation?.notes ?? ""}
       />
 

@@ -10,7 +10,7 @@ export default async function DecisionTreesPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Decision Trees"
-        description="Interactive, click-through decision flows for agents."
+        description="Interactive, click-through decision flows for champions."
         actions={
           <Link
             href="/admin/decision-trees/new"

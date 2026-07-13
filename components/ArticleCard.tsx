@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getCategoryBadgeClasses } from "@/lib/helpers";
 
 interface Props {
   article: {
@@ -30,7 +31,7 @@ export default function ArticleCard({ article }: Props) {
 
         </div>
 
-        <span className="bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-brand px-5 py-2 rounded-full font-semibold h-fit">
+        <span className={`px-5 py-2 rounded-full font-semibold h-fit ${getCategoryBadgeClasses(article.category)}`}>
           {article.category}
         </span>
 

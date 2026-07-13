@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Eye } from "lucide-react";
 import { getTrendingArticles } from "@/lib/article-service";
+import { getCategoryBadgeClasses } from "@/lib/helpers";
 
 export default async function TrendingArticles() {
 
@@ -52,11 +53,9 @@ export default async function TrendingArticles() {
 
             </div>
 
-            <p className="mt-2 text-sm text-gray-500">
-
+            <span className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-semibold ${getCategoryBadgeClasses(article.category)}`}>
               {article.category}
-
-            </p>
+            </span>
 
           </Link>
 

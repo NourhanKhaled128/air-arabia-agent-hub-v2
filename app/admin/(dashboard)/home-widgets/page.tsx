@@ -9,7 +9,7 @@ export default async function HomeWidgetsPage() {
     <div className="space-y-8">
       <AdminPageHeader
         title="Home Page Widgets"
-        description="Control which widgets appear on the agent portal home page, their order, size, and visibility."
+        description="Control which widgets appear on the champion portal home page, their order, size, and visibility."
       />
 
       <HomeWidgetsManager widgets={widgets} />

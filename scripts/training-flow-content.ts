@@ -24,7 +24,7 @@ export interface ModuleSpec {
 }
 
 // ---------------------------------------------------------------------------
-// A new agent's first days on the phones, told as one connected flow.
+// A new Champion's first days on the phones, told as one connected flow.
 // Facts are drawn from the site's existing knowledge base (scripts/seed-kb-
 // content.ts and scripts/kb-templates/*.ts) — condensed and reframed for
 // onboarding, not invented. Each module opens with a short in-story beat and
@@ -242,7 +242,7 @@ export const MODULES: ModuleSpec[] = [
     title: "Module 4: Passenger Eligibility & Visa Applications",
     description: "Where to send visa questions, and how to recognize and handle a visa-change (VFR) booking request.",
     overview:
-      "Every so often a routine booking call turns out to be something else — a same-day return that's actually a visa run. Here's how to spot it and what to do next.\n\nAir Arabia doesn't process visa applications. For a UAE visa, any Air Arabia office can help; for anywhere else, the passenger needs the relevant consulate or embassy.\n\nWith bookings sorted and eligibility covered, the next thing every agent needs is what happens when plans change.",
+      "Every so often a routine booking call turns out to be something else — a same-day return that's actually a visa run. Here's how to spot it and what to do next.\n\nAir Arabia doesn't process visa applications. For a UAE visa, any Air Arabia office can help; for anywhere else, the passenger needs the relevant consulate or embassy.\n\nWith bookings sorted and eligibility covered, the next thing every Champion needs is what happens when plans change.",
     procedures: [
       {
         title: "Visa questions",
@@ -314,7 +314,7 @@ export const MODULES: ModuleSpec[] = [
     ],
     scenarios: [
       {
-        situation: "An agent quotes charges before checking whether ancillaries carried forward.",
+        situation: "A Champion quotes charges before checking whether ancillaries carried forward.",
         response: "Wrong order — Ancillary comes right after the first recap and before Charges, because it can change what's actually being charged.",
       },
       {
@@ -834,7 +834,7 @@ export const MODULES: ModuleSpec[] = [
       {
         title: "Check-in variants — Abu Dhabi (3L)",
         content:
-          "Early Check-in: select locations (Cruise Terminal, YAS Mall, Mussafah), from 24h prior, AED 35/25/15 (adult/child/infant). Home Check-in (via MORAFIQ): agent visits within a 24h–5h window, priced AED 185–400 by bag count.",
+          "Early Check-in: select locations (Cruise Terminal, YAS Mall, Mussafah), from 24h prior, AED 35/25/15 (adult/child/infant). Home Check-in (via MORAFIQ): a champion visits within a 24h–5h window, priced AED 185–400 by bag count.",
         image: "/uploads/1783879084345-home-checkin-auh.png",
       },
       {
@@ -948,7 +948,7 @@ export const MODULES: ModuleSpec[] = [
     ],
     scenarios: [
       {
-        situation: "A passenger complains that a previous agent quoted the wrong modification fee.",
+        situation: "A passenger complains that a previous Champion quoted the wrong modification fee.",
         response: "This is a quality case — raise it under Complaints > Call Center Complaints with the 'wrong information' sub-type.",
       },
     ],

@@ -41,7 +41,7 @@ export default function NotificationComposer({
         label="Audience"
         defaultValue={notification?.audience ?? "all"}
         options={[
-          { label: "All Agents", value: "all" },
+          { label: "All Champions", value: "all" },
           { label: "Reservations", value: "reservation" },
           { label: "Airport", value: "airport" },
           { label: "Finance", value: "finance" },

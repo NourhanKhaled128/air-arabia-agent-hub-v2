@@ -11,7 +11,7 @@ export default function GeneralSettingsPage() {
         </h1>
 
         <p className="mt-3 text-slate-500">
-          Configure the Air Arabia Agent Hub.
+          Configure the Air Arabia Champion Hub.
         </p>
       </div>
 
@@ -23,7 +23,7 @@ export default function GeneralSettingsPage() {
             </label>
 
             <input
-              defaultValue="Air Arabia Agent Hub"
+              defaultValue="Air Arabia Champion Hub"
               className="w-full rounded-xl border border-slate-300 px-4 py-3"
             />
           </div>
