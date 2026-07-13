@@ -161,8 +161,8 @@ export async function deleteArticle(
   });
 }
 
-/** A shuffled batch of real scenarios (situation/response) from published articles, for practice/role-play mode. */
-export async function getRandomScenariosForPractice(count = 10) {
+/** A shuffled batch of real scenarios (situation/response) from published articles, for practice/role-play mode. Omit `count` to get the full site-wide pool, shuffled, with no repeats. */
+export async function getRandomScenariosForPractice(count?: number) {
   const articles = await prisma.article.findMany({
     where: { status: "Published", scenarios: { some: {} } },
     select: {
@@ -188,7 +188,7 @@ export async function getRandomScenariosForPractice(count = 10) {
     [all[i], all[j]] = [all[j], all[i]];
   }
 
-  return all.slice(0, count);
+  return count === undefined ? all : all.slice(0, count);
 }
 
 /** Recent Published-article Created/Updated audit events, resolved to their current title/slug/category — for a shift-change digest. */

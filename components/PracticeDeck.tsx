@@ -17,12 +17,22 @@ interface Props {
   scenarios: PracticeScenario[];
 }
 
+function shuffle<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 export default function PracticeDeck({ scenarios }: Props) {
+  const [deck, setDeck] = useState(scenarios);
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [done, setDone] = useState(false);
 
-  if (scenarios.length === 0) {
+  if (deck.length === 0) {
     return (
       <div className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-10 text-center shadow-sm">
         <p className="text-gray-500 dark:text-slate-400">No scenarios available to practice with yet.</p>
@@ -34,10 +44,11 @@ export default function PracticeDeck({ scenarios }: Props) {
     return (
       <div className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-10 text-center shadow-sm">
         <p className="text-xl font-bold text-gray-900 dark:text-slate-100">
-          That&apos;s the deck — {scenarios.length} scenarios done.
+          That&apos;s the deck — {deck.length} scenarios done.
         </p>
         <button
           onClick={() => {
+            setDeck(shuffle(scenarios));
             setIndex(0);
             setRevealed(false);
             setDone(false);
@@ -45,16 +56,16 @@ export default function PracticeDeck({ scenarios }: Props) {
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
         >
           <RotateCcw size={18} />
-          Start over
+          Start over (new order)
         </button>
       </div>
     );
   }
 
-  const scenario = scenarios[index];
+  const scenario = deck[index];
 
   function next() {
-    if (index + 1 >= scenarios.length) {
+    if (index + 1 >= deck.length) {
       setDone(true);
       return;
     }
@@ -65,7 +76,7 @@ export default function PracticeDeck({ scenarios }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between text-sm text-gray-500 dark:text-slate-400">
-        <span>Scenario {index + 1} of {scenarios.length}</span>
+        <span>Scenario {index + 1} of {deck.length}</span>
         <span className={`rounded-full px-3 py-1 text-xs font-semibold ${getCategoryBadgeClasses(scenario.category)}`}>
           {scenario.category}
         </span>
