@@ -74,7 +74,10 @@ export async function getTrendingArticles(limit = 4) {
 
 export async function getArticlesForSearch() {
   const articles = await prisma.article.findMany({
-    where: { status: "Published" },
+    where: {
+      status: "Published",
+      OR: [{ categoryId: null }, { category: { name: { not: "Training" } } }],
+    },
     select: {
       id: true,
       slug: true,

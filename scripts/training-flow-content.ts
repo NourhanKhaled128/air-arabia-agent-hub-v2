@@ -17,7 +17,7 @@ export interface ModuleSpec {
   title: string;
   description: string;
   overview: string;
-  procedures?: { title?: string; content: string }[];
+  procedures?: { title?: string; content: string; image?: string }[];
   scenarios?: { situation: string; response: string }[];
   notes?: { type?: string; content: string }[];
   keywords?: string[];
@@ -43,6 +43,7 @@ export const MODULES: ModuleSpec[] = [
         title: "The 3-question verification",
         content:
           "Before sharing any booking detail or making any change to a paid PNR, collect the PNR and get all three answered correctly: (1) the passenger's full name, (2) the flight destination and date, (3) one contact detail on the booking — mobile number or email. All three must check out before you go further.",
+        image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MzAiIGhlaWdodD0iMTkwIiB2aWV3Qm94PSIwIDAgNzMwIDE5MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj48cmVjdCB3aWR0aD0iNzMwIiBoZWlnaHQ9IjE5MCIgZmlsbD0iI2ZmZmZmZiIvPjx0ZXh0IHg9IjM2NSIgeT0iMzAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4zLVF1ZXN0aW9uIFZlcmlmaWNhdGlvbiDigJQgYWxsIG11c3QgY2hlY2sgb3V0PC90ZXh0PjxyZWN0IHg9IjMwIiB5PSI3MCIgd2lkdGg9IjE5MCIgaGVpZ2h0PSI5MCIgcng9IjE0IiBmaWxsPSIjZmVmMmYyIiBzdHJva2U9IiNiOTFjMWMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHRleHQgeD0iMTI1IiB5PSIxMjAiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBhc3NlbmdlcidzIGZ1bGwgbmFtZTwvdGV4dD48bGluZSB4MT0iMjI4IiB5MT0iMTE1IiB4Mj0iMjYyIiB5Mj0iMTE1IiBzdHJva2U9IiM2YjcyODAiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBvbHlnb24gcG9pbnRzPSIyNjIsMTA5IDI3NCwxMTUgMjYyLDEyMSIgZmlsbD0iIzZiNzI4MCIvPjxyZWN0IHg9IjI3MCIgeT0iNzAiIHdpZHRoPSIxOTAiIGhlaWdodD0iOTAiIHJ4PSIxNCIgZmlsbD0iI2ZlZjJmMiIgc3Ryb2tlPSIjYjkxYzFjIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjM2NSIgeT0iMTExIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5GbGlnaHQgZGVzdGluYXRpb24gJmFtcDs8L3RleHQ+PHRleHQgeD0iMzY1IiB5PSIxMjkiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPmRhdGU8L3RleHQ+PGxpbmUgeDE9IjQ2OCIgeTE9IjExNSIgeDI9IjUwMiIgeTI9IjExNSIgc3Ryb2tlPSIjNmI3MjgwIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwb2x5Z29uIHBvaW50cz0iNTAyLDEwOSA1MTQsMTE1IDUwMiwxMjEiIGZpbGw9IiM2YjcyODAiLz48cmVjdCB4PSI1MTAiIHk9IjcwIiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjkwIiByeD0iMTQiIGZpbGw9IiNmZWYyZjIiIHN0cm9rZT0iI2I5MWMxYyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48dGV4dCB4PSI2MDUiIHk9IjEyMCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TW9iaWxlIG51bWJlciBvciBlbWFpbDwvdGV4dD48L3N2Zz4=",
       },
       {
         title: "When you can skip verification",
@@ -82,7 +83,11 @@ export const MODULES: ModuleSpec[] = [
     overview:
       "Verification's second nature now — so let's get into the first thing every booking call needs: who, exactly, is travelling?\n\nAge is everything for ticket type, and it's fixed on the day of travel, not the day of booking. 12 and up is Adult, 2–11 is Child, under 2 is Infant — a child who turns 12 the week after their flight still flies on the Child fare, because what matters is their age on the travel date.\n\nSome passengers need more than a ticket type, though — a document too. That's next.",
     procedures: [
-      { title: "Classifying passengers", content: "Age as of the travel date decides the fare: 12+ Adult, 2–11 Child, under 2 Infant." },
+      {
+        title: "Classifying passengers",
+        content: "Age as of the travel date decides the fare: 12+ Adult, 2–11 Child, under 2 Infant.",
+        image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MzAiIGhlaWdodD0iMTkwIiB2aWV3Qm94PSIwIDAgNzMwIDE5MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj48cmVjdCB3aWR0aD0iNzMwIiBoZWlnaHQ9IjE5MCIgZmlsbD0iI2ZmZmZmZiIvPjx0ZXh0IHg9IjM2NSIgeT0iMzAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UaWNrZXQgdHlwZSBieSBhZ2Ugb24gdGhlIHRyYXZlbCBkYXRlPC90ZXh0PjxyZWN0IHg9IjMwIiB5PSI3MCIgd2lkdGg9IjE5MCIgaGVpZ2h0PSI5MCIgcng9IjE0IiBmaWxsPSIjZmVmMmYyIiBzdHJva2U9IiNiOTFjMWMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHRleHQgeD0iMTI1IiB5PSIxMjAiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPlVuZGVyIDIg4oCUIEluZmFudDwvdGV4dD48bGluZSB4MT0iMjI4IiB5MT0iMTE1IiB4Mj0iMjYyIiB5Mj0iMTE1IiBzdHJva2U9IiM2YjcyODAiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBvbHlnb24gcG9pbnRzPSIyNjIsMTA5IDI3NCwxMTUgMjYyLDEyMSIgZmlsbD0iIzZiNzI4MCIvPjxyZWN0IHg9IjI3MCIgeT0iNzAiIHdpZHRoPSIxOTAiIGhlaWdodD0iOTAiIHJ4PSIxNCIgZmlsbD0iI2ZlZjJmMiIgc3Ryb2tlPSIjYjkxYzFjIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjM2NSIgeT0iMTIwIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4yIHRvIDExIOKAlCBDaGlsZDwvdGV4dD48bGluZSB4MT0iNDY4IiB5MT0iMTE1IiB4Mj0iNTAyIiB5Mj0iMTE1IiBzdHJva2U9IiM2YjcyODAiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBvbHlnb24gcG9pbnRzPSI1MDIsMTA5IDUxNCwxMTUgNTAyLDEyMSIgZmlsbD0iIzZiNzI4MCIvPjxyZWN0IHg9IjUxMCIgeT0iNzAiIHdpZHRoPSIxOTAiIGhlaWdodD0iOTAiIHJ4PSIxNCIgZmlsbD0iI2ZlZjJmMiIgc3Ryb2tlPSIjYjkxYzFjIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjYwNSIgeT0iMTIwIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj4xMiBhbmQgdXAg4oCUIEFkdWx0PC90ZXh0Pjwvc3ZnPg==",
+      },
       {
         title: "Unaccompanied minors",
         content: "Children under 12 must travel with an adult aged 16 or older. From 12 onward they can fly unaccompanied, provided they meet both countries' immigration rules.",
@@ -120,16 +125,87 @@ export const MODULES: ModuleSpec[] = [
     keywords: ["ticket type", "fit to fly", "unaccompanied minor", "pregnancy", "infant"],
   },
   {
-    title: "Module 3: Booking Basics — Payment Channels & Credit Vouchers",
+    title: "Module 3: Booking Basics — Accel Aero Walkthrough, Payment Channels & Credit Vouchers",
     description:
-      "The payment channels available by country, the charges you must disclose, and how to apply an existing credit voucher to a new booking.",
+      "A screen-by-screen walkthrough of building a new booking in Accel Aero, the payment channels available by country, and how to apply an existing credit voucher to a new booking.",
     overview:
-      "Now that you know who's flying, let's get them paid for. Payment channels differ by market — Installments, Book Now Pay Later, or a local method like Mada, KNET, UPI or iDeal depending on where the passenger's based — and every one of them carries a small, mandatory-to-disclose charge.\n\nSometimes the passenger isn't paying fresh — they're using credit from a previous booking. That's a name-matching exercise as much as a payment one.\n\nNext: what happens when the booking itself needs to change.",
+      "Time to actually build a booking. The 14 steps below are a real, screen-by-screen walkthrough of Accel Aero — from searching flights through to reading a PNR's history — worth working through slowly the first few times.\n\nOnce it's built, it needs paying for. Payment channels differ by market — Installments, Book Now Pay Later, or a local method like Mada, KNET, UPI or iDeal depending on where the passenger's based — and every one of them carries a small, mandatory-to-disclose charge. Sometimes the passenger isn't paying fresh, either — they're using credit from a previous booking, which is a name-matching exercise as much as a payment one.\n\nNext: what happens when the booking itself needs to change.",
     procedures: [
+      {
+        title: "Making a new booking in Accel Aero — 1. Search flights",
+        content: "Enter origin, destination and dates, then run the search to see available flights and fares.",
+        image: "/uploads/1783880038872-01-search-flights.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 2. Data collection",
+        content: "Collect passenger count and basic trip details before selecting a flight.",
+        image: "/uploads/1783880039592-02-data-collection.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 3. Flight details",
+        content: "Confirm the selected flight's details with the passenger before proceeding.",
+        image: "/uploads/1783880040424-03-flight-details.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 4. Ticket price",
+        content: "Review the fare breakdown and total ticket price before moving to passenger info.",
+        image: "/uploads/1783880041289-04-ticket-price.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 5. Passenger info",
+        content: "Enter each passenger's name and details exactly as they appear on their travel document.",
+        image: "/uploads/1783880042138-05-passenger-info.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 6. Contact details",
+        content: "Add a mobile number and email so the booking has a valid contact detail on file — needed later for caller verification.",
+        image: "/uploads/1783880042927-06-contact-details.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 7. Loading passenger info",
+        content: "Let the system load and validate the passenger information before continuing.",
+        image: "/uploads/1783880043722-07-loading-passenger-info.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 8. Ancillaries",
+        content: "Offer and add any ancillaries the passenger wants — baggage, seat, meal, insurance — before payment.",
+        image: "/uploads/1783880044527-08-ancillaries.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 9. Editing name/nationality",
+        content: "If a name or nationality needs correcting before ticketing, edit it here — this is the pre-payment window to fix simple errors.",
+        image: "/uploads/1783880045343-09-editing-name-nationality.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 10. Editing ancillaries",
+        content: "Ancillaries already added can be changed here before the booking is finalized.",
+        image: "/uploads/1783880046202-10-editing-ancillaries.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 11. Split passengers",
+        content: "Use this when part of a group booking needs to be split into a separate PNR.",
+        image: "/uploads/1783880046926-11-split-passengers.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 12. Adding an infant",
+        content: "Add an infant passenger under the accompanying adult — remember infants get no checked baggage allowance.",
+        image: "/uploads/1783880047727-12-adding-infant.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 13. Removing an infant",
+        content: "Use this screen if an infant needs to be removed from an existing booking.",
+        image: "/uploads/1783880048527-13-removing-infant.png",
+      },
+      {
+        title: "Making a new booking in Accel Aero — 14. Reading booking history",
+        content: "Check a PNR's history to see everything that's already happened on it before making a new change.",
+        image: "/uploads/1783880049306-14-reading-history.png",
+      },
       {
         title: "Payment channels",
         content:
           "Installments (UAE, KSA, Egypt — select routes); Book Now Pay Later (cash at offices, travel agents, airports, partner banks, exchange houses, retail chains, post offices); market-specific options — Mada (KSA), KNET (Kuwait), RuPay/UPI (India), iDeal (Netherlands), Bancontact (Belgium), Sofort (Germany), Internet/Mobile Banking (Morocco, India).",
+        image: "/uploads/1783879088637-office-payment.png",
       },
       {
         title: "Disclosing the charge",
@@ -140,11 +216,13 @@ export const MODULES: ModuleSpec[] = [
         title: "Applying credit to a new booking",
         content:
           "Credit shows per passenger under \"Balance\" on the original PNR and only works for the same passenger — spelling must match exactly. Create a new PNR (or load the original passenger details to guarantee the match), select Credit at payment, enter the PNR holding the credit, search, and confirm once the amount displays.",
+        image: "/uploads/1783879087775-manage-booking-pay.png",
       },
       {
         title: "Partial credit",
         content:
           "If the credit doesn't cover the full fare, send a payment link for the remaining balance — the booking shows as forced (CNF forced), and if that link isn't paid, cancellation charges apply. Make sure the passenger understands this before you hang up.",
+        image: "/uploads/1783879089451-payment-link.png",
       },
     ],
     scenarios: [
@@ -174,6 +252,7 @@ export const MODULES: ModuleSpec[] = [
       {
         title: "Handling a VFR booking",
         content: "Visa-change tickets can't be booked, modified, or cancelled from the Call Center — the passenger must visit an Air Arabia office. These are marked VFR in Accel Aero.",
+        image: "/uploads/1783879100516-visachange-vfr.png",
       },
     ],
     scenarios: [
@@ -194,16 +273,44 @@ export const MODULES: ModuleSpec[] = [
     overview:
       "Plans change — and when they do, there's a set order to work through so nothing gets missed. This isn't a menu you pick from; it's a sequence, every time.\n\nModification has nine steps, cancellation has five. Both start the same way every call does: verification.\n\nOnce a booking is settled — modified, cancelled, or untouched — the next question is usually about what's actually in the suitcase.",
     procedures: [
+      { title: "Modification — 1. Verification", content: "Collect the PNR and confirm all 3 verification questions (passenger name, flight destination & date, one contact detail)." },
+      { title: "Modification — 2. Data collection", content: "Confirm whether the modification is for all passengers on the PNR, and which segment is affected." },
+      { title: "Modification — 3. First recap", content: "Read back the current flight details to the passenger." },
       {
-        title: "Modification checklist",
-        content:
-          "1. Verification (all 3 questions). 2. Data collection — all passengers or one? which segment? 3. First recap — read back current flight details. 4. Ancillary — do previously selected ancillaries carry forward? 5. Charges — quote balance per passenger, then total due. 6. Terms & conditions — old date cancelled, new date confirmed, payment due before the new segment can be used. 7. Final recap — confirm new flight details. 8. Payment — send the offline payment link. 9. Confirmation — ask the passenger to double-check the new dates.",
+        title: "Modification — 4. Ancillary",
+        content: "Check whether previously selected ancillaries carry forward automatically to the new flight.",
+        image: "/uploads/1783878442370-modcancel-04-ancillary-carryforward.png",
       },
       {
-        title: "Cancellation checklist",
-        content:
-          "1. Verification (all 3 questions). 2. Data collection — all passengers or one? which segment? 3. Terms & conditions — check original payment date and method, since these affect what's owed or returned. 4. Credit details — confirm the credit amount and expiry with the passenger. 5. Confirmation — send the cancellation confirmation by email.",
+        title: "Modification — 5. Charges",
+        content: "Quote the balance per passenger under \"Balance,\" then the total amount due.",
+        image: "/uploads/1783878442672-modcancel-05-charges-balance.png",
       },
+      { title: "Modification — 6. Terms & conditions", content: "Explain that the previous date is cancelled, the new date is confirmed, and payment is due before the new segment can be used." },
+      {
+        title: "Modification — 7. Final recap",
+        content: "Confirm the new flight details back to the passenger.",
+        image: "/uploads/1783878443023-modcancel-07-final-recap.png",
+      },
+      {
+        title: "Modification — 8. Payment",
+        content: "Send the offline payment link.",
+        image: "/uploads/1783878443296-modcancel-08-payment-link.png",
+      },
+      { title: "Modification — 9. Confirmation", content: "Ask the passenger to double-check the new travel dates are correct." },
+      { title: "Cancellation — 1. Verification", content: "Collect the PNR and confirm all 3 verification questions." },
+      { title: "Cancellation — 2. Data collection", content: "Confirm whether the cancellation is for all passengers, and which segment." },
+      {
+        title: "Cancellation — 3. Terms & conditions",
+        content: "Check the original payment date and payment method — these affect what's owed/returned, and any refund goes back to the original payment method.",
+        image: "/uploads/1783878443625-modcancel-12-refund-original-payment.png",
+      },
+      {
+        title: "Cancellation — 4. Credit details",
+        content: "Confirm the credit amount and its expiry date with the passenger.",
+        image: "/uploads/1783878443925-modcancel-13-credit-details.png",
+      },
+      { title: "Cancellation — 5. Confirmation", content: "Send the cancellation confirmation by email." },
     ],
     scenarios: [
       {
@@ -228,6 +335,7 @@ export const MODULES: ModuleSpec[] = [
         title: "Hand carry & checked allowance",
         content:
           "7kg hand carry + 3kg personal item (max 100ml liquids). Checked baggage: up to 32kg per piece, 158cm W+L+H dimension limit. Excess weight is charged per kilo at the airport plus a handling fee; an extra piece is also charged at the airport. Infants get no checked allowance, only a 3kg hand-carry bag.",
+        image: "/uploads/checked-baggage-dimensions.png",
       },
       {
         title: "Restricted items",
@@ -252,8 +360,16 @@ export const MODULES: ModuleSpec[] = [
     overview:
       "The passenger's booked, their bags are sorted — now it's about making the flight itself comfortable. Seating has a couple of hard rules worth knowing, entertainment is free and simple, and insurance is one of those things passengers only ask about right when they need it most.\n\nGetting all this right onboard is part of the job — but so is getting them through the airport in the first place. That's next.",
     procedures: [
-      { title: "Front-row seating", content: "Extra legroom, and the only row eligible for a baby bassinet request (subject to availability)." },
-      { title: "Exit row seating", content: "Passenger must be over 16, not pregnant, in good health, and able to assist in an emergency if instructed by crew." },
+      {
+        title: "Front-row seating",
+        content: "Extra legroom, and the only row eligible for a baby bassinet request (subject to availability).",
+        image: "/uploads/1783879081009-frontrow-exit-layout.jpeg",
+      },
+      {
+        title: "Exit row seating",
+        content: "Passenger must be over 16, not pregnant, in good health, and able to assist in an emergency if instructed by crew.",
+        image: "/uploads/1783879080112-exit-seat-screen.png",
+      },
       {
         title: "SkyTime",
         content:
@@ -263,6 +379,7 @@ export const MODULES: ModuleSpec[] = [
         title: "Travel insurance — Gold vs Platinum",
         content:
           "Both Tune Protect plans include Accidental Death & Disablement (USD 20,000), medical reimbursement (up to USD 50,000), hospital allowance, and 24/7 emergency assistance. Platinum adds loss of documents/money, travel delay, missed departure, cancellation, baggage delay/loss, home protection and mugging cover. Coverage runs from departure to return date, maximum 90 days — changing the return date doesn't automatically update the policy.",
+        image: "/uploads/1783879086916-insurance-tab.png",
       },
     ],
     scenarios: [
@@ -286,6 +403,7 @@ export const MODULES: ModuleSpec[] = [
       {
         title: "Online check-in",
         content: "Opens 48 hours, closes 3 hours before departure. A \"check-in successful\" message with no boarding pass just means the arrival airport requires a physical one, collected at the counter.",
+        image: "/uploads/1783879078486-checkin-options.png",
       },
       {
         title: "Ancillary cut-off times",
@@ -296,11 +414,13 @@ export const MODULES: ModuleSpec[] = [
         title: "Airport shuttle buses",
         content:
           "G9 Sharjah: free bus from City Centre Al Shindagha, or AED 30 from the Ras Al Khaimah office. G9 Ras Al Khaimah: free shuttle from Dubai/Sharjah/Ajman/Umm Al Quwain, first come first served. 3L Abu Dhabi: hourly bus from Ibn Battuta Mall, ticket purchased at the bus station, operated by Abu Dhabi Airport.",
+        image: "/uploads/1783879073278-bus-service-accelaero.png",
       },
       {
         title: "Wheelchair assistance",
         content:
           "Arranged through the airport's own service provider, not Air Arabia directly — personal wheelchairs can't be used within the airport. Any charge is assessed at check-in based on the passenger's situation. Recommend requesting as early as possible.",
+        image: "/uploads/1783879101315-wheelchair-ssr.png",
       },
     ],
     scenarios: [
@@ -319,6 +439,7 @@ export const MODULES: ModuleSpec[] = [
       {
         title: "No-show airport tax credit",
         content: "G9, E5, 9P: credited automatically. 3O: only on request. Valid 1 year from the date of payment, kept under the passenger's name. A cash refund instead of credit is only processed if specifically requested.",
+        image: "/uploads/1783879753505-noshow-history.png",
       },
       {
         title: "Flight change entitlements",
@@ -326,6 +447,46 @@ export const MODULES: ModuleSpec[] = [
           "Delay/advance under 2 hours: no free entitlements. 2–4 hours: free rebooking and free cancellation, no refund. Over 4 hours, or a commercial/operational cancellation: free rebooking, cancellation and refund. Force majeure (weather, airspace closure): free rebooking and cancellation, no refund (except 9P Domestic).",
       },
       { title: "Passenger-initiated rebooking", content: "Free within ±7 days of the original date. Beyond that window, only the fare difference applies." },
+      {
+        title: "Handling a disruption — 1. Identify the alert",
+        content: "Spot the disruption alert on the booking before doing anything else — it drives every step that follows.",
+        image: "/uploads/1783879094514-resched-identify-alert.png",
+      },
+      {
+        title: "Handling a disruption — 2. Check the Accel Aero flag",
+        content: "Confirm the disruption is flagged on the booking in Accel Aero.",
+        image: "/uploads/1783879091146-resched-accelaero-flag.png",
+      },
+      {
+        title: "Handling a disruption — 3. Passenger notification",
+        content: "Check whether the passenger has already been notified of the change.",
+        image: "/uploads/1783879095366-resched-notification.png",
+      },
+      {
+        title: "Handling a disruption — 4. Confirm via Caesar",
+        content: "Cross-check the schedule change against the hub's Caesar link to confirm it's real and current.",
+        image: "/uploads/1783879092831-resched-caesar.png",
+      },
+      {
+        title: "Handling a disruption — 5. Escalate via Teams if needed",
+        content: "If anything doesn't add up or needs another team, escalate via Teams the same way you would for any urgent case.",
+        image: "/uploads/1783879096994-resched-teams.png",
+      },
+      {
+        title: "Handling a disruption — 6. Action the alert",
+        content: "Work through the entitlement (rebooking, cancellation, refund) that matches the disruption type.",
+        image: "/uploads/1783879092013-resched-action-alert.png",
+      },
+      {
+        title: "Handling a disruption — 7. Search for a transfer flight",
+        content: "If rebooking, search for the passenger's replacement flight.",
+        image: "/uploads/1783879096197-resched-search-transfer.png",
+      },
+      {
+        title: "Handling a disruption — 8. Clear the alert",
+        content: "Once everything is actioned, clear the alert so it doesn't sit open on the booking.",
+        image: "/uploads/1783879093690-resched-clear-alert.png",
+      },
     ],
     scenarios: [
       {
@@ -348,10 +509,12 @@ export const MODULES: ModuleSpec[] = [
       {
         title: "What counts as a group",
         content: "More than 10 passengers, and the requested flight needs more than 70 available seats in each sector. All requests go through the group booking form.",
+        image: "/uploads/1783879081855-groupbooking-criteria.png",
       },
       {
         title: "Identifying a group booking",
         content: "10+ passengers; any passenger name shown as \"TBA\"; an Accel Aero note confirming it's a group; or the booking was created by \"Groups User.\"",
+        image: "/uploads/1783879082724-groupbooking-verify.png",
       },
       {
         title: "What the Call Center can't touch",
@@ -383,6 +546,7 @@ export const MODULES: ModuleSpec[] = [
       {
         title: "Registration & eligibility",
         content: "Register online, or via the Call Center through Accel Aero (Join Air Rewards). Passengers 12+ register and earn/redeem in their own right. Ages 2–11 must be linked to an existing family head account.",
+        image: "/uploads/1783878442055-airrewards-registration-accelaero.png",
       },
       {
         title: "Family head accounts",
@@ -425,6 +589,7 @@ export const MODULES: ModuleSpec[] = [
         title: "Complaint handling approach",
         content:
           "Listen and show empathy first, then acknowledge the inconvenience. Offer a solution, escalate to a supervisor, or raise a case, depending on the complaint type: AirRewards, Booking issues, Business Class downgrade, Call Center complaints, Flight delay & cancellation, Holiday booking complaints, Onboard services, Payment issues, Staff behavior.",
+        image: "/uploads/1783879079290-complaint-quality-case.png",
       },
       {
         title: "Payment issue sub-procedure",
@@ -455,16 +620,19 @@ export const MODULES: ModuleSpec[] = [
         title: "G9 Bundle Fares",
         content:
           "Basic: baggage/seat/meal at a charge, AED 200 modification fee (24h), AED 200 cancellation fee for credit or AED 200 more for refund (24h). Value: 20/30kg baggage, free seat from row 8+, sandwich + water, 1 free modification (24h), AED 100 cancellation credit or AED 300 refund. Ultimate: 30/40kg baggage, any seat row 2+, hot meal, 2 free modifications (8h), free cancellation credit or AED 200 refund, priority check-in included. Effective 15 Jan 2026; not applicable on Cairo routes.",
+        image: "/uploads/g9-bundle-fares.png",
       },
       {
         title: "3O Bundle Fares — Domestic vs International",
         content:
           "Separate charts by currency: International in EUR, Domestic in MAD. International Basic: modification €40, cancellation credit €50 (72h), no refund. International Ultimate: 25kg baggage, 2 free modifications (8h), free cancellation credit or €40 refund, priority check-in included. Domestic follows the same 3-tier shape at MAD figures with shorter windows (Value 12h, Ultimate 8h).",
+        image: "/uploads/3o-bundle-fares-international.png",
       },
       {
         title: "9P Bundle Fares — Domestic vs International",
         content:
           "Domestic in PKR, International in AED. Domestic Ultimate: 46kg baggage, 2 free modifications (8h), free cancellation credit or PKR 7,000 refund. International Ultimate: 40kg baggage, same 2 free modifications (8h), free cancellation credit or AED 200 refund. Only discuss the modification/cancellation cut-off and what's included on a call — full T&Cs aren't for the phone.",
+        image: "/uploads/1783879751130-9p-bundle-chart-intl.png",
       },
     ],
     scenarios: [
@@ -494,6 +662,7 @@ export const MODULES: ModuleSpec[] = [
         title: "G9 excess baggage",
         content:
           "Priced per kg by destination zone (GCC/KSA, Africa, Egypt/Sudan, India, Iran/Iraq, Levant, Sub-Continent, CIS, Turkey, Europe, Far East, Morocco), and by whether the journey is point-to-point (to/from UAE), connecting to GCC, or connecting elsewhere — connecting routes cost more. Example: Sub-Continent point-to-point is AED 60/kg. No-baggage-fare customers: first 20kg flat AED 100, extra piece AED 50. No carton boxes accepted on flights to Bangladesh, regardless of willingness to pay.",
+        image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MzAiIGhlaWdodD0iMTkwIiB2aWV3Qm94PSIwIDAgNzMwIDE5MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj48cmVjdCB3aWR0aD0iNzMwIiBoZWlnaHQ9IjE5MCIgZmlsbD0iI2ZmZmZmZiIvPjx0ZXh0IHg9IjM2NSIgeT0iMzAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5FeGNlc3MgYmFnZ2FnZSDigJQgY29uZmlybSBiZWZvcmUgcXVvdGluZzwvdGV4dD48cmVjdCB4PSIzMCIgeT0iNzAiIHdpZHRoPSIxOTAiIGhlaWdodD0iOTAiIHJ4PSIxNCIgZmlsbD0iI2ZlZjJmMiIgc3Ryb2tlPSIjYjkxYzFjIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjEyNSIgeT0iMTIwIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Db25maXJtIGRlc3RpbmF0aW9uPC90ZXh0PjxsaW5lIHgxPSIyMjgiIHkxPSIxMTUiIHgyPSIyNjIiIHkyPSIxMTUiIHN0cm9rZT0iIzZiNzI4MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cG9seWdvbiBwb2ludHM9IjI2MiwxMDkgMjc0LDExNSAyNjIsMTIxIiBmaWxsPSIjNmI3MjgwIi8+PHJlY3QgeD0iMjcwIiB5PSI3MCIgd2lkdGg9IjE5MCIgaGVpZ2h0PSI5MCIgcng9IjE0IiBmaWxsPSIjZmVmMmYyIiBzdHJva2U9IiNiOTFjMWMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHRleHQgeD0iMzY1IiB5PSIxMTEiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPlBvaW50LXRvLXBvaW50IG9yPC90ZXh0Pjx0ZXh0IHg9IjM2NSIgeT0iMTI5IiBmb250LXNpemU9IjE0IiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5jb25uZWN0aW5nPzwvdGV4dD48bGluZSB4MT0iNDY4IiB5MT0iMTE1IiB4Mj0iNTAyIiB5Mj0iMTE1IiBzdHJva2U9IiM2YjcyODAiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBvbHlnb24gcG9pbnRzPSI1MDIsMTA5IDUxNCwxMTUgNTAyLDEyMSIgZmlsbD0iIzZiNzI4MCIvPjxyZWN0IHg9IjUxMCIgeT0iNzAiIHdpZHRoPSIxOTAiIGhlaWdodD0iOTAiIHJ4PSIxNCIgZmlsbD0iI2ZlZjJmMiIgc3Ryb2tlPSIjYjkxYzFjIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjYwNSIgeT0iMTExIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BcHBseSB0aGUgbWF0Y2hpbmc8L3RleHQ+PHRleHQgeD0iNjA1IiB5PSIxMjkiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPnBlci1rZyByYXRlPC90ZXh0Pjwvc3ZnPg==",
       },
       {
         title: "9P excess baggage",
@@ -537,11 +706,19 @@ export const MODULES: ModuleSpec[] = [
         title: "G9 & 9P name change (same shape)",
         content:
           "Paid by card/cash: 24 hours before first-sector departure, AED 350/PKR 3,500 per passenger + fare difference. Paid via previous credit: immediate family only, same 24h notice, same fee — raise a Sprinklr case and request proof of relationship. Free spelling amendments (e.g. married name change): send directly to a Supervisor, not Sprinklr.",
+        image: "/uploads/1783879752702-namechange-screen.png",
       },
       {
-        title: "3O name correction — 5 cases",
+        title: "3O name correction — cases 1–3 (free)",
         content:
-          "1. Spelling correction — free, raise a DS Form directly, no manager approval needed. 2. AirRewards ID correction — free, but only if the ID is already visible in Accelaero. 3. Spouse/family name — free, raise an SP case, requires marriage certificate. 4. First/last name wrong — charge applies, requires passport number + DOB already on Accelaero, raise SP case with proof documents, 24h reply. 5. Total name change — not permitted at all (ticket is nominative); offer alternatives like a refund depending on the fare bundle.",
+          "1. Spelling correction — free, raise a DS Form directly, no manager approval needed. 2. AirRewards ID correction — free, but only if the ID is already visible in Accelaero. 3. Spouse/family name — free, raise an SP case, requires marriage certificate.",
+        image: "/uploads/3o-namecorrection-1to3.png",
+      },
+      {
+        title: "3O name correction — cases 4–5 (charge / not permitted)",
+        content:
+          "4. First/last name wrong — charge applies, requires passport number + DOB already on Accelaero, raise SP case with proof documents, 24h reply. 5. Total name change — not permitted at all (ticket is nominative); offer alternatives like a refund depending on the fare bundle.",
+        image: "/uploads/3o-namecorrection-4to5.png",
       },
       {
         title: "3O urgent same-day cases",
@@ -574,6 +751,7 @@ export const MODULES: ModuleSpec[] = [
       {
         title: "TV handling — G9",
         content: "Counted as 1 baggage piece, no limit on number of TVs. Under 40in: no extra charge. 40–60in: AED 150 + airport handling fee. Over 60in: not allowed.",
+        image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI3MzAiIGhlaWdodD0iMTkwIiB2aWV3Qm94PSIwIDAgNzMwIDE5MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj48cmVjdCB3aWR0aD0iNzMwIiBoZWlnaHQ9IjE5MCIgZmlsbD0iI2ZmZmZmZiIvPjx0ZXh0IHg9IjM2NSIgeT0iMzAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UViBoYW5kbGluZyDigJQgY2hlY2sgdGhlIHNpemUgYmFuZDwvdGV4dD48cmVjdCB4PSIzMCIgeT0iNzAiIHdpZHRoPSIxOTAiIGhlaWdodD0iOTAiIHJ4PSIxNCIgZmlsbD0iI2ZlZjJmMiIgc3Ryb2tlPSIjYjkxYzFjIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9IjEyNSIgeT0iMTIwIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5VbmRlciA0MGluIOKAlCBmcmVlPC90ZXh0PjxsaW5lIHgxPSIyMjgiIHkxPSIxMTUiIHgyPSIyNjIiIHkyPSIxMTUiIHN0cm9rZT0iIzZiNzI4MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cG9seWdvbiBwb2ludHM9IjI2MiwxMDkgMjc0LDExNSAyNjIsMTIxIiBmaWxsPSIjNmI3MjgwIi8+PHJlY3QgeD0iMjcwIiB5PSI3MCIgd2lkdGg9IjE5MCIgaGVpZ2h0PSI5MCIgcng9IjE0IiBmaWxsPSIjZmVmMmYyIiBzdHJva2U9IiNiOTFjMWMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHRleHQgeD0iMzY1IiB5PSIxMTEiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPjQw4oCTNjBpbiDigJQgZmxhdCBmZWU8L3RleHQ+PHRleHQgeD0iMzY1IiB5PSIxMjkiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPmFwcGxpZXM8L3RleHQ+PGxpbmUgeDE9IjQ2OCIgeTE9IjExNSIgeDI9IjUwMiIgeTI9IjExNSIgc3Ryb2tlPSIjNmI3MjgwIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwb2x5Z29uIHBvaW50cz0iNTAyLDEwOSA1MTQsMTE1IDUwMiwxMjEiIGZpbGw9IiM2YjcyODAiLz48cmVjdCB4PSI1MTAiIHk9IjcwIiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjkwIiByeD0iMTQiIGZpbGw9IiNmZWYyZjIiIHN0cm9rZT0iI2I5MWMxYyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48dGV4dCB4PSI2MDUiIHk9IjEyMCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+T3ZlciA2MGluIOKAlCBub3QgYWNjZXB0ZWQ8L3RleHQ+PC9zdmc+",
       },
       {
         title: "TV handling — E5",
@@ -612,27 +790,57 @@ export const MODULES: ModuleSpec[] = [
       {
         title: "Pets & Animals (Falcons) — G9 only",
         content: "No pets or animals on any Air Arabia flight, except falcons on G9. Book on Basic fare with no added services, via Accel Aero, at least 48 hours before departure. No baggage allowance is added for a falcon's seat. Add a User Note in Accel Aero: \"Passenger is Travelling with Falcon.\"",
+        image: "/uploads/1783879090329-pets-usernotes.png",
       },
       {
         title: "Special Discounts — G9",
         content: "Homat Al Watan, Fazaa & Waffer: 10% off Ultimate Bundle fare/surcharge (Business/Ultimate on Cairo), cardholder + spouse/children up to 18. Esaad: same 10%, cardholder + spouse/parents/children with no age limit. All valid only on departures from Abu Dhabi, RAK & Sharjah. Raise a Sprinklr case with ID + proof of relationship — never create an on-hold booking.",
+        image: "/uploads/1783879099673-specialdiscount-procedure.png",
       },
       {
         title: "Air Arabia Holidays — G9 only",
         content: "Predesigned flight+hotel+transfer+tour packages. No modification permitted. Cancellation needs 72 hours' notice and results in a credit voucher only (1 year validity, usable for any passenger on the booking) — never a refund. Raise on Sprinklr; the Holidays team contacts the passenger directly.",
+        image: "/uploads/1783879083558-holiday-sprinklr.png",
       },
       {
-        title: "Airport Services — Sharjah only",
-        content: "Meet & Assist, Fast Track, Porter, Dedicated Check-in, Business Lounge (from AED 145), and Airport Transfers (Standard Sedan, up to 4 pax/4 bags, +971 54 3082573). Bookable up to 24 hours prior, Sharjah departures/arrivals/transit only — not available for other airports.",
+        title: "Sharjah Airport Services — 1. Departure",
+        content: "Meet & Assist (Warm Welcome, Fast Track, Porter, Dedicated Check-in, Accompanied Assistance — all included) or Fast Track Services (Warm Welcome, Fast Track, Dedicated Check-in — no porter/accompanied assistance). Bookable up to 24 hours prior.",
+        image: "/uploads/1783879068153-airport-svc-departure.png",
+      },
+      {
+        title: "Sharjah Airport Services — 2. Arrival",
+        content: "Meet & Assist includes Warm Welcome, Fast Track, Porter and Accompanied Assistance. Fast Track Services covers Warm Welcome and Fast Track only.",
+        image: "/uploads/1783879067345-airport-svc-arrival.png",
+      },
+      {
+        title: "Sharjah Airport Services — 3. Transit",
+        content: "Warm Welcome, Fast Track and Accompanied Assistance for passengers transiting through Sharjah.",
+        image: "/uploads/1783879069001-airport-svc-transit.png",
+      },
+      {
+        title: "Sharjah Airport Services — 4. Business Lounge",
+        content: "Business Centre, Wi-Fi, smoking cabin, international TV, shower room with toiletries/towels, newspapers, boarding announcements, and 24/7 food & beverage. Starting AED 145 depending on bag count.",
+        image: "/uploads/shj-business-lounge.png",
+      },
+      {
+        title: "Sharjah Airport Services — 5. Airport Transfers",
+        content: "Standard Sedan, up to 4 passengers with 4 medium bags. 24/7 via call/WhatsApp +971 54 3082573 or booking@sayararental.com.",
+        image: "/uploads/1783879069942-airport-transfers.png",
       },
       {
         title: "Ok to Board (OTB) — G9 & 9P",
         content: "Required for passengers travelling from India, Pakistan or Bangladesh to the UAE on a UAE visa copy. Update only at an Air Arabia office, minimum 24h prior, with visa copy + passport + PNR. Charge: free at Pakistan offices, AED 15–20 per passenger at UAE offices.",
       },
       {
-        title: "Check-in variants — 3L & G9",
+        title: "Check-in variants — Abu Dhabi (3L)",
         content:
-          "Abu Dhabi Early Check-in: select locations (Cruise Terminal, YAS Mall, Mussafah), from 24h prior, AED 35/25/15 (adult/child/infant). Abu Dhabi Home Check-in (via MORAFIQ): agent visits within a 24h–5h window, priced AED 185–400 by bag count. Sharjah Home Check-in: Sharjah residents only, bookable up to 6h prior, AED 145–185 by bag count. Sharjah Early Check-in: free, from 24h prior.",
+          "Early Check-in: select locations (Cruise Terminal, YAS Mall, Mussafah), from 24h prior, AED 35/25/15 (adult/child/infant). Home Check-in (via MORAFIQ): agent visits within a 24h–5h window, priced AED 185–400 by bag count.",
+        image: "/uploads/1783879084345-home-checkin-auh.png",
+      },
+      {
+        title: "Check-in variants — Sharjah (G9)",
+        content: "Home Check-in: Sharjah residents only, bookable up to 6h prior, AED 145–185 by bag count. Early Check-in: free, from 24h prior.",
+        image: "/uploads/1783879085201-home-checkin-shj.png",
       },
     ],
     scenarios: [
@@ -653,6 +861,7 @@ export const MODULES: ModuleSpec[] = [
         title: "Transport of a deceased passenger — 9P",
         content:
           "Requires: one attendant with a confirmed ticket; death certificate (government-hospital-attested) + CNIC copy; coffin box certificate from a certified provider; police station NOC; deceased's CNIC copy. Last reporting time: 1 hour before departure, at cargo (not standard check-in). Charge: PKR 20,000 + airport handling fees. 24/7 contact: +92 300 8214381.",
+        image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NzAiIGhlaWdodD0iMTkwIiB2aWV3Qm94PSIwIDAgOTcwIDE5MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj48cmVjdCB3aWR0aD0iOTcwIiBoZWlnaHQ9IjE5MCIgZmlsbD0iI2ZmZmZmZiIvPjx0ZXh0IHg9IjQ4NSIgeT0iMzAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5Eb2N1bWVudHMgcmVxdWlyZWQg4oCUIGRlYWQgYm9keSB0cmFuc3BvcnQ8L3RleHQ+PHJlY3QgeD0iMzAiIHk9IjcwIiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjkwIiByeD0iMTQiIGZpbGw9IiNmZWYyZjIiIHN0cm9rZT0iI2I5MWMxYyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48dGV4dCB4PSIxMjUiIHk9IjEyMCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RGVhdGggY2VydGlmaWNhdGUgKyBDTklDPC90ZXh0PjxsaW5lIHgxPSIyMjgiIHkxPSIxMTUiIHgyPSIyNjIiIHkyPSIxMTUiIHN0cm9rZT0iIzZiNzI4MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cG9seWdvbiBwb2ludHM9IjI2MiwxMDkgMjc0LDExNSAyNjIsMTIxIiBmaWxsPSIjNmI3MjgwIi8+PHJlY3QgeD0iMjcwIiB5PSI3MCIgd2lkdGg9IjE5MCIgaGVpZ2h0PSI5MCIgcng9IjE0IiBmaWxsPSIjZmVmMmYyIiBzdHJva2U9IiNiOTFjMWMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHRleHQgeD0iMzY1IiB5PSIxMjAiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPkNvZmZpbiBib3ggY2VydGlmaWNhdGU8L3RleHQ+PGxpbmUgeDE9IjQ2OCIgeTE9IjExNSIgeDI9IjUwMiIgeTI9IjExNSIgc3Ryb2tlPSIjNmI3MjgwIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwb2x5Z29uIHBvaW50cz0iNTAyLDEwOSA1MTQsMTE1IDUwMiwxMjEiIGZpbGw9IiM2YjcyODAiLz48cmVjdCB4PSI1MTAiIHk9IjcwIiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjkwIiByeD0iMTQiIGZpbGw9IiNmZWYyZjIiIHN0cm9rZT0iI2I5MWMxYyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48dGV4dCB4PSI2MDUiIHk9IjEyMCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UG9saWNlIE5PQzwvdGV4dD48bGluZSB4MT0iNzA4IiB5MT0iMTE1IiB4Mj0iNzQyIiB5Mj0iMTE1IiBzdHJva2U9IiM2YjcyODAiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHBvbHlnb24gcG9pbnRzPSI3NDIsMTA5IDc1NCwxMTUgNzQyLDEyMSIgZmlsbD0iIzZiNzI4MCIvPjxyZWN0IHg9Ijc1MCIgeT0iNzAiIHdpZHRoPSIxOTAiIGhlaWdodD0iOTAiIHJ4PSIxNCIgZmlsbD0iI2ZlZjJmMiIgc3Ryb2tlPSIjYjkxYzFjIiBzdHJva2Utd2lkdGg9IjIuNSIvPjx0ZXh0IHg9Ijg0NSIgeT0iMTExIiBmb250LXNpemU9IjE0IiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BdHRlbmRhbnQgd2l0aCBjb25maXJtZWQ8L3RleHQ+PHRleHQgeD0iODQ1IiB5PSIxMjkiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPnRpY2tldDwvdGV4dD48L3N2Zz4=",
       },
       {
         title: "APW/TAC Military Vouchers — 9P",
@@ -683,9 +892,25 @@ export const MODULES: ModuleSpec[] = [
       "Two last things don't fit neatly into any hub bucket: Cairo, which plays by its own rules entirely, and promotions, which are only true for as long as their booking window lasts. Both need the same instinct — check before you quote, because both change without much warning.\n\nAfter this, the story loops back to where it started: the habits that make every one of these calls go well.",
     procedures: [
       {
-        title: "Cairo (CAI) — the only Business Class route",
+        title: "Cairo (CAI) — 1. Overview",
+        content: "Cairo is the only route with Business Class. Economy offers Basic and Ultimate bundles only — no Value. Cairo Economy passengers have no baby bassinet access.",
+        image: "/uploads/1783879077585-cai-overview.png",
+      },
+      {
+        title: "Cairo (CAI) — 2. Basic & Ultimate T&Cs",
         content:
-          "Economy: Basic and Ultimate only (no Value). Basic: 10kg carry-on + 20/30kg checked, standard meal, 24h modification/cancellation, AED 200/passenger/sector modification + fare difference, AED 200 cancellation. Ultimate: 40kg checked, premium meal, any seat, priority check-in, 8h notice, 2 free modifications, AED 200 cancellation. Business Class: 40kg checked, Business meal, any seat, priority check-in, 8h notice, free modifications (fare difference only), AED 200 cancellation, free seating in first 2 rows (A320) / 3 rows (A321) with the middle seat always blocked. Cairo Economy has no baby bassinet access.",
+          "Basic: 10kg carry-on + 20/30kg checked, standard meal, 24h modification/cancellation, AED 200/passenger/sector modification + fare difference, AED 200 cancellation. Ultimate: 40kg checked, premium meal, any seat, priority check-in, 8h notice, 2 free modifications, AED 200 cancellation.",
+        image: "/uploads/1783879075006-cai-basic-ultimate-tc.png",
+      },
+      {
+        title: "Cairo (CAI) — 3. Business Class T&Cs",
+        content: "40kg checked, Business meal, any seat, priority check-in, 8h notice, free modifications (fare difference only), AED 200 cancellation.",
+        image: "/uploads/1783879076720-cai-business-tc.png",
+      },
+      {
+        title: "Cairo (CAI) — 4. Business Class seat layout",
+        content: "Free seating in the first 2 rows (A320) or 3 rows (A321), with the middle seat always blocked and left empty.",
+        image: "/uploads/1783879075866-cai-business-seatlayout.png",
       },
       {
         title: "RAK Bank tickets",
@@ -718,6 +943,7 @@ export const MODULES: ModuleSpec[] = [
       {
         title: "Raising a quality case",
         content: "Raise under Complaints > Call Center Complaints, then select the correct sub-type — wrong information given, wrong booking, wrong modification, or a cancellation that was requested but not completed.",
+        image: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5NzAiIGhlaWdodD0iMTkwIiB2aWV3Qm94PSIwIDAgOTcwIDE5MCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIj48cmVjdCB3aWR0aD0iOTcwIiBoZWlnaHQ9IjE5MCIgZmlsbD0iI2ZmZmZmZiIvPjx0ZXh0IHg9IjQ4NSIgeT0iMzAiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMTExODI3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5UaGUgaGFiaXRzIGJlaGluZCBldmVyeSBnb29kIGNhbGw8L3RleHQ+PHJlY3QgeD0iMzAiIHk9IjcwIiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjkwIiByeD0iMTQiIGZpbGw9IiNmZWYyZjIiIHN0cm9rZT0iI2I5MWMxYyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48dGV4dCB4PSIxMjUiIHk9IjEyMCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+VmVyaWZ5PC90ZXh0PjxsaW5lIHgxPSIyMjgiIHkxPSIxMTUiIHgyPSIyNjIiIHkyPSIxMTUiIHN0cm9rZT0iIzZiNzI4MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cG9seWdvbiBwb2ludHM9IjI2MiwxMDkgMjc0LDExNSAyNjIsMTIxIiBmaWxsPSIjNmI3MjgwIi8+PHJlY3QgeD0iMjcwIiB5PSI3MCIgd2lkdGg9IjE5MCIgaGVpZ2h0PSI5MCIgcng9IjE0IiBmaWxsPSIjZmVmMmYyIiBzdHJva2U9IiNiOTFjMWMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHRleHQgeD0iMzY1IiB5PSIxMjAiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPkZvbGxvdyB0aGUgY2hlY2tsaXN0PC90ZXh0PjxsaW5lIHgxPSI0NjgiIHkxPSIxMTUiIHgyPSI1MDIiIHkyPSIxMTUiIHN0cm9rZT0iIzZiNzI4MCIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48cG9seWdvbiBwb2ludHM9IjUwMiwxMDkgNTE0LDExNSA1MDIsMTIxIiBmaWxsPSIjNmI3MjgwIi8+PHJlY3QgeD0iNTEwIiB5PSI3MCIgd2lkdGg9IjE5MCIgaGVpZ2h0PSI5MCIgcng9IjE0IiBmaWxsPSIjZmVmMmYyIiBzdHJva2U9IiNiOTFjMWMiIHN0cm9rZS13aWR0aD0iMi41Ii8+PHRleHQgeD0iNjA1IiB5PSIxMjAiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiMxMTE4MjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPlF1b3RlIGFjY3VyYXRlbHk8L3RleHQ+PGxpbmUgeDE9IjcwOCIgeTE9IjExNSIgeDI9Ijc0MiIgeTI9IjExNSIgc3Ryb2tlPSIjNmI3MjgwIiBzdHJva2Utd2lkdGg9IjIuNSIvPjxwb2x5Z29uIHBvaW50cz0iNzQyLDEwOSA3NTQsMTE1IDc0MiwxMjEiIGZpbGw9IiM2YjcyODAiLz48cmVjdCB4PSI3NTAiIHk9IjcwIiB3aWR0aD0iMTkwIiBoZWlnaHQ9IjkwIiByeD0iMTQiIGZpbGw9IiNmZWYyZjIiIHN0cm9rZT0iI2I5MWMxYyIgc3Ryb2tlLXdpZHRoPSIyLjUiLz48dGV4dCB4PSI4NDUiIHk9IjEyMCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzExMTgyNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TGVhZCB3aXRoIGVtcGF0aHk8L3RleHQ+PC9zdmc+",
       },
     ],
     scenarios: [

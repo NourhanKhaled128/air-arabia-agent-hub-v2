@@ -33,6 +33,7 @@
   "exclude": [
     "node_modules",
     "scripts/publish-training-flow-via-admin.ts",
-    "scripts/extend-training-flow-via-admin.ts"
+    "scripts/extend-training-flow-via-admin.ts",
+    "scripts/add-training-images-via-admin.ts"
   ]
 }

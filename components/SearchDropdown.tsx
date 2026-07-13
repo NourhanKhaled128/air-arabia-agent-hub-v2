@@ -125,13 +125,9 @@ export default function SearchDropdown({
     );
   }
 
-  const knowledgeResults = results.filter((a) => a.category !== "Training").slice(0, 6);
-  const trainingResults = results.filter((a) => a.category === "Training").slice(0, 4);
-
   return (
     <div className="absolute left-0 right-0 top-16 z-50 max-h-96 overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-2xl">
-      <ResultGroup label="Knowledge Base" results={knowledgeResults} query={query} onClose={onClose} />
-      <ResultGroup label="Training" results={trainingResults} query={query} onClose={onClose} />
+      <ResultGroup label="Knowledge Base" results={results.slice(0, 6)} query={query} onClose={onClose} />
     </div>
   );
 }
