@@ -10,6 +10,7 @@ interface Disposition {
   code: string;
   label: string;
   description: string | null;
+  category: string | null;
   active: boolean;
 }
 
@@ -18,9 +19,16 @@ interface Props {
 }
 
 export default function DispositionCodesTable({ dispositions }: Props) {
+  const categoryOptions = Array.from(
+    new Set(dispositions.map((d) => d.category).filter((c): c is string => Boolean(c)))
+  )
+    .sort()
+    .map((category) => ({ value: category, label: category }));
+
   return (
     <AdminListTable
       columns={[
+        { key: "category", label: "Category" },
         { key: "code", label: "Code" },
         { key: "label", label: "Label" },
         { key: "description", label: "Description" },
@@ -33,10 +41,16 @@ export default function DispositionCodesTable({ dispositions }: Props) {
         return (
           item.code.toLowerCase().includes(q) ||
           item.label.toLowerCase().includes(q) ||
+          (item.category ?? "").toLowerCase().includes(q) ||
           (item.description ?? "").toLowerCase().includes(q)
         );
       }}
       filters={[
+        {
+          key: "category",
+          label: "Category",
+          options: categoryOptions,
+        },
         {
           key: "active",
           label: "Status",
@@ -47,6 +61,7 @@ export default function DispositionCodesTable({ dispositions }: Props) {
         },
       ]}
       filterFn={(item, values) => {
+        if (values.category && item.category !== values.category) return false;
         if (values.active === "active" && !item.active) return false;
         if (values.active === "inactive" && item.active) return false;
         return true;
@@ -55,6 +70,7 @@ export default function DispositionCodesTable({ dispositions }: Props) {
       emptyMessage="No disposition codes yet."
       renderRow={(disposition) => (
         <>
+          <td className="px-6 py-5 text-slate-500">{disposition.category ?? "-"}</td>
           <td className="px-6 py-5 font-semibold">{disposition.code}</td>
           <td className="px-6 py-5">{disposition.label}</td>
           <td className="px-6 py-5 text-slate-500">{disposition.description ?? "-"}</td>

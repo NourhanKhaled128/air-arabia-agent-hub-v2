@@ -21,6 +21,7 @@ export async function createDispositionCodeAction(formData: FormData) {
     code: formData.get("code") as string,
     label: formData.get("label") as string,
     description: formData.get("description") as string,
+    category: (formData.get("category") as string) || undefined,
     active: formData.get("active") === "true",
   });
 
@@ -39,6 +40,7 @@ export async function updateDispositionCodeAction(
     code: formData.get("code") as string,
     label: formData.get("label") as string,
     description: formData.get("description") as string,
+    category: (formData.get("category") as string) || undefined,
     active: formData.get("active") === "true",
   });
 

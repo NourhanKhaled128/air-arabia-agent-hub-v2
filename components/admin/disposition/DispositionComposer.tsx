@@ -6,6 +6,7 @@ interface DispositionCode {
   code: string;
   label: string;
   description: string | null;
+  category?: string | null;
   active: boolean;
 }
 
@@ -13,15 +14,33 @@ interface Props {
   action: (formData: FormData) => void;
   submitLabel?: string;
   disposition?: DispositionCode;
+  categories?: string[];
 }
 
 export default function DispositionComposer({
   action,
   submitLabel = "Save Disposition Code",
   disposition,
+  categories = [],
 }: Props) {
   return (
     <form action={action} className="space-y-6">
+
+      <AdminInput
+        name="category"
+        label="Category (Type)"
+        placeholder="e.g. New booking, Complaint, Baggage..."
+        defaultValue={disposition?.category ?? ""}
+        list="disposition-categories"
+      />
+
+      {categories.length > 0 && (
+        <datalist id="disposition-categories">
+          {categories.map((category) => (
+            <option key={category} value={category} />
+          ))}
+        </datalist>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
 

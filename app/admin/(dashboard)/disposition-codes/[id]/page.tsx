@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import DispositionComposer from "@/components/admin/disposition/DispositionComposer";
-import { getDispositionCodeById } from "@/lib/disposition-service";
+import { getDispositionCodeById, getDispositionCategories } from "@/lib/disposition-service";
 import { updateDispositionCodeAction } from "@/app/admin/actions/disposition-actions";
 
 interface Props {
@@ -22,6 +22,7 @@ export default async function EditDispositionCodePage({ params }: Props) {
     notFound();
   }
 
+  const categories = await getDispositionCategories();
   const boundUpdate = updateDispositionCodeAction.bind(null, dispositionId);
 
   return (
@@ -34,6 +35,7 @@ export default async function EditDispositionCodePage({ params }: Props) {
           action={boundUpdate}
           submitLabel="Save Changes"
           disposition={disposition}
+          categories={categories}
         />
       </div>
 

@@ -382,6 +382,7 @@ model DispositionCode {
   code        String
   label       String
   description String?
+  category    String?
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @default(now()) @updatedAt
