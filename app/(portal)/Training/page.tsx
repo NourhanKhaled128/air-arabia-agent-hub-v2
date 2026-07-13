@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import PageHeader from "@/components/PageHeader";
 import TrainingLibrary from "@/components/TrainingLibrary";
 import { getArticlesByCategoryName } from "@/lib/article-service";
