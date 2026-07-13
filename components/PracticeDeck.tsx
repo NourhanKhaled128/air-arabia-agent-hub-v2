@@ -17,6 +17,8 @@ interface Props {
   scenarios: PracticeScenario[];
 }
 
+const BATCH_SIZE = 10;
+
 function shuffle<T>(items: T[]): T[] {
   const copy = [...items];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -27,12 +29,13 @@ function shuffle<T>(items: T[]): T[] {
 }
 
 export default function PracticeDeck({ scenarios }: Props) {
-  const [deck, setDeck] = useState(scenarios);
+  const [pool, setPool] = useState(scenarios);
+  const [batchStart, setBatchStart] = useState(0);
   const [index, setIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
-  const [done, setDone] = useState(false);
+  const [batchDone, setBatchDone] = useState(false);
 
-  if (deck.length === 0) {
+  if (pool.length === 0) {
     return (
       <div className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-10 text-center shadow-sm">
         <p className="text-gray-500 dark:text-slate-400">No scenarios available to practice with yet.</p>
@@ -40,33 +43,44 @@ export default function PracticeDeck({ scenarios }: Props) {
     );
   }
 
-  if (done) {
+  const batch = pool.slice(batchStart, batchStart + BATCH_SIZE);
+
+  function nextBatch() {
+    // Once we've worked through the whole site-wide pool, reshuffle and loop back —
+    // otherwise just slide the window to the next distinct, not-yet-seen 10.
+    if (batchStart + BATCH_SIZE >= pool.length) {
+      setPool(shuffle(scenarios));
+      setBatchStart(0);
+    } else {
+      setBatchStart((s) => s + BATCH_SIZE);
+    }
+    setIndex(0);
+    setRevealed(false);
+    setBatchDone(false);
+  }
+
+  if (batchDone) {
     return (
       <div className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-10 text-center shadow-sm">
         <p className="text-xl font-bold text-gray-900 dark:text-slate-100">
-          That&apos;s the deck — {deck.length} scenarios done.
+          Nice work — {batch.length} scenarios done.
         </p>
         <button
-          onClick={() => {
-            setDeck(shuffle(scenarios));
-            setIndex(0);
-            setRevealed(false);
-            setDone(false);
-          }}
+          onClick={nextBatch}
           className="mt-6 inline-flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
         >
           <RotateCcw size={18} />
-          Start over (new order)
+          Next {BATCH_SIZE} questions
         </button>
       </div>
     );
   }
 
-  const scenario = deck[index];
+  const scenario = batch[index];
 
   function next() {
-    if (index + 1 >= deck.length) {
-      setDone(true);
+    if (index + 1 >= batch.length) {
+      setBatchDone(true);
       return;
     }
     setIndex((i) => i + 1);
@@ -76,7 +90,7 @@ export default function PracticeDeck({ scenarios }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between text-sm text-gray-500 dark:text-slate-400">
-        <span>Scenario {index + 1} of {deck.length}</span>
+        <span>Question {index + 1} of {batch.length}</span>
         <span className={`rounded-full px-3 py-1 text-xs font-semibold ${getCategoryBadgeClasses(scenario.category)}`}>
           {scenario.category}
         </span>
