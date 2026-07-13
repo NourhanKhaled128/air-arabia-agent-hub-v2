@@ -415,7 +415,7 @@ export const MODULES: ModuleSpec[] = [
     title: "Module 12: Baggage Claims & Handling Complaints",
     description: "How to report damaged, lost or delayed baggage, and the core approach — plus the two most common sub-procedures — for handling a complaint.",
     overview:
-      "Not every call is about what's coming up — some are about what already went wrong. These calls need a different instinct: fix the timing-sensitive stuff fast, and lead every complaint with empathy before policy.\n\nBaggage claims are location- and time-sensitive — reported at the arrival airport, at the time of arrival, full stop. Complaints are broader, but they all start the same way: listen, acknowledge, then act.\n\nOne more type of call closes the loop on everything you've learned — the ones where quality itself is the issue.",
+      "Not every call is about what's coming up — some are about what already went wrong. These calls need a different instinct: fix the timing-sensitive stuff fast, and lead every complaint with empathy before policy.\n\nBaggage claims are location- and time-sensitive — reported at the arrival airport, at the time of arrival, full stop. Complaints are broader, but they all start the same way: listen, acknowledge, then act.\n\nEverything so far has applied across every hub the same way. From here, the ground shifts — G9, 3O, 9P and E5 each run their own bundle fares, baggage rates, name-change rules and more, and that's the next stretch of the job.",
     procedures: [
       {
         title: "Reporting baggage claims",
@@ -446,10 +446,274 @@ export const MODULES: ModuleSpec[] = [
     keywords: ["baggage claim", "complaints", "payment issue", "sprinklr"],
   },
   {
-    title: "Module 13: Call Handling Wrap-up — Quality & Escalations",
+    title: "Module 13: Fare Bundles by Hub — G9, 3O & 9P",
+    description: "How Basic/Value/Ultimate bundle fares differ across G9, 3O and 9P — baggage, seating, meals, and modification/cancellation terms for each.",
+    overview:
+      "Same three tiers — Basic, Value, Ultimate — but the numbers change hub by hub, and mixing them up is an easy mistake to make. Basic always charges baggage/seat/meal separately and has the tightest change window; Ultimate is always the most flexible, with the biggest baggage allowance, best seat choice, a hot meal, and included priority check-in. Value sits in between.\n\nWhat changes is the fine print: currencies, exact fees, and cut-off windows differ by hub — and by domestic vs. international within 9P and 3O.\n\nOnce the bundle is sorted, the next question is almost always what it costs to go over the baggage that came with it.",
+    procedures: [
+      {
+        title: "G9 Bundle Fares",
+        content:
+          "Basic: baggage/seat/meal at a charge, AED 200 modification fee (24h), AED 200 cancellation fee for credit or AED 200 more for refund (24h). Value: 20/30kg baggage, free seat from row 8+, sandwich + water, 1 free modification (24h), AED 100 cancellation credit or AED 300 refund. Ultimate: 30/40kg baggage, any seat row 2+, hot meal, 2 free modifications (8h), free cancellation credit or AED 200 refund, priority check-in included. Effective 15 Jan 2026; not applicable on Cairo routes.",
+      },
+      {
+        title: "3O Bundle Fares — Domestic vs International",
+        content:
+          "Separate charts by currency: International in EUR, Domestic in MAD. International Basic: modification €40, cancellation credit €50 (72h), no refund. International Ultimate: 25kg baggage, 2 free modifications (8h), free cancellation credit or €40 refund, priority check-in included. Domestic follows the same 3-tier shape at MAD figures with shorter windows (Value 12h, Ultimate 8h).",
+      },
+      {
+        title: "9P Bundle Fares — Domestic vs International",
+        content:
+          "Domestic in PKR, International in AED. Domestic Ultimate: 46kg baggage, 2 free modifications (8h), free cancellation credit or PKR 7,000 refund. International Ultimate: 40kg baggage, same 2 free modifications (8h), free cancellation credit or AED 200 refund. Only discuss the modification/cancellation cut-off and what's included on a call — full T&Cs aren't for the phone.",
+      },
+    ],
+    scenarios: [
+      {
+        situation: "A passenger asks what's included in G9 Ultimate.",
+        response: "30/40kg baggage, any seat from row 2+, a hot meal, 2 free modifications (up to 8h before departure), and included priority check-in.",
+      },
+      {
+        situation: "A 3O domestic Basic passenger wants to modify 80 hours before departure.",
+        response: "Within the window — Basic domestic modification is allowed up to 72 hours prior, so 80 hours out is fine; quote the MAD fee from the chart.",
+      },
+      {
+        situation: "A 9P passenger quotes a PKR fee but is flying an international sector.",
+        response: "International 9P fares are in AED, not PKR — confirm domestic vs international before quoting, since the two use entirely different currency charts.",
+      },
+    ],
+    notes: [{ type: "Information", content: "G9 bundles don't split by domestic/international like 3O and 9P do — confirm which structure applies before quoting a chart." }],
+    keywords: ["bundle fares", "G9", "3O", "9P", "basic", "value", "ultimate"],
+  },
+  {
+    title: "Module 14: Excess Baggage Rates by Hub",
+    description: "How excess baggage is priced per kg on G9, 9P and 3O, and where to check E5's current rates.",
+    overview:
+      "Every hub bills excess weight differently, and getting the wrong figure on a call is one of the fastest ways to end up in a quality case. G9 prices per kg by destination zone and whether the passenger is flying point-to-point or connecting; 9P splits by domestic vs international-departing vs international-arriving; 3O splits by direction (from/to Morocco) with different currencies each way.\n\nWhen in doubt, confirm destination and direction first — the rate table only makes sense once those two are pinned down.\n\nBaggage rates sorted, the next set of hub differences is about the passenger's own name on the ticket.",
+    procedures: [
+      {
+        title: "G9 excess baggage",
+        content:
+          "Priced per kg by destination zone (GCC/KSA, Africa, Egypt/Sudan, India, Iran/Iraq, Levant, Sub-Continent, CIS, Turkey, Europe, Far East, Morocco), and by whether the journey is point-to-point (to/from UAE), connecting to GCC, or connecting elsewhere — connecting routes cost more. Example: Sub-Continent point-to-point is AED 60/kg. No-baggage-fare customers: first 20kg flat AED 100, extra piece AED 50. No carton boxes accepted on flights to Bangladesh, regardless of willingness to pay.",
+      },
+      {
+        title: "9P excess baggage",
+        content:
+          "Three separate tables: Domestic (PKR, e.g. 1st piece 23kg PKR 3,800, excess PKR 200/kg), International departing Pakistan (higher PKR figures), International arriving Pakistan (AED, direct AED 60/kg vs connecting AED 70/kg). Max oversize dimension 305cm. Carton boxes accepted departing Pakistan (PKR 3,800) but not accepted arriving Pakistan (N/A).",
+      },
+      {
+        title: "3O excess baggage",
+        content:
+          "From Morocco: MAD 120/kg to Europe/Turkey, MAD 250/kg to UAE, MAD 50/kg domestic. To Morocco: priced in the destination's own currency (EUR/GBP/CHF), e.g. €12/kg from Europe. No-baggage-fare first 20kg: from MAD 300 (domestic) up to MAD 1,200 (to UAE). No restriction on number of pieces.",
+      },
+      {
+        title: "E5 excess baggage",
+        content: "Priced per kg by destination from/to Egypt, same shape as the other hubs — check the live Excess Baggage Rates – E5 article or the shared rate workbook for the current figures before quoting.",
+      },
+    ],
+    scenarios: [
+      {
+        situation: "A G9 passenger flying direct UAE to Pakistan asks the excess rate.",
+        response: "Sub-Continent point-to-point: AED 60 per kg, plus airport handling fees.",
+      },
+      {
+        situation: "A 9P passenger arriving in Pakistan on a connecting flight asks the excess rate.",
+        response: "AED 70 per kg for a connecting arrival into Pakistan — AED 60 per kg if it were direct instead.",
+      },
+      {
+        situation: "A 3O no-baggage-fare passenger flying Casablanca to Turkey asks about their first 20kg.",
+        response: "MAD 800 flat for the first 20kg, with no restriction on the number of pieces within that weight.",
+      },
+    ],
+    notes: [{ type: "Information", content: "Always confirm exact destination and direction (point-to-point vs connecting, from vs to) before quoting — the same passenger's rate can change materially based on either." }],
+    keywords: ["excess baggage", "rates", "G9", "9P", "3O", "E5"],
+  },
+  {
+    title: "Module 15: Name Changes & Corrections by Hub",
+    description: "G9, 9P and 3O name-change fees and eligibility, plus 3O's 5-case name-correction decision flow.",
+    overview:
+      "Two different things get called \"name change\" and they're handled completely differently: a paid name change (a different passenger, essentially) versus a free spelling correction (the same passenger, fixed). G9 and 9P follow the same shape — paid changes need 24 hours' notice and a fee plus fare difference; credit-based changes are restricted to immediate family with proof; spelling fixes go straight to a supervisor, free.\n\n3O breaks this into five distinct cases with their own do/don't rules — worth knowing in detail, since getting the wrong case wrong is an easy quality-case trigger.\n\nName changes handled, what a passenger can bring with them — and what needs special handling — is next.",
+    procedures: [
+      {
+        title: "G9 & 9P name change (same shape)",
+        content:
+          "Paid by card/cash: 24 hours before first-sector departure, AED 350/PKR 3,500 per passenger + fare difference. Paid via previous credit: immediate family only, same 24h notice, same fee — raise a Sprinklr case and request proof of relationship. Free spelling amendments (e.g. married name change): send directly to a Supervisor, not Sprinklr.",
+      },
+      {
+        title: "3O name correction — 5 cases",
+        content:
+          "1. Spelling correction — free, raise a DS Form directly, no manager approval needed. 2. AirRewards ID correction — free, but only if the ID is already visible in Accelaero. 3. Spouse/family name — free, raise an SP case, requires marriage certificate. 4. First/last name wrong — charge applies, requires passport number + DOB already on Accelaero, raise SP case with proof documents, 24h reply. 5. Total name change — not permitted at all (ticket is nominative); offer alternatives like a refund depending on the fare bundle.",
+      },
+      {
+        title: "3O urgent same-day cases",
+        content: "Cases 1–3 on a same-day flight: escalate via Teams immediately and follow up until resolved. Manager support is reserved for genuinely urgent, exceptional, or non-standard cases only — not routine ones.",
+      },
+    ],
+    scenarios: [
+      {
+        situation: "A G9 passenger wants a name change 10 hours before departure.",
+        response: "Not possible through this channel — name changes need at least 24 hours' notice before the first sector's departure. Escalate to check for an airport-level exception.",
+      },
+      {
+        situation: "A 3O passenger's AirRewards ID correction request comes in, but the ID isn't visible in Accelaero.",
+        response: "Don't raise the case yet — the free AirRewards correction (case 2) requires the ID to already be confirmed in Accelaero. Verify it there first.",
+      },
+      {
+        situation: "A 9P passenger wants to use a sibling's credit for a name change.",
+        response: "Siblings count as immediate family, so it's permitted — raise a Sprinklr case and request proof of relationship before processing.",
+      },
+    ],
+    notes: [{ type: "Warning", content: "Never confuse a paid name change (different passenger) with a free spelling correction (same passenger) — they go to completely different queues." }],
+    keywords: ["name change", "name correction", "G9", "9P", "3O", "spelling correction"],
+  },
+  {
+    title: "Module 16: TV Handling & Cargo Support by Hub",
+    description: "Rules for carrying a TV as checked baggage on E5 and G9, and cargo/trade contacts for G9, 3O and E5.",
+    overview:
+      "Two more things that vary by hub but follow a recognizable pattern once you've seen it once: TVs travel free under a size threshold, cost a flat fee in a middle band, and aren't accepted past a maximum size at all. Cargo and trade questions, meanwhile, almost never get handled by the Call Center directly — the job is knowing exactly which contact to hand off to.\n\nWith hub differences covered, a few special, less-common cases are worth knowing before the story wraps up.",
+    procedures: [
+      {
+        title: "TV handling — G9",
+        content: "Counted as 1 baggage piece, no limit on number of TVs. Under 40in: no extra charge. 40–60in: AED 150 + airport handling fee. Over 60in: not allowed.",
+      },
+      {
+        title: "TV handling — E5",
+        content: "Under 40in: free. 40–60in: EGP 2,000 per TV + airport handling fees. Maximum accepted size: 60in.",
+      },
+      {
+        title: "TV handling — 9P & 3O",
+        content: "Follow the same under-40/40-60/over-60 shape as G9 and E5, at their own local rates — check the hub-specific TV Handling article for the current figures before quoting.",
+      },
+      {
+        title: "Cargo & trade contacts — G9 (Sharjah)",
+        content: "SAS Export Counter: 06-514-1174, 24/7. SAS Import Counter: 06-514-1188 or 06-514-1189, 24/7.",
+      },
+      {
+        title: "Cargo & trade contacts — 3O (Morocco)",
+        content: "Cargo booking: +212 666 28 49 02 / maccargobooking@airarabia.com. UAE Sales Support: trade@airarabia.com / 600 50 8002 (9am–10pm). Country-specific trade-support emails exist per market (Spain, Belgium, France, Netherlands, UK & Ireland, Germany, Switzerland, Morocco, Italy) plus a dedicated Turkey contact (info@airarabiaturkey.com) separate from the general line.",
+      },
+      {
+        title: "Cargo & trade contacts — E5 (Egypt)",
+        content: "Check the live Cargo & Trade Contacts – E5 article for the current export/import and trade-support numbers before directing a passenger.",
+      },
+    ],
+    scenarios: [
+      { situation: "A G9 passenger wants to check in three 45-inch TVs.", response: "Permitted — no limit on number of TVs. Each is AED 150 plus airport handling fee, and each counts as one baggage piece." },
+      { situation: "An E5 passenger wants to check a 65-inch TV.", response: "Not accepted — E5's maximum accepted TV size is 60 inches." },
+      { situation: "A travel agent in Turkey asks for their 3O support contact instead of the general UAE line.", response: "Turkey has its own dedicated contact, info@airarabiaturkey.com, separate from the general UAE Sales Support line." },
+    ],
+    keywords: ["TV handling", "cargo", "trade support", "G9", "E5", "3O"],
+  },
+  {
+    title: "Module 17: Hub-Specific Services — Falcons, Discounts, Holidays & Check-in Variants",
+    description: "G9-exclusive services (falcons, card discounts, holiday packages, Sharjah airport services, Ok to Board) and 3L/G9/Sharjah check-in variants.",
+    overview:
+      "A handful of services only exist on specific hubs, and knowing they exist — even if you're not the one who processes them — is what keeps a call from stalling out. G9 alone carries falcons, offers card-based fare discounts, sells holiday packages, and runs a premium airport-services desk at Sharjah. Abu Dhabi and Sharjah passengers also get check-in options nobody else has: early check-in at city locations, and full home check-in.\n\nA few genuinely rare situations round out the hub picture before the wrap-up.",
+    procedures: [
+      {
+        title: "Pets & Animals (Falcons) — G9 only",
+        content: "No pets or animals on any Air Arabia flight, except falcons on G9. Book on Basic fare with no added services, via Accel Aero, at least 48 hours before departure. No baggage allowance is added for a falcon's seat. Add a User Note in Accel Aero: \"Passenger is Travelling with Falcon.\"",
+      },
+      {
+        title: "Special Discounts — G9",
+        content: "Homat Al Watan, Fazaa & Waffer: 10% off Ultimate Bundle fare/surcharge (Business/Ultimate on Cairo), cardholder + spouse/children up to 18. Esaad: same 10%, cardholder + spouse/parents/children with no age limit. All valid only on departures from Abu Dhabi, RAK & Sharjah. Raise a Sprinklr case with ID + proof of relationship — never create an on-hold booking.",
+      },
+      {
+        title: "Air Arabia Holidays — G9 only",
+        content: "Predesigned flight+hotel+transfer+tour packages. No modification permitted. Cancellation needs 72 hours' notice and results in a credit voucher only (1 year validity, usable for any passenger on the booking) — never a refund. Raise on Sprinklr; the Holidays team contacts the passenger directly.",
+      },
+      {
+        title: "Airport Services — Sharjah only",
+        content: "Meet & Assist, Fast Track, Porter, Dedicated Check-in, Business Lounge (from AED 145), and Airport Transfers (Standard Sedan, up to 4 pax/4 bags, +971 54 3082573). Bookable up to 24 hours prior, Sharjah departures/arrivals/transit only — not available for other airports.",
+      },
+      {
+        title: "Ok to Board (OTB) — G9 & 9P",
+        content: "Required for passengers travelling from India, Pakistan or Bangladesh to the UAE on a UAE visa copy. Update only at an Air Arabia office, minimum 24h prior, with visa copy + passport + PNR. Charge: free at Pakistan offices, AED 15–20 per passenger at UAE offices.",
+      },
+      {
+        title: "Check-in variants — 3L & G9",
+        content:
+          "Abu Dhabi Early Check-in: select locations (Cruise Terminal, YAS Mall, Mussafah), from 24h prior, AED 35/25/15 (adult/child/infant). Abu Dhabi Home Check-in (via MORAFIQ): agent visits within a 24h–5h window, priced AED 185–400 by bag count. Sharjah Home Check-in: Sharjah residents only, bookable up to 6h prior, AED 145–185 by bag count. Sharjah Early Check-in: free, from 24h prior.",
+      },
+    ],
+    scenarios: [
+      { situation: "A passenger wants to bring a pet cat on a G9 flight.", response: "Not possible — no pets or animals are carried on any flight; G9's only exception is falcons, under the 48-hour-advance procedure." },
+      { situation: "A Fazaa cardholder wants their 10% discount on a Dubai departure.", response: "Not eligible — the discount only applies to departures from Abu Dhabi, RAK & Sharjah." },
+      { situation: "A Sharjah resident wants Home Check-in booked 4 hours before departure.", response: "Too late — Sharjah Home Check-in needs 6 hours' notice. Offer the standard counter or Sharjah's free 24-hour early check-in instead." },
+    ],
+    notes: [{ type: "Warning", content: "Never create an on-hold booking for a Special Discount request — the outbound team contacts the passenger directly once the Sprinklr case is raised." }],
+    keywords: ["falcons", "special discounts", "air arabia holidays", "sharjah airport services", "ok to board", "home check-in", "early check-in"],
+  },
+  {
+    title: "Module 18: Special Cases — Dead Body Transport, Military Vouchers & Office Moves",
+    description: "9P's transport-of-deceased procedure and military voucher handling, plus the Islamabad sales office relocation.",
+    overview:
+      "Some calls are rare enough that they're easy to freeze up on — this module exists so that doesn't happen. Transporting a deceased passenger is the clearest example: it needs empathy first, then a precise document checklist, because getting it wrong at cargo check-in adds pain to an already difficult day.\n\nWith the rare cases covered, the last stretch of this training turns to Cairo's unique fare rules and whatever promotions are currently active.",
+    procedures: [
+      {
+        title: "Transport of a deceased passenger — 9P",
+        content:
+          "Requires: one attendant with a confirmed ticket; death certificate (government-hospital-attested) + CNIC copy; coffin box certificate from a certified provider; police station NOC; deceased's CNIC copy. Last reporting time: 1 hour before departure, at cargo (not standard check-in). Charge: PKR 20,000 + airport handling fees. 24/7 contact: +92 300 8214381.",
+      },
+      {
+        title: "APW/TAC Military Vouchers — 9P",
+        content: "A dedicated voucher-based fare category for military travel — check the live APW/TAC Military Vouchers article for current documentation and servicing requirements before processing.",
+      },
+      {
+        title: "Islamabad Sales Office move — 9P & G9",
+        content: "The Fly Jinnah (9P) and Air Arabia (G9) Islamabad Sales Office relocated to a new address effective 13 July 2026 — confirm the current address before directing a passenger there in person.",
+      },
+    ],
+    scenarios: [
+      {
+        situation: "A family calls about transporting a deceased relative on 9P and asks what's needed.",
+        response: "A government-hospital-attested death certificate + CNIC copy, a coffin box certificate from a certified provider, a police NOC, the deceased's CNIC copy, and one attendant with a confirmed ticket — reporting is 1 hour before departure, at cargo.",
+      },
+      {
+        situation: "A passenger asks how late they can arrive for a dead body transport booking.",
+        response: "Strictly 1 hour before departure, at cargo — not the standard passenger check-in counter.",
+      },
+    ],
+    notes: [{ type: "Information", content: "Lead with empathy on dead body transport calls — the documentation checklist matters, but tone matters just as much." }],
+    keywords: ["dead body transport", "9P", "military vouchers", "islamabad office"],
+  },
+  {
+    title: "Module 19: Cairo Special Rules & Current Promotions",
+    description: "Cairo's unique Business Class and bundle rules, plus the promotions and card partnerships currently active.",
+    overview:
+      "Two last things don't fit neatly into any hub bucket: Cairo, which plays by its own rules entirely, and promotions, which are only true for as long as their booking window lasts. Both need the same instinct — check before you quote, because both change without much warning.\n\nAfter this, the story loops back to where it started: the habits that make every one of these calls go well.",
+    procedures: [
+      {
+        title: "Cairo (CAI) — the only Business Class route",
+        content:
+          "Economy: Basic and Ultimate only (no Value). Basic: 10kg carry-on + 20/30kg checked, standard meal, 24h modification/cancellation, AED 200/passenger/sector modification + fare difference, AED 200 cancellation. Ultimate: 40kg checked, premium meal, any seat, priority check-in, 8h notice, 2 free modifications, AED 200 cancellation. Business Class: 40kg checked, Business meal, any seat, priority check-in, 8h notice, free modifications (fare difference only), AED 200 cancellation, free seating in first 2 rows (A320) / 3 rows (A321) with the middle seat always blocked. Cairo Economy has no baby bassinet access.",
+      },
+      {
+        title: "RAK Bank tickets",
+        content: "Cannot be modified or cancelled once issued, through any channel, including in person at an office — no exceptions.",
+      },
+      {
+        title: "Active promotions (confirm dates before quoting)",
+        content:
+          "AUH promo: starting fares from JOD 115 (Amman) up to KWD 29 (Kuwait); booking window 1–15 July 2026, travel to 31 Oct 2026. Emirates Islamic Visa Card: 10% off Value / 20% off Ultimate, fare+surcharge only, UAE-departing flights, promo code EIB at search, booking window 8 Jul–6 Aug 2026, travel to 30 Sep 2026.",
+      },
+      {
+        title: "Travel Fusion bookings",
+        content: "Third-party channel bookings are on hold for all standard actions (modification, cancellation, name change, credit transfer) through any channel — direct the passenger to Travel Fusion directly. Sole exception: a flight transfer specifically due to a disruption alert can be processed here.",
+      },
+    ],
+    scenarios: [
+      { situation: "A passenger tries to book a Value bundle to Cairo.", response: "Not available — Cairo Economy only offers Basic and Ultimate." },
+      { situation: "A passenger with a RAK Bank ticket visits an office in person to cancel.", response: "Still not possible — RAK Bank tickets can't be modified or cancelled through any channel, including in person." },
+      { situation: "A Travel Fusion passenger's flight is disrupted and they want to transfer to a new flight.", response: "This is the one exception — process the transfer directly. A cancellation or refund request instead still goes to Travel Fusion." },
+    ],
+    notes: [{ type: "Warning", content: "Promotions have hard booking/travel windows — always confirm today's date falls inside both before quoting a promotional fare." }],
+    keywords: ["cairo", "CAI", "business class", "RAK Bank", "promotion", "travel fusion", "emirates islamic"],
+  },
+  {
+    title: "Module 20: Call Handling Wrap-up — Quality & Escalations",
     description: "How quality cases get raised, and the habits — verification, checklists, empathy — that separate a good call from one that ends up as a complaint.",
     overview:
-      "You've made it through the full flow — from the first ring to a passenger safely on their way, or their issue properly resolved. This last module is about closing the loop on quality itself.\n\nWhen a call doesn't go right — wrong information, a wrong booking, a wrong modification, a cancellation that was requested but never completed — that's a quality case, raised under Complaints > Call Center Complaints with the correct sub-type so it reaches the right team.\n\nThe throughline across everything in this training is the same: verify first, follow the checklist in order, quote things accurately, and lead with empathy when something's gone wrong. Get those right and quality cases stay rare. Welcome to the floor — you're ready for your first real call.",
+      "You've now been through the full flow twice over — the general rules every hub shares, and then the hub-by-hub specifics: bundles, baggage rates, name changes, cargo, special services, Cairo, and today's promotions. This last module closes the loop on quality itself.\n\nWhen a call doesn't go right — wrong information, a wrong booking, a wrong modification, a cancellation that was requested but never completed — that's a quality case, raised under Complaints > Call Center Complaints with the correct sub-type so it reaches the right team.\n\nThe throughline across everything in this training is the same: verify first, follow the checklist in order, quote things accurately for the right hub, and lead with empathy when something's gone wrong. Get those right and quality cases stay rare. Welcome to the floor — you're ready for your first real call.",
     procedures: [
       {
         title: "Raising a quality case",
