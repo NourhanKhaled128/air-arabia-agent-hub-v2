@@ -36,6 +36,7 @@
     "scripts/extend-training-flow-via-admin.ts",
     "scripts/add-training-images-via-admin.ts",
     "scripts/add-sidebar-links-via-admin.ts",
-    "scripts/add-rakbank-etihad-content.ts"
+    "scripts/add-rakbank-etihad-content.ts",
+    "scripts/add-redemption-and-rakbank-screenshots.ts"
   ]
 }
