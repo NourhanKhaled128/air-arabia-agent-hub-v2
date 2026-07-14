@@ -169,12 +169,13 @@ export async function getRandomScenariosForPractice(count?: number) {
       title: true,
       slug: true,
       category: { select: { name: true } },
-      scenarios: { select: { situation: true, response: true } },
+      scenarios: { select: { id: true, situation: true, response: true } },
     },
   });
 
   const all = articles.flatMap((a) =>
     a.scenarios.map((s) => ({
+      id: s.id,
       situation: s.situation,
       response: s.response,
       articleTitle: a.title,
