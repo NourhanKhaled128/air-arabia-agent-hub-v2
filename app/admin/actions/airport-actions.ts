@@ -1,10 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import {
   parseAirportsWorkbook,
   replaceAirportsFromRows,
+  updateAirport,
 } from "@/lib/airport-service";
 import { logAction } from "@/lib/audit-service";
 import { getCurrentAdminUser } from "@/lib/admin-dal";
@@ -12,6 +14,22 @@ import { getCurrentAdminUser } from "@/lib/admin-dal";
 async function currentUserName() {
   const user = await getCurrentAdminUser();
   return user?.name ?? "System";
+}
+
+export async function updateAirportAction(id: number, formData: FormData) {
+  await updateAirport(id, {
+    code: formData.get("code") as string,
+    city: formData.get("city") as string,
+    airport: formData.get("airport") as string,
+    country: formData.get("country") as string,
+    terminal: (formData.get("terminal") as string) || undefined,
+  });
+
+  await logAction("Updated", "Airport", id, await currentUserName());
+
+  revalidatePath("/admin/airport-codes");
+  revalidatePath("/airport-codes");
+  redirect("/admin/airport-codes");
 }
 
 export async function uploadAirportsAction(formData: FormData) {

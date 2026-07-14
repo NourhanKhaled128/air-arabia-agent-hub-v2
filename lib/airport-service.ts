@@ -45,6 +45,23 @@ export async function getAirports() {
   return dedupeAirportRows(airports);
 }
 
+export async function getAirportById(id: number) {
+  return prisma.airport.findUnique({ where: { id } });
+}
+
+export async function updateAirport(id: number, data: AirportRow) {
+  return prisma.airport.update({
+    where: { id },
+    data: {
+      code: data.code,
+      city: data.city,
+      airport: data.airport,
+      country: data.country,
+      terminal: data.terminal || null,
+    },
+  });
+}
+
 export async function replaceAirportsFromRows(rows: AirportRow[]) {
   if (rows.length === 0) {
     throw new Error("No airport rows found in the uploaded sheet.");
