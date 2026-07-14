@@ -1,5 +1,5 @@
 import { getLatestAnnouncements } from "@/lib/dashboard-service";
-import { formatRelativeTime } from "@/lib/format";
+import AnnouncementItem from "@/components/AnnouncementItem";
 
 export default async function Announcements() {
 
@@ -27,24 +27,13 @@ export default async function Announcements() {
 
         {announcements.map((item) => (
 
-          <div
+          <AnnouncementItem
             key={item.id}
-            className="rounded-2xl border border-gray-100 p-4 transition hover:bg-red-50"
-          >
-
-            <h3 className="font-semibold">
-
-              {item.title}
-
-            </h3>
-
-            <p className="mt-2 text-sm text-gray-500">
-
-              {formatRelativeTime(item.createdAt)}
-
-            </p>
-
-          </div>
+            id={item.id}
+            title={item.title}
+            content={item.content}
+            createdAt={item.createdAt}
+          />
 
         ))}
 
