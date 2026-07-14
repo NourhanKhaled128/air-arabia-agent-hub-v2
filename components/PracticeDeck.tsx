@@ -36,14 +36,23 @@ function shuffle<T>(items: T[]): T[] {
   return copy;
 }
 
-/** Wrong options are real responses to other scenarios (same category preferred) so they read as plausible SOP text, not obvious noise. */
+/**
+ * Wrong options are real responses to other scenarios, preferring the closest topic match first
+ * (same article, then same category, then site-wide) so they read as plausible SOP text for the
+ * situation at hand rather than an obviously-unrelated decoy.
+ */
 function buildOptions(scenario: PracticeScenario, allScenarios: PracticeScenario[]): string[] | null {
   const seen = new Set([scenario.response]);
-  const sameCategory = shuffle(allScenarios.filter((s) => s.category === scenario.category && s.id !== scenario.id));
+  const sameArticle = shuffle(
+    allScenarios.filter((s) => s.articleSlug === scenario.articleSlug && s.id !== scenario.id)
+  );
+  const sameCategory = shuffle(
+    allScenarios.filter((s) => s.articleSlug !== scenario.articleSlug && s.category === scenario.category && s.id !== scenario.id)
+  );
   const others = shuffle(allScenarios.filter((s) => s.category !== scenario.category && s.id !== scenario.id));
 
   const distractors: string[] = [];
-  for (const s of [...sameCategory, ...others]) {
+  for (const s of [...sameArticle, ...sameCategory, ...others]) {
     if (distractors.length >= 3) break;
     if (seen.has(s.response)) continue;
     seen.add(s.response);
