@@ -8,6 +8,18 @@ export async function getAnnouncements() {
   });
 }
 
+/** Published announcements for the portal-facing Announcements page — mirrors the Article status convention (Draft/Scheduled never shown to champions). */
+export async function getPublishedAnnouncements() {
+  return prisma.announcement.findMany({
+    where: {
+      status: "Published",
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
 export async function getAnnouncementById(id: number) {
   return prisma.announcement.findUnique({
     where: {
