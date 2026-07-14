@@ -27,7 +27,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({
-      url: blob.url,
+      // Same-origin path (proxied via app/api/blob) rather than the raw vercel-storage.com
+      // URL — some networks block that host outright, which breaks the image for viewers.
+      url: `/api/blob/${blob.pathname}`,
       fileName: file.name,
       mimeType: file.type || "application/octet-stream",
       size: file.size,
