@@ -12,7 +12,18 @@ function slugify(text: string) {
     .replace(/\s+/g, "-");
 }
 
-async function main() {
+async function updateJeddahAirportTerminal() {
+  const result = await prisma.airport.updateMany({
+    where: { code: "JED" },
+    data: {
+      terminal:
+        "Hajj Terminal (9P, until 11 Sep 2026) / North Terminal (G9 & E5, until 20 Sep 2026) — all moving to Terminal 4 (T4): 9P from 12 Sep 2026, G9/E5 from 21 Sep 2026",
+    },
+  });
+  console.log(`Updated JED airport terminal (${result.count} row(s)).`);
+}
+
+async function createJeddahTerminalArticle() {
   const title = "Jeddah (JED) Terminal Relocation — Fly Jinnah (9P) & Air Arabia (G9/E5)";
 
   const existing = await prisma.article.findFirst({ where: { title } });
@@ -92,6 +103,11 @@ async function main() {
   });
 
   console.log(`Created article: ${title} (#${article.id})`);
+}
+
+async function main() {
+  await updateJeddahAirportTerminal();
+  await createJeddahTerminalArticle();
 }
 
 main()
