@@ -6,6 +6,7 @@ import { getArticlesForSearch } from "@/lib/article-service";
 import { getVisibleCategoriesForSidebar } from "@/lib/category-service";
 import { getVisibleSidebarLinksBySection } from "@/lib/sidebar-service";
 import { getVisibleImportantLinks } from "@/lib/important-link-service";
+import { CUSTOMER_SUPPORT_TEAM_GROUP } from "@/lib/customer-support-team";
 
 interface Props {
   children: React.ReactNode;
@@ -20,9 +21,9 @@ export default async function PortalLayout({ children }: Props) {
     getVisibleImportantLinks(),
   ]);
 
-  // Customer Support Team has its own separated section (see app/CustomerSupportTeam/)
-  // reached via the pinned sidebar link, so it's excluded from the generic category tree here.
-  const categories = allCategories.filter((c) => c.slug !== "customer-support-team");
+  // Any category in the Customer Support Team sidebar group belongs to the separated
+  // section (see app/CustomerSupportTeam/), reached via the pinned sidebar link instead.
+  const categories = allCategories.filter((c) => c.group !== CUSTOMER_SUPPORT_TEAM_GROUP);
 
   return (
     <SidebarPrefsProvider>

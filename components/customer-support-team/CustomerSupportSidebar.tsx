@@ -26,6 +26,13 @@ interface CustomerSupportFolder {
   name: string;
 }
 
+interface CustomerSupportCategory {
+  id: number;
+  name: string;
+  slug: string;
+  folders: CustomerSupportFolder[];
+}
+
 interface ImportantLinkItem {
   id: number;
   title: string;
@@ -34,21 +41,32 @@ interface ImportantLinkItem {
 }
 
 interface Props {
-  folders: CustomerSupportFolder[];
+  categories: CustomerSupportCategory[];
   importantLinks: ImportantLinkItem[];
 }
 
-export default function CustomerSupportSidebar({ folders, importantLinks }: Props) {
+export default function CustomerSupportSidebar({ categories, importantLinks }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const { collapsed, dock, mobileOpen, toggleCollapsed, closeMobile } = useSidebarPrefs();
 
   const [linksOpen, setLinksOpen] = useState(true);
-  const [foldersOpen, setFoldersOpen] = useState(true);
+  const [openCategoryFolders, setOpenCategoryFolders] = useState<Record<number, boolean>>({});
+
+  function isCategoryFoldersOpen(categoryId: number) {
+    return openCategoryFolders[categoryId] ?? true;
+  }
+
+  function toggleCategoryFolders(categoryId: number) {
+    setOpenCategoryFolders((prev) => ({
+      ...prev,
+      [categoryId]: !isCategoryFoldersOpen(categoryId),
+    }));
+  }
 
   const activeFolderId = searchParams.get("folder");
-  const onLanding = pathname === "/CustomerSupportTeam";
+  const onOverview = pathname === "/CustomerSupportTeam";
   const onDecisionTrees = pathname.startsWith("/CustomerSupportTeam/decision-trees");
 
   const sideClasses = dock === "left" ? "left-0 border-r" : "right-0 border-l";
@@ -143,68 +161,96 @@ export default function CustomerSupportSidebar({ folders, importantLinks }: Prop
               </h3>
             )}
 
-            {collapsed ? (
-              <Link
-                href="/CustomerSupportTeam"
-                onClick={closeMobile}
-                title="All Articles"
-                className={`mb-2 flex items-center justify-center rounded-xl px-0 py-3 transition-all duration-200 ${
-                  onLanding
-                    ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand shadow"
-                    : "text-gray-800 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
-                }`}
-              >
-                <Folder size={20} />
-              </Link>
-            ) : (
-              <div className="mb-2">
-                <div
-                  className={`flex items-center rounded-xl transition-all duration-200 ${
-                    onLanding && !activeFolderId
-                      ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand shadow"
-                      : "text-gray-800 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
-                  }`}
-                >
-                  <Link
-                    href="/CustomerSupportTeam"
-                    onClick={closeMobile}
-                    className="flex flex-1 items-center gap-3 px-4 py-3"
-                  >
-                    <Folder size={20} />
-                    <span className="font-medium">All Articles</span>
-                  </Link>
+            <Link
+              href="/CustomerSupportTeam"
+              onClick={closeMobile}
+              title={collapsed ? "Overview" : undefined}
+              className={`mb-2 flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
+                collapsed ? "justify-center px-0" : ""
+              } ${
+                onOverview
+                  ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand shadow"
+                  : "text-gray-800 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+              }`}
+            >
+              <Folder size={20} />
+              {!collapsed && <span className="font-medium">Overview</span>}
+            </Link>
 
-                  {folders.length > 0 && (
-                    <button
-                      onClick={() => setFoldersOpen(!foldersOpen)}
-                      title={foldersOpen ? "Hide folders" : "Show folders"}
-                      className="px-3 py-3 text-gray-500 dark:text-slate-400 hover:text-brand"
+            {categories.map((category) => {
+              const categoryHref = `/CustomerSupportTeam/category/${category.slug}`;
+              const active = pathname === categoryHref;
+              const hasFolders = category.folders.length > 0;
+              const open = isCategoryFoldersOpen(category.id);
+
+              if (collapsed) {
+                return (
+                  <Link
+                    key={category.id}
+                    href={categoryHref}
+                    onClick={closeMobile}
+                    title={category.name}
+                    className={`mb-2 flex items-center justify-center rounded-xl px-0 py-3 transition-all duration-200 ${
+                      active
+                        ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand shadow"
+                        : "text-gray-800 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                    }`}
+                  >
+                    <Folder size={18} />
+                  </Link>
+                );
+              }
+
+              return (
+                <div key={category.id} className="mb-2">
+                  <div
+                    className={`flex items-center rounded-xl transition-all duration-200 ${
+                      active
+                        ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand shadow"
+                        : "text-gray-800 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                    }`}
+                  >
+                    <Link
+                      href={categoryHref}
+                      onClick={closeMobile}
+                      className="flex flex-1 items-center gap-3 px-4 py-3"
                     >
-                      {foldersOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-                    </button>
+                      <Folder size={20} />
+                      <span className="font-medium">{category.name}</span>
+                    </Link>
+
+                    {hasFolders && (
+                      <button
+                        onClick={() => toggleCategoryFolders(category.id)}
+                        title={open ? "Hide folders" : "Show folders"}
+                        className="px-3 py-3 text-gray-500 dark:text-slate-400 hover:text-brand"
+                      >
+                        {open ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                      </button>
+                    )}
+                  </div>
+
+                  {hasFolders && open && (
+                    <div className="ml-6 mt-1 space-y-1 border-l border-gray-200 dark:border-border-subtle pl-3">
+                      {category.folders.map((folder) => (
+                        <Link
+                          key={folder.id}
+                          href={`${categoryHref}?folder=${folder.id}`}
+                          onClick={closeMobile}
+                          className={`block rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
+                            active && activeFolderId === String(folder.id)
+                              ? "font-semibold text-brand"
+                              : "text-gray-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                          }`}
+                        >
+                          {folder.name}
+                        </Link>
+                      ))}
+                    </div>
                   )}
                 </div>
-
-                {folders.length > 0 && foldersOpen && (
-                  <div className="ml-6 mt-1 space-y-1 border-l border-gray-200 dark:border-border-subtle pl-3">
-                    {folders.map((folder) => (
-                      <Link
-                        key={folder.id}
-                        href={`/CustomerSupportTeam?folder=${folder.id}`}
-                        onClick={closeMobile}
-                        className={`block rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
-                          onLanding && activeFolderId === String(folder.id)
-                            ? "font-semibold text-brand"
-                            : "text-gray-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
-                        }`}
-                      >
-                        {folder.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+              );
+            })}
 
           </div>
 
