@@ -161,28 +161,62 @@ export async function deleteArticle(
   });
 }
 
-/** A shuffled batch of real scenarios (situation/response) from published articles, for practice/role-play mode. Omit `count` to get the full site-wide pool, shuffled, with no repeats. */
+/**
+ * A shuffled batch of real situation/response pairs from published articles, for practice/role-play
+ * mode. Beyond the dedicated Scenario records, this also draws from Dispositions (their `scenario` +
+ * `content` fields) and Escalations (their `condition` + `content` fields) — all real, human-authored
+ * "if this happens, do this" content already living on the article, just surfaced as practice questions
+ * instead of hand-written a second time. Omit `count` to get the full site-wide pool, shuffled, with no repeats.
+ */
 export async function getRandomScenariosForPractice(count?: number) {
   const articles = await prisma.article.findMany({
-    where: { status: "Published", scenarios: { some: {} } },
+    where: {
+      status: "Published",
+      OR: [
+        { scenarios: { some: {} } },
+        { dispositions: { some: { scenario: { not: null } } } },
+        { escalations: { some: { condition: { not: null } } } },
+      ],
+    },
     select: {
       title: true,
       slug: true,
       category: { select: { name: true } },
       scenarios: { select: { id: true, situation: true, response: true } },
+      dispositions: { select: { id: true, scenario: true, content: true } },
+      escalations: { select: { id: true, condition: true, content: true } },
     },
   });
 
-  const all = articles.flatMap((a) =>
-    a.scenarios.map((s) => ({
-      id: s.id,
+  const all = articles.flatMap((a) => {
+    const category = a.category?.name ?? "Uncategorized";
+    const base = { articleTitle: a.title, articleSlug: a.slug, category };
+
+    const fromScenarios = a.scenarios.map((s) => ({
+      id: `scenario:${s.id}`,
       situation: s.situation,
       response: s.response,
-      articleTitle: a.title,
-      articleSlug: a.slug,
-      category: a.category?.name ?? "Uncategorized",
-    }))
-  );
+      ...base,
+    }));
+    const fromDispositions = a.dispositions
+      .filter((d) => d.scenario?.trim())
+      .map((d) => ({
+        id: `disposition:${d.id}`,
+        situation: d.scenario!.trim(),
+        response: d.content,
+        ...base,
+      }));
+    const fromEscalations = a.escalations
+      .filter((e) => e.condition?.trim())
+      .map((e) => ({
+        id: `escalation:${e.id}`,
+        situation: e.condition!.trim(),
+        response: e.content,
+        ...base,
+      }));
+
+    return [...fromScenarios, ...fromDispositions, ...fromEscalations];
+  });
 
   for (let i = all.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

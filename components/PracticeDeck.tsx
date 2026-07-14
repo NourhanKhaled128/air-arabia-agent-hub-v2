@@ -7,7 +7,7 @@ import { getCategoryBadgeClasses } from "@/lib/helpers";
 import PracticeSetup from "@/components/PracticeSetup";
 
 export interface PracticeScenario {
-  id: number;
+  id: string;
   situation: string;
   response: string;
   articleTitle: string;
@@ -17,7 +17,7 @@ export interface PracticeScenario {
 
 interface BatchCard {
   scenario: PracticeScenario;
-  /** 4 shuffled options (1 correct + 3 real responses from other scenarios as distractors), or null if too few distinct responses exist to build one. */
+  /** 2 shuffled options (1 correct + 1 real response from another scenario as a distractor), or null if no distinct response exists to build one. */
   options: string[] | null;
 }
 
@@ -37,9 +37,9 @@ function shuffle<T>(items: T[]): T[] {
 }
 
 /**
- * Wrong options are real responses to other scenarios, preferring the closest topic match first
- * (same article, then same category, then site-wide) so they read as plausible SOP text for the
- * situation at hand rather than an obviously-unrelated decoy.
+ * The wrong option is a real response to another scenario, preferring the closest topic match
+ * first (same article, then same category, then site-wide) so it reads as plausible SOP text for
+ * the situation at hand rather than an obviously-unrelated decoy.
  */
 function buildOptions(scenario: PracticeScenario, allScenarios: PracticeScenario[]): string[] | null {
   const seen = new Set([scenario.response]);
@@ -53,13 +53,13 @@ function buildOptions(scenario: PracticeScenario, allScenarios: PracticeScenario
 
   const distractors: string[] = [];
   for (const s of [...sameArticle, ...sameCategory, ...others]) {
-    if (distractors.length >= 3) break;
+    if (distractors.length >= 1) break;
     if (seen.has(s.response)) continue;
     seen.add(s.response);
     distractors.push(s.response);
   }
 
-  if (distractors.length < 3) return null;
+  if (distractors.length < 1) return null;
   return shuffle([scenario.response, ...distractors]);
 }
 
@@ -199,7 +199,9 @@ export default function PracticeDeck({ scenarios }: Props) {
       </div>
 
       <div className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm">
-        <p className="text-sm font-bold uppercase tracking-wide text-gray-500 dark:text-slate-400">If:</p>
+        <p className="text-sm font-bold uppercase tracking-wide text-gray-500 dark:text-slate-400">
+          {scenario.category} — If:
+        </p>
         <p className="mt-2 text-xl font-semibold text-gray-900 dark:text-slate-100">{scenario.situation}</p>
 
         {options ? (
