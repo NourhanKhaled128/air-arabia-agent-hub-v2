@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import CustomerSupportSidebar from "@/components/customer-support-team/CustomerSupportSidebar";
 import Header from "@/components/Header";
 import PortalMain from "@/components/PortalMain";
@@ -26,7 +27,9 @@ export default async function CustomerSupportTeamLayout({ children }: Props) {
     <SidebarPrefsProvider>
       <div className="min-h-screen bg-gray-100 dark:bg-background">
 
-        <CustomerSupportSidebar folders={folders} />
+        <Suspense fallback={null}>
+          <CustomerSupportSidebar folders={folders} />
+        </Suspense>
 
         <PortalMain>
 
