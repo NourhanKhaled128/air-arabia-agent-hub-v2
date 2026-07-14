@@ -5,6 +5,7 @@ import PortalMain from "@/components/PortalMain";
 import { SidebarPrefsProvider } from "@/components/SidebarPrefsProvider";
 import { getArticlesForSearch } from "@/lib/article-service";
 import { getCategoryBySlug, getCategoryFolders } from "@/lib/category-service";
+import { getVisibleImportantLinks } from "@/lib/important-link-service";
 
 const CATEGORY_SLUG = "customer-support-team";
 
@@ -15,9 +16,10 @@ interface Props {
 export default async function CustomerSupportTeamLayout({ children }: Props) {
   const category = await getCategoryBySlug(CATEGORY_SLUG);
 
-  const [allFolders, allArticles] = await Promise.all([
+  const [allFolders, allArticles, importantLinks] = await Promise.all([
     category ? getCategoryFolders(category.id) : Promise.resolve([]),
     getArticlesForSearch(),
+    getVisibleImportantLinks(),
   ]);
 
   const folders = allFolders.filter((f) => f.visible);
@@ -28,7 +30,7 @@ export default async function CustomerSupportTeamLayout({ children }: Props) {
       <div className="min-h-screen bg-gray-100 dark:bg-background">
 
         <Suspense fallback={null}>
-          <CustomerSupportSidebar folders={folders} />
+          <CustomerSupportSidebar folders={folders} importantLinks={importantLinks} />
         </Suspense>
 
         <PortalMain>

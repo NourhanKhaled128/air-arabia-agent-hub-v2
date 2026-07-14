@@ -1,12 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
+  ChevronDown,
+  ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  ExternalLink,
   Folder,
   GitBranch,
   PhoneCall,
@@ -14,21 +18,34 @@ import {
 } from "lucide-react";
 
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
+import { getSidebarIcon } from "@/lib/sidebar-icons";
+import CopyButton from "@/components/CopyButton";
 
 interface CustomerSupportFolder {
   id: number;
   name: string;
 }
 
-interface Props {
-  folders: CustomerSupportFolder[];
+interface ImportantLinkItem {
+  id: number;
+  title: string;
+  url: string;
+  icon: string;
 }
 
-export default function CustomerSupportSidebar({ folders }: Props) {
+interface Props {
+  folders: CustomerSupportFolder[];
+  importantLinks: ImportantLinkItem[];
+}
+
+export default function CustomerSupportSidebar({ folders, importantLinks }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const { collapsed, dock, mobileOpen, toggleCollapsed, closeMobile } = useSidebarPrefs();
+
+  const [linksOpen, setLinksOpen] = useState(true);
+  const [foldersOpen, setFoldersOpen] = useState(true);
 
   const activeFolderId = searchParams.get("folder");
   const onLanding = pathname === "/CustomerSupportTeam";
@@ -126,40 +143,68 @@ export default function CustomerSupportSidebar({ folders }: Props) {
               </h3>
             )}
 
-            <Link
-              href="/CustomerSupportTeam"
-              onClick={closeMobile}
-              title={collapsed ? "All Articles" : undefined}
-              className={`mb-2 flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
-                collapsed ? "justify-center px-0" : ""
-              } ${
-                onLanding && !activeFolderId
-                  ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand shadow"
-                  : "text-gray-800 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
-              }`}
-            >
-              <Folder size={20} />
-              {!collapsed && <span className="font-medium">All Articles</span>}
-            </Link>
-
-            {folders.map((folder) => (
+            {collapsed ? (
               <Link
-                key={folder.id}
-                href={`/CustomerSupportTeam?folder=${folder.id}`}
+                href="/CustomerSupportTeam"
                 onClick={closeMobile}
-                title={collapsed ? folder.name : undefined}
-                className={`mb-2 flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
-                  collapsed ? "justify-center px-0" : "pl-8"
-                } ${
-                  onLanding && activeFolderId === String(folder.id)
+                title="All Articles"
+                className={`mb-2 flex items-center justify-center rounded-xl px-0 py-3 transition-all duration-200 ${
+                  onLanding
                     ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand shadow"
-                    : "text-gray-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                    : "text-gray-800 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
                 }`}
               >
-                {collapsed && <Folder size={18} />}
-                <span className={collapsed ? "hidden" : "font-medium"}>{folder.name}</span>
+                <Folder size={20} />
               </Link>
-            ))}
+            ) : (
+              <div className="mb-2">
+                <div
+                  className={`flex items-center rounded-xl transition-all duration-200 ${
+                    onLanding && !activeFolderId
+                      ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand shadow"
+                      : "text-gray-800 dark:text-slate-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                  }`}
+                >
+                  <Link
+                    href="/CustomerSupportTeam"
+                    onClick={closeMobile}
+                    className="flex flex-1 items-center gap-3 px-4 py-3"
+                  >
+                    <Folder size={20} />
+                    <span className="font-medium">All Articles</span>
+                  </Link>
+
+                  {folders.length > 0 && (
+                    <button
+                      onClick={() => setFoldersOpen(!foldersOpen)}
+                      title={foldersOpen ? "Hide folders" : "Show folders"}
+                      className="px-3 py-3 text-gray-500 dark:text-slate-400 hover:text-brand"
+                    >
+                      {foldersOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    </button>
+                  )}
+                </div>
+
+                {folders.length > 0 && foldersOpen && (
+                  <div className="ml-6 mt-1 space-y-1 border-l border-gray-200 dark:border-border-subtle pl-3">
+                    {folders.map((folder) => (
+                      <Link
+                        key={folder.id}
+                        href={`/CustomerSupportTeam?folder=${folder.id}`}
+                        onClick={closeMobile}
+                        className={`block rounded-lg px-3 py-2 text-sm transition-all duration-200 ${
+                          onLanding && activeFolderId === String(folder.id)
+                            ? "font-semibold text-brand"
+                            : "text-gray-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                        }`}
+                      >
+                        {folder.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
           </div>
 
@@ -188,6 +233,83 @@ export default function CustomerSupportSidebar({ folders }: Props) {
             </Link>
 
           </div>
+
+          {importantLinks.length > 0 && (
+            <div className="mb-8">
+
+              {collapsed ? (
+                <>
+                  {importantLinks.map((link) => {
+                    const Icon = getSidebarIcon(link.icon);
+
+                    return (
+                      <a
+                        key={link.id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={link.title}
+                        className="mb-2 flex items-center justify-center rounded-xl px-0 py-3 text-gray-800 dark:text-slate-200 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                      >
+                        <Icon size={20} />
+                      </a>
+                    );
+                  })}
+                </>
+              ) : (
+                <>
+                  <div className="mb-3 flex w-full items-center justify-between px-4">
+
+                    <span className="text-xs font-bold uppercase tracking-widest text-gray-500 dark:text-slate-400">
+                      Important Links
+                    </span>
+
+                    <button
+                      onClick={() => setLinksOpen(!linksOpen)}
+                      aria-label={linksOpen ? "Collapse important links" : "Expand important links"}
+                      className="text-gray-500 dark:text-slate-400 hover:text-brand"
+                    >
+                      {linksOpen ? (
+                        <ChevronDown size={16} />
+                      ) : (
+                        <ChevronRight size={16} />
+                      )}
+                    </button>
+
+                  </div>
+
+                  {linksOpen && (
+                    <div>
+                      {importantLinks.map((link) => {
+                        const Icon = getSidebarIcon(link.icon);
+
+                        return (
+                          <div
+                            key={link.id}
+                            className="mb-2 flex items-center gap-2 rounded-xl px-4 py-3 text-gray-800 dark:text-slate-200 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand"
+                          >
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex min-w-0 flex-1 items-center gap-3"
+                            >
+                              <Icon size={20} />
+                              <span className="flex-1 truncate font-medium">{link.title}</span>
+                              <ExternalLink size={14} className="shrink-0 text-gray-400 dark:text-slate-500" />
+                            </a>
+
+                            <CopyButton text={link.url} compact />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+
+            </div>
+          )}
 
         </div>
 
