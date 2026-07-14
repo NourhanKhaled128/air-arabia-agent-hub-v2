@@ -24,6 +24,7 @@ interface Props {
   results: SearchableArticle[];
   query: string;
   onClose: () => void;
+  basePath?: string;
 }
 
 function ArticleSnippet({ article, query }: { article: SearchableArticle; query: string }) {
@@ -73,11 +74,13 @@ function ResultGroup({
   results,
   query,
   onClose,
+  basePath = "/Knowledge",
 }: {
   label: string;
   results: SearchableArticle[];
   query: string;
   onClose: () => void;
+  basePath?: string;
 }) {
   if (results.length === 0) return null;
 
@@ -90,7 +93,7 @@ function ResultGroup({
       {results.map((article) => (
         <Link
           key={article.id}
-          href={`/Knowledge/${article.slug}`}
+          href={`${basePath}/${article.slug}`}
           onClick={onClose}
           className="block border-b border-gray-100 p-5 transition hover:bg-red-50"
         >
@@ -115,6 +118,7 @@ export default function SearchDropdown({
   results,
   query,
   onClose,
+  basePath = "/Knowledge",
 }: Props) {
   if (results.length === 0) {
     return (
@@ -128,7 +132,7 @@ export default function SearchDropdown({
 
   return (
     <div className="absolute left-0 right-0 top-16 z-50 max-h-96 overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-2xl">
-      <ResultGroup label="Knowledge Base" results={results.slice(0, 6)} query={query} onClose={onClose} />
+      <ResultGroup label="Knowledge Base" results={results.slice(0, 6)} query={query} onClose={onClose} basePath={basePath} />
     </div>
   );
 }

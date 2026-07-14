@@ -11,9 +11,10 @@ import { sortByRelevance } from "@/lib/search-utils";
 
 interface Props {
   articles: SearchableArticle[];
+  basePath?: string;
 }
 
-export default function Header({ articles }: Props) {
+export default function Header({ articles, basePath = "/Knowledge" }: Props) {
 
   const { toggleMobileOpen } = useSidebarPrefs();
 
@@ -140,7 +141,7 @@ export default function Header({ articles }: Props) {
                 setQuery("");
                 e.currentTarget.blur();
               } else if (e.key === "Enter" && results[0]) {
-                router.push(`/Knowledge/${results[0].slug}`);
+                router.push(`${basePath}/${results[0].slug}`);
                 setQuery("");
               }
             }}
@@ -163,6 +164,8 @@ export default function Header({ articles }: Props) {
               query={query}
 
               onClose={()=>setQuery("")}
+
+              basePath={basePath}
 
             />
 

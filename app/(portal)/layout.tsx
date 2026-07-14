@@ -12,13 +12,17 @@ interface Props {
 }
 
 export default async function PortalLayout({ children }: Props) {
-  const [articles, categories, pinnedLinks, toolLinks, importantLinks] = await Promise.all([
+  const [articles, allCategories, pinnedLinks, toolLinks, importantLinks] = await Promise.all([
     getArticlesForSearch(),
     getVisibleCategoriesForSidebar(),
     getVisibleSidebarLinksBySection("pinned"),
     getVisibleSidebarLinksBySection("tools"),
     getVisibleImportantLinks(),
   ]);
+
+  // Customer Support Team has its own separated section (see app/CustomerSupportTeam/)
+  // reached via the pinned sidebar link, so it's excluded from the generic category tree here.
+  const categories = allCategories.filter((c) => c.slug !== "customer-support-team");
 
   return (
     <SidebarPrefsProvider>

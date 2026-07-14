@@ -465,7 +465,7 @@ const EXISTING_TEMPLATES: Record<string, TemplateSpec> = {
     emailTemplates: [{ title: "Your Air Arabia excess baggage query", subject: "Your Air Arabia excess baggage query", body: "Dear passenger,\n\nExcess baggage on G9 is charged per kilogram based on your destination and whether you're travelling point-to-point or connecting (rates range roughly from AED 45 to AED 105+ per kg depending on region). Airport handling fees apply on top. You're welcome to add the extra weight to your booking in advance, or pay the excess at the airport. Note that carton boxes are not accepted on flights to Bangladesh.\n\nAir Arabia Customer Support" }],
   },
   "g9-tv-handling-g9": {
-    chatTemplates: [{ title: "TV handling quote", content: "TVs under 40 inch fly free as part of your baggage allowance; 40–60 inch is AED 150 + airport handling fee; over 60 inch can't be accepted. No limit on how many TVs you bring." }],
+    chatTemplates: [{ title: "TV handling quote", content: "TVs under 40 inches fly free as part of your baggage allowance; 40–60 inches is AED 150 + airport handling fee; over 60 inches can't be accepted. No limit on how many TVs you bring." }],
     emailTemplates: [{ title: "Bringing a TV on your G9 flight", subject: "Bringing a TV on your G9 flight", body: "Dear passenger,\n\nTVs under 40 inches travel free within your baggage allowance (counted as 1 piece). TVs between 40–60 inches are AED 150 plus an airport handling fee. TVs over 60 inches cannot be accepted. There's no limit on the number of TVs you can bring, each charged individually.\n\nAir Arabia Customer Support" }],
   },
   "g9-airport-services-sharjah-shj-airport-only": {
@@ -513,7 +513,7 @@ const EXISTING_TEMPLATES: Record<string, TemplateSpec> = {
     emailTemplates: [{ title: "3O excess baggage rates", subject: "3O excess baggage rates", body: "Dear passenger,\n\nExcess baggage rates on 3O depend on direction of travel. From Morocco: most European destinations, Turkey are MAD 120/kg, UAE is MAD 250/kg, Domestic is MAD 50/kg. To Morocco: most destinations are around 12 EUR/GBP/CHF per kg. There's no restriction on the number of pieces.\n\nAir Arabia Customer Support" }],
   },
   "3o-tv-handling-3o": {
-    chatTemplates: [{ title: "TV handling quote", content: "TVs under 40 inch fly free; 40–60 inch is MAD 500 plus a signed indemnity form at the airport; over 60 inch can't be accepted. No limit on the number of TVs." }],
+    chatTemplates: [{ title: "TV handling quote", content: "TVs under 40 inches fly free; 40–60 inches is MAD 500 plus a signed indemnity form at the airport; over 60 inches can't be accepted. No limit on the number of TVs." }],
     emailTemplates: [{ title: "Bringing a TV on your 3O flight", subject: "Bringing a TV on your 3O flight", body: "Dear passenger,\n\nTVs under 40 inches travel free within your baggage allowance. TVs 40–60 inches are MAD 500 and require a signed indemnity form at the airport. TVs over 60 inches cannot be accepted.\n\nAir Arabia Customer Support" }],
   },
   "3o-name-change-3o": {
@@ -533,7 +533,7 @@ const EXISTING_TEMPLATES: Record<string, TemplateSpec> = {
     emailTemplates: [{ title: "9P excess baggage rates", subject: "9P excess baggage rates", body: "Dear passenger,\n\nExcess baggage on 9P depends on your sector: Domestic (PKR 200/kg excess, PKR 3,800 first piece), International departing Pakistan (PKR 2,000/kg excess, PKR 6,000 first piece), or International arriving Pakistan (AED 60/kg direct or AED 70/kg connecting, AED 100 first piece). Oversize items are capped at 305cm.\n\nAir Arabia Customer Support" }],
   },
   "9p-tv-handling-9p": {
-    chatTemplates: [{ title: "TV handling quote", content: "TVs under 40 inch fly free; 40–60 inch is PKR 2,500 domestic or AED 150 international, plus a handling fee; over 60 inch can't be accepted." }],
+    chatTemplates: [{ title: "TV handling quote", content: "TVs under 40 inches fly free; 40–60 inches is PKR 2,500 domestic or AED 150 international, plus a handling fee; over 60 inches can't be accepted." }],
     emailTemplates: [{ title: "Bringing a TV on your 9P flight", subject: "Bringing a TV on your 9P flight", body: "Dear passenger,\n\nTVs under 40 inches travel free within your baggage allowance. TVs 40–60 inches are PKR 2,500 (domestic) or AED 150 (international), plus an airport handling fee. TVs over 60 inches cannot be accepted.\n\nAir Arabia Customer Support" }],
   },
   "9p-name-change-9p": {
@@ -557,7 +557,7 @@ const EXISTING_TEMPLATES: Record<string, TemplateSpec> = {
     emailTemplates: [{ title: "E5 excess baggage rates", subject: "E5 excess baggage rates", body: "Dear passenger,\n\nExcess baggage rates on E5 vary by direction and destination — for example, from Egypt to Sharjah is EGP 450/kg, and to Egypt from Amman is JOD 6/kg. No-baggage-fare customers have a separate first-20kg rate.\n\nAir Arabia Customer Support" }],
   },
   "e5-tv-handling-e5": {
-    chatTemplates: [{ title: "TV handling quote", content: "TVs under 40 inch fly free on E5; 40–60 inch is EGP 2,000 plus airport handling fees; over 60 inch isn't accepted." }],
+    chatTemplates: [{ title: "TV handling quote", content: "TVs under 40 inches fly free on E5; 40–60 inches is EGP 2,000 plus airport handling fees; over 60 inches isn't accepted." }],
     emailTemplates: [{ title: "Bringing a TV on your E5 flight", subject: "Bringing a TV on your E5 flight", body: "Dear passenger,\n\nTVs under 40 inches travel free of charge on E5. TVs between 40–60 inches are EGP 2,000 per TV plus airport handling fees. The maximum accepted size is 60 inches.\n\nAir Arabia Customer Support" }],
   },
   "e5-cargo-trade-contacts-e5": {

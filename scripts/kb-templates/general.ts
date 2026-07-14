@@ -486,13 +486,13 @@ export const GENERAL_TEMPLATES: Record<string, ArticleTemplateSet> = {
     },
     {
       chatEn: "I'm afraid the middle seat is always blocked in Business Class on Cairo flights, so it can't be occupied — I can offer your family adjoining aisle and window seats within the free-selection rows instead.",
-      chatAr: "نأسف، المقعد الأوسط محجوب دائمًا في الدرجة الأولى على رحلات القاهرة ولا يمكن شغله - يمكنني تقديم مقاعد ممر ونافذة متجاورة لعائلتكم ضمن الصفوف المتاحة للاختيار المجاني.",
+      chatAr: "نأسف، المقعد الأوسط محجوب دائمًا في درجة رجال الأعمال على رحلات القاهرة ولا يمكن شغله - يمكنني تقديم مقاعد ممر ونافذة متجاورة لعائلتكم ضمن الصفوف المتاحة للاختيار المجاني.",
       emailSubjectEn: "Middle seat policy in Business Class",
       emailIssueEn: "Thank you for your request to seat your family together, including the middle seat, in Business Class.",
       emailResolutionEn: "The middle seat is always kept empty in Business Class on Cairo flights and cannot be occupied. We'd be glad to offer adjoining aisle and window seats within the free-selection rows for your family instead.",
-      emailSubjectAr: "سياسة المقعد الأوسط في الدرجة الأولى",
-      emailIssueAr: "شكراً لطلبكم إجلاس عائلتكم معًا، بما في ذلك المقعد الأوسط، في الدرجة الأولى.",
-      emailResolutionAr: "يبقى المقعد الأوسط محجوبًا دائمًا في الدرجة الأولى على رحلات القاهرة ولا يمكن شغله. يسعدنا تقديم مقاعد ممر ونافذة متجاورة لعائلتكم ضمن الصفوف المتاحة للاختيار المجاني.",
+      emailSubjectAr: "سياسة المقعد الأوسط في درجة رجال الأعمال",
+      emailIssueAr: "شكراً لطلبكم إجلاس عائلتكم معًا، بما في ذلك المقعد الأوسط، في درجة رجال الأعمال.",
+      emailResolutionAr: "يبقى المقعد الأوسط محجوبًا دائمًا في درجة رجال الأعمال على رحلات القاهرة ولا يمكن شغله. يسعدنا تقديم مقاعد ممر ونافذة متجاورة لعائلتكم ضمن الصفوف المتاحة للاختيار المجاني.",
     },
   ],
 };

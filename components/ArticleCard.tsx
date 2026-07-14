@@ -9,12 +9,13 @@ interface Props {
     category: string;
     updatedAt: Date;
   };
+  basePath?: string;
 }
 
-export default function ArticleCard({ article }: Props) {
+export default function ArticleCard({ article, basePath = "/Knowledge" }: Props) {
   return (
     <Link
-      href={`/Knowledge/${article.slug}`}
+      href={`${basePath}/${article.slug}`}
       className="block bg-white dark:bg-surface rounded-3xl shadow-lg p-8 hover:shadow-xl transition"
     >
       <div className="flex justify-between">

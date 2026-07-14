@@ -102,7 +102,7 @@ export const THREE_O_TEMPLATES: Record<string, ArticleTemplateSet> = {
 
   "3o-name-change-3o": [
     {
-      chatEn: "I'm sorry, but a complete name change to a different traveler isn't permitted under 3O policy — the ticket is nominative. Let me know if there's anything else I can help with instead.",
+      chatEn: "I'm sorry, but a complete name change to a different traveller isn't permitted under 3O policy — the ticket is nominative. Let me know if there's anything else I can help with instead.",
       chatAr: "نأسف، تغيير الاسم بالكامل إلى مسافر مختلف غير مسموح وفق سياسة 3O - التذكرة اسمية. أخبروني إذا كان هناك أي شيء آخر يمكنني مساعدتكم به.",
       emailSubjectEn: "Full name change not permitted",
       emailIssueEn: "Thank you for your request to change the traveller's name on your domestic ticket entirely.",
