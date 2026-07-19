@@ -136,6 +136,7 @@ export async function duplicateArticleAction(id: number) {
     throw new Error("Article not found.");
   }
 
+  /* eslint-disable @typescript-eslint/no-unused-vars -- destructured only to exclude from articleData spread */
   const {
     id: _id,
     createdAt,
@@ -149,6 +150,7 @@ export async function duplicateArticleAction(id: number) {
     images,
     ...articleData
   } = article;
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   const duplicated = await prisma.article.create({
     data: {

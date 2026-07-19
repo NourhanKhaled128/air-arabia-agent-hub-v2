@@ -94,13 +94,13 @@ async function main() {
   const sourceByKey = new Map(sourceDispositions.map((d) => [`${d.articleId}::${d.code}`, d]));
 
   for (const title of moduleTitles) {
-    const module = moduleByTitle.get(title);
-    if (!module) {
+    const mod = moduleByTitle.get(title);
+    if (!mod) {
       console.warn(`Training module not found: "${title}" — skipping.`);
       continue;
     }
 
-    const existingCodes = new Set(module.dispositions.map((d) => d.code));
+    const existingCodes = new Set(mod.dispositions.map((d) => d.code));
     const rows = COPY_ROWS.filter((r) => r.moduleTitle === title);
 
     const toCreate: { code: string; content: string }[] = [];
@@ -120,7 +120,7 @@ async function main() {
     }
 
     await prisma.article.update({
-      where: { id: module.id },
+      where: { id: mod.id },
       data: { dispositions: { create: toCreate } },
     });
     console.log(`Added ${toCreate.length} disposition(s) to: ${title}`);

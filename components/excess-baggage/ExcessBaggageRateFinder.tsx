@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { matchesAllWords } from "@/lib/search-utils";
 
@@ -27,6 +27,12 @@ export default function ExcessBaggageRateFinder({ rates, defaultHub, compact = f
   const [hub, setHub] = useState(defaultHub ?? availableHubs[0] ?? "");
   const [section, setSection] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const [prevHub, setPrevHub] = useState(hub);
+
+  if (hub !== prevHub) {
+    setPrevHub(hub);
+    setSection("all");
+  }
 
   const hubRates = useMemo(() => rates.filter((r) => r.hub === hub), [rates, hub]);
 
@@ -37,10 +43,6 @@ export default function ExcessBaggageRateFinder({ rates, defaultHub, compact = f
     }
     return seen;
   }, [hubRates]);
-
-  useEffect(() => {
-    setSection("all");
-  }, [hub]);
 
   const filtered = useMemo(() => {
     let rows = hubRates;

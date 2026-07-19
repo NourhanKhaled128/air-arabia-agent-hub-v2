@@ -1,41 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Clock3 } from "lucide-react";
+
+function formatResult(input: string): string {
+  if (input.length !== 4) return "--:--";
+
+  const hour = Number(input.substring(0, 2));
+  const minute = Number(input.substring(2, 4));
+
+  if (
+    isNaN(hour) ||
+    isNaN(minute) ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return "Invalid";
+  }
+
+  const period = hour >= 12 ? "PM" : "AM";
+
+  let h = hour % 12;
+
+  if (h === 0) h = 12;
+
+  return `${h}:${minute.toString().padStart(2, "0")} ${period}`;
+}
 
 export default function TimeConverter() {
   const [input, setInput] = useState("");
-  const [result, setResult] = useState("--:--");
-
-  useEffect(() => {
-    if (input.length !== 4) {
-      setResult("--:--");
-      return;
-    }
-
-    const hour = Number(input.substring(0, 2));
-    const minute = Number(input.substring(2, 4));
-
-    if (
-      isNaN(hour) ||
-      isNaN(minute) ||
-      hour < 0 ||
-      hour > 23 ||
-      minute < 0 ||
-      minute > 59
-    ) {
-      setResult("Invalid");
-      return;
-    }
-
-    const period = hour >= 12 ? "PM" : "AM";
-
-    let h = hour % 12;
-
-    if (h === 0) h = 12;
-
-    setResult(`${h}:${minute.toString().padStart(2, "0")} ${period}`);
-  }, [input]);
+  const result = formatResult(input);
 
   return (
     <section className="h-[360px] rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
