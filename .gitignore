@@ -53,3 +53,6 @@ Files/**/*.pptx
 
 # database backups (contain real data, never commit)
 /backups/
+
+# generated training material (large binary, regenerate via scripts/ if needed)
+/training-material/
