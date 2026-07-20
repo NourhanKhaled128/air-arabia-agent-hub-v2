@@ -7,7 +7,7 @@ import {
   deleteManyComments,
 } from "@/lib/comment-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -15,6 +15,8 @@ async function currentUserName() {
 }
 
 export async function approveCommentAction(id: number) {
+  await requireAdminUser();
+
   await approveComment(id);
 
   await logAction("Approved", "Comment", id, await currentUserName());
@@ -23,6 +25,8 @@ export async function approveCommentAction(id: number) {
 }
 
 export async function deleteCommentAction(id: number) {
+  await requireAdminUser();
+
   await deleteComment(id);
 
   await logAction("Deleted", "Comment", id, await currentUserName());
@@ -31,6 +35,8 @@ export async function deleteCommentAction(id: number) {
 }
 
 export async function deleteManyCommentsAction(ids: number[]) {
+  await requireAdminUser();
+
   await deleteManyComments(ids);
 
   await logAction("Deleted", "Comment", null, await currentUserName());

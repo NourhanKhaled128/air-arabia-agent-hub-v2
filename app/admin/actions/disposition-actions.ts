@@ -11,7 +11,7 @@ import {
   replaceDispositionCodesFromRows,
 } from "@/lib/disposition-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -19,6 +19,8 @@ async function currentUserName() {
 }
 
 export async function createDispositionCodeAction(formData: FormData) {
+  await requireAdminUser();
+
   const disposition = await createDispositionCode({
     code: formData.get("code") as string,
     label: formData.get("label") as string,
@@ -39,6 +41,8 @@ export async function updateDispositionCodeAction(
   id: number,
   formData: FormData
 ) {
+  await requireAdminUser();
+
   await updateDispositionCode(id, {
     code: formData.get("code") as string,
     label: formData.get("label") as string,
@@ -56,6 +60,8 @@ export async function updateDispositionCodeAction(
 }
 
 export async function deleteDispositionCodeAction(id: number) {
+  await requireAdminUser();
+
   await deleteDispositionCode(id);
 
   await logAction("Deleted", "DispositionCode", id, await currentUserName());
@@ -65,6 +71,8 @@ export async function deleteDispositionCodeAction(id: number) {
 }
 
 export async function deleteManyDispositionCodesAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.dispositionCode.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "DispositionCode", null, await currentUserName());
@@ -74,6 +82,8 @@ export async function deleteManyDispositionCodesAction(ids: number[]) {
 }
 
 export async function uploadDispositionCodesAction(formData: FormData) {
+  await requireAdminUser();
+
   const file = formData.get("file");
 
   if (!(file instanceof File) || file.size === 0) {

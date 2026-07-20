@@ -12,7 +12,7 @@ import {
   deleteCategoryFolder,
 } from "@/lib/category-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -20,6 +20,8 @@ async function currentUserName() {
 }
 
 export async function createCategoryAction(formData: FormData) {
+  await requireAdminUser();
+
   const category = await createCategory({
     name: formData.get("name") as string,
     slug: formData.get("slug") as string,
@@ -42,6 +44,8 @@ export async function updateCategoryAction(
   id: number,
   formData: FormData
 ) {
+  await requireAdminUser();
+
   await updateCategory(id, {
     name: formData.get("name") as string,
     slug: formData.get("slug") as string,
@@ -61,6 +65,8 @@ export async function updateCategoryAction(
 }
 
 export async function deleteCategoryAction(id: number) {
+  await requireAdminUser();
+
   await deleteCategory(id);
 
   await logAction("Deleted", "Category", id, await currentUserName());
@@ -69,6 +75,8 @@ export async function deleteCategoryAction(id: number) {
 }
 
 export async function deleteManyCategoriesAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.category.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "Category", null, await currentUserName());
@@ -78,6 +86,8 @@ export async function deleteManyCategoriesAction(ids: number[]) {
 }
 
 export async function createCategoryFolderAction(categoryId: number, name: string) {
+  await requireAdminUser();
+
   const folder = await createCategoryFolder({
     categoryId,
     name,
@@ -90,6 +100,8 @@ export async function createCategoryFolderAction(categoryId: number, name: strin
 }
 
 export async function renameCategoryFolderAction(id: number, categoryId: number, name: string) {
+  await requireAdminUser();
+
   await updateCategoryFolder(id, { name });
 
   await logAction("Updated", "Category Folder", id, await currentUserName());
@@ -99,6 +111,8 @@ export async function renameCategoryFolderAction(id: number, categoryId: number,
 }
 
 export async function toggleCategoryFolderVisibleAction(id: number, categoryId: number, visible: boolean) {
+  await requireAdminUser();
+
   await updateCategoryFolder(id, { visible });
 
   await logAction("Updated", "Category Folder", id, await currentUserName());
@@ -108,6 +122,8 @@ export async function toggleCategoryFolderVisibleAction(id: number, categoryId: 
 }
 
 export async function reorderCategoryFoldersAction(categoryId: number, orderedIds: number[]) {
+  await requireAdminUser();
+
   await Promise.all(
     orderedIds.map((id, index) => updateCategoryFolder(id, { order: index }))
   );
@@ -119,6 +135,8 @@ export async function reorderCategoryFoldersAction(categoryId: number, orderedId
 }
 
 export async function deleteCategoryFolderAction(id: number, categoryId: number) {
+  await requireAdminUser();
+
   await deleteCategoryFolder(id);
 
   await logAction("Deleted", "Category Folder", id, await currentUserName());

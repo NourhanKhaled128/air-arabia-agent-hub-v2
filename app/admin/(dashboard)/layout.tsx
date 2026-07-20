@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { redirect } from "next/navigation";
 import AdminSidebar from "@/components/AdminSidebar";
 import AdminHeader from "@/components/AdminHeader";
 import AdminMain from "@/components/AdminMain";
@@ -7,6 +8,7 @@ import AdminCommandPalette from "@/components/admin/AdminCommandPalette";
 import { SidebarPrefsProvider } from "@/components/SidebarPrefsProvider";
 import { getAllArticles } from "@/lib/article-service";
 import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getDraftNotificationCount } from "@/lib/notification-service";
 
 export const metadata: Metadata = {
   title: "KB Admin",
@@ -19,9 +21,15 @@ interface AdminLayoutProps {
 export default async function AdminLayout({
   children,
 }: AdminLayoutProps) {
-  const [articles, currentUser] = await Promise.all([
+  const currentUser = await getCurrentAdminUser();
+
+  if (!currentUser) {
+    redirect("/admin/login");
+  }
+
+  const [articles, draftNotificationCount] = await Promise.all([
     getAllArticles(),
-    getCurrentAdminUser(),
+    getDraftNotificationCount(),
   ]);
 
   return (
@@ -35,12 +43,8 @@ export default async function AdminLayout({
 
         <AdminMain>
           <AdminHeader
-            articles={articles}
-            user={
-              currentUser
-                ? { name: currentUser.name, role: currentUser.role.name }
-                : null
-            }
+            draftNotificationCount={draftNotificationCount}
+            user={{ name: currentUser.name, role: currentUser.role.name }}
           />
 
           {children}

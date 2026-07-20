@@ -9,7 +9,7 @@ import {
   updateAirport,
 } from "@/lib/airport-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -17,6 +17,8 @@ async function currentUserName() {
 }
 
 export async function updateAirportAction(id: number, formData: FormData) {
+  await requireAdminUser();
+
   await updateAirport(id, {
     code: formData.get("code") as string,
     city: formData.get("city") as string,
@@ -33,6 +35,8 @@ export async function updateAirportAction(id: number, formData: FormData) {
 }
 
 export async function uploadAirportsAction(formData: FormData) {
+  await requireAdminUser();
+
   const file = formData.get("file");
 
   if (!(file instanceof File) || file.size === 0) {
@@ -58,6 +62,8 @@ export async function uploadAirportsAction(formData: FormData) {
 }
 
 export async function deleteAirportAction(id: number) {
+  await requireAdminUser();
+
   await prisma.airport.delete({ where: { id } });
 
   await logAction("Deleted", "Airport", id, await currentUserName());
@@ -67,6 +73,8 @@ export async function deleteAirportAction(id: number) {
 }
 
 export async function deleteManyAirportsAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.airport.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "Airport", null, await currentUserName());

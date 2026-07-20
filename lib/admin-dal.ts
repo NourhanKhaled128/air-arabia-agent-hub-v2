@@ -13,3 +13,15 @@ export const getCurrentAdminUser = cache(async () => {
     include: { role: true },
   });
 });
+
+// Server actions are independently callable endpoints, not protected by page-level
+// redirects — every mutating admin action must call this before touching data.
+export async function requireAdminUser() {
+  const user = await getCurrentAdminUser();
+
+  if (!user) {
+    throw new Error("Unauthorized: no active admin session.");
+  }
+
+  return user;
+}

@@ -9,7 +9,7 @@ import {
   deleteTrainingCourse,
 } from "@/lib/training-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -23,6 +23,8 @@ function parseScore(value: FormDataEntryValue | null) {
 }
 
 export async function createTrainingCourseAction(formData: FormData) {
+  await requireAdminUser();
+
   const course = await createTrainingCourse({
     title: formData.get("title") as string,
     description: formData.get("description") as string,
@@ -42,6 +44,8 @@ export async function updateTrainingCourseAction(
   id: number,
   formData: FormData
 ) {
+  await requireAdminUser();
+
   await updateTrainingCourse(id, {
     title: formData.get("title") as string,
     description: formData.get("description") as string,
@@ -58,6 +62,8 @@ export async function updateTrainingCourseAction(
 }
 
 export async function deleteTrainingCourseAction(id: number) {
+  await requireAdminUser();
+
   await deleteTrainingCourse(id);
 
   await logAction("Deleted", "Training Course", id, await currentUserName());
@@ -67,6 +73,8 @@ export async function deleteTrainingCourseAction(id: number) {
 }
 
 export async function deleteManyTrainingCoursesAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.trainingCourse.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "Training Course", null, await currentUserName());

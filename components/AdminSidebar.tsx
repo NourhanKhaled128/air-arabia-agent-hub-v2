@@ -99,9 +99,9 @@ export const adminMenuGroups = [
     items: [
       { title: "Disruptions", href: "/admin/disruptions", icon: AlertTriangle },
       { title: "Audit Trail", href: "/admin/audit", icon: History },
-      { title: "Backup & Restore", href: "/admin/backup", icon: Database },
-      { title: "Integrations", href: "/admin/integrations", icon: Plug },
-      { title: "System Health", href: "/admin/system", icon: Activity },
+      { title: "Backup & Restore", href: "/admin/backup", icon: Database, badge: "Soon" },
+      { title: "Integrations", href: "/admin/integrations", icon: Plug, badge: "Soon" },
+      { title: "System Health", href: "/admin/system", icon: Activity, badge: "Soon" },
     ],
   },
   {
@@ -264,7 +264,16 @@ export default function AdminSidebar() {
                         }`}
                       >
                         <Icon size={20} />
-                        {!collapsed && item.title}
+                        {!collapsed && (
+                          <span className="flex flex-1 items-center justify-between gap-2">
+                            {item.title}
+                            {"badge" in item && item.badge && (
+                              <span className="rounded-full bg-amber-100 dark:bg-amber-950/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                                {item.badge}
+                              </span>
+                            )}
+                          </span>
+                        )}
                       </Link>
                     );
                   })}

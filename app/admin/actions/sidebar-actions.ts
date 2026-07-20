@@ -9,7 +9,7 @@ import {
   updateSidebarLink,
 } from "@/lib/sidebar-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -17,6 +17,8 @@ async function currentUserName() {
 }
 
 export async function createSidebarLinkAction(formData: FormData) {
+  await requireAdminUser();
+
   const link = await createSidebarLink({
     label: formData.get("label") as string,
     href: formData.get("href") as string,
@@ -37,6 +39,8 @@ export async function updateSidebarLinkAction(
   id: number,
   formData: FormData
 ) {
+  await requireAdminUser();
+
   await updateSidebarLink(id, {
     label: formData.get("label") as string,
     href: formData.get("href") as string,
@@ -54,6 +58,8 @@ export async function updateSidebarLinkAction(
 }
 
 export async function deleteSidebarLinkAction(id: number) {
+  await requireAdminUser();
+
   await deleteSidebarLink(id);
 
   await logAction("Deleted", "Sidebar Link", id, await currentUserName());
@@ -63,6 +69,8 @@ export async function deleteSidebarLinkAction(id: number) {
 }
 
 export async function reorderSidebarLinksAction(orderedIds: number[]) {
+  await requireAdminUser();
+
   await reorderSidebarLinks(orderedIds);
 
   revalidatePath("/admin/sidebar");

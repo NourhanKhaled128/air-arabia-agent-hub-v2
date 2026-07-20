@@ -7,7 +7,7 @@ import {
   applyExcessBaggageRatesToKB,
 } from "@/lib/excess-baggage-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -15,6 +15,8 @@ async function currentUserName() {
 }
 
 export async function uploadExcessBaggageRatesAction(formData: FormData) {
+  await requireAdminUser();
+
   const file = formData.get("file");
 
   if (!(file instanceof File) || file.size === 0) {

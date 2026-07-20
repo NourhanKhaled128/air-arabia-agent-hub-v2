@@ -9,7 +9,7 @@ import {
   deleteNotification,
 } from "@/lib/notification-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -23,6 +23,8 @@ function parseSendDate(value: FormDataEntryValue | null) {
 }
 
 export async function createNotificationAction(formData: FormData) {
+  await requireAdminUser();
+
   const notification = await createNotification({
     title: formData.get("title") as string,
     message: formData.get("message") as string,
@@ -42,6 +44,8 @@ export async function updateNotificationAction(
   id: number,
   formData: FormData
 ) {
+  await requireAdminUser();
+
   await updateNotification(id, {
     title: formData.get("title") as string,
     message: formData.get("message") as string,
@@ -58,6 +62,8 @@ export async function updateNotificationAction(
 }
 
 export async function deleteNotificationAction(id: number) {
+  await requireAdminUser();
+
   await deleteNotification(id);
 
   await logAction("Deleted", "Notification", id, await currentUserName());
@@ -67,6 +73,8 @@ export async function deleteNotificationAction(id: number) {
 }
 
 export async function deleteManyNotificationsAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.notification.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "Notification", null, await currentUserName());

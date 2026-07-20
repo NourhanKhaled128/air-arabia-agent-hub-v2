@@ -10,9 +10,9 @@ interface Props {
 }
 
 const TEAMS = [
-  { label: "Main Hub", href: "/", icon: Home, prefix: null as string | null },
-  { label: "Customer Support", href: "/CustomerSupportTeam", icon: PhoneCall, prefix: "/CustomerSupportTeam" },
-  { label: "Trade Support", href: "/TradeSupportTeam", icon: Briefcase, prefix: "/TradeSupportTeam" },
+  { label: "Main Hub", fullLabel: "Main Hub", href: "/", icon: Home, prefix: null as string | null },
+  { label: "CS Team", fullLabel: "Customer Support Team", href: "/CustomerSupportTeam", icon: PhoneCall, prefix: "/CustomerSupportTeam" },
+  { label: "Trade Team", fullLabel: "Trade Support Team", href: "/TradeSupportTeam", icon: Briefcase, prefix: "/TradeSupportTeam" },
 ];
 
 export default function TeamSwitcher({ collapsed, onNavigate }: Props) {
@@ -36,7 +36,7 @@ export default function TeamSwitcher({ collapsed, onNavigate }: Props) {
             key={team.href}
             href={team.href}
             onClick={onNavigate}
-            title={team.label}
+            title={team.fullLabel}
             className={`flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-center text-[11px] font-semibold transition ${
               collapsed ? "mb-1 w-11" : ""
             } ${

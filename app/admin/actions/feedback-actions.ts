@@ -7,7 +7,7 @@ import {
   deleteManyFeedback,
 } from "@/lib/feedback-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -15,6 +15,8 @@ async function currentUserName() {
 }
 
 export async function markFeedbackReviewedAction(id: number) {
+  await requireAdminUser();
+
   await markFeedbackReviewed(id);
 
   await logAction("Reviewed", "Feedback", id, await currentUserName());
@@ -23,6 +25,8 @@ export async function markFeedbackReviewedAction(id: number) {
 }
 
 export async function deleteFeedbackAction(id: number) {
+  await requireAdminUser();
+
   await deleteFeedback(id);
 
   await logAction("Deleted", "Feedback", id, await currentUserName());
@@ -31,6 +35,8 @@ export async function deleteFeedbackAction(id: number) {
 }
 
 export async function deleteManyFeedbackAction(ids: number[]) {
+  await requireAdminUser();
+
   await deleteManyFeedback(ids);
 
   await logAction("Deleted", "Feedback", null, await currentUserName());

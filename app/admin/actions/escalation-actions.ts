@@ -9,7 +9,7 @@ import {
   deleteEscalationContact,
 } from "@/lib/escalation-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -17,6 +17,8 @@ async function currentUserName() {
 }
 
 export async function createEscalationContactAction(formData: FormData) {
+  await requireAdminUser();
+
   const escalation = await createEscalationContact({
     issueType: formData.get("issueType") as string,
     escalateTo: formData.get("escalateTo") as string,
@@ -36,6 +38,8 @@ export async function updateEscalationContactAction(
   id: number,
   formData: FormData
 ) {
+  await requireAdminUser();
+
   await updateEscalationContact(id, {
     issueType: formData.get("issueType") as string,
     escalateTo: formData.get("escalateTo") as string,
@@ -52,6 +56,8 @@ export async function updateEscalationContactAction(
 }
 
 export async function deleteEscalationContactAction(id: number) {
+  await requireAdminUser();
+
   await deleteEscalationContact(id);
 
   await logAction("Deleted", "EscalationContact", id, await currentUserName());
@@ -61,6 +67,8 @@ export async function deleteEscalationContactAction(id: number) {
 }
 
 export async function deleteManyEscalationContactsAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.escalationContact.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "EscalationContact", null, await currentUserName());

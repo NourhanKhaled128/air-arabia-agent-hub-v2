@@ -10,7 +10,7 @@ import {
   updateImportantLink,
 } from "@/lib/important-link-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -18,6 +18,8 @@ async function currentUserName() {
 }
 
 export async function createImportantLinkAction(formData: FormData) {
+  await requireAdminUser();
+
   const link = await createImportantLink({
     title: formData.get("title") as string,
     url: formData.get("url") as string,
@@ -38,6 +40,8 @@ export async function updateImportantLinkAction(
   id: number,
   formData: FormData
 ) {
+  await requireAdminUser();
+
   await updateImportantLink(id, {
     title: formData.get("title") as string,
     url: formData.get("url") as string,
@@ -55,6 +59,8 @@ export async function updateImportantLinkAction(
 }
 
 export async function deleteImportantLinkAction(id: number) {
+  await requireAdminUser();
+
   await deleteImportantLink(id);
 
   await logAction("Deleted", "Important Link", id, await currentUserName());
@@ -64,6 +70,8 @@ export async function deleteImportantLinkAction(id: number) {
 }
 
 export async function deleteManyImportantLinksAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.importantLink.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "Important Link", null, await currentUserName());
@@ -73,6 +81,8 @@ export async function deleteManyImportantLinksAction(ids: number[]) {
 }
 
 export async function reorderImportantLinksAction(orderedIds: number[]) {
+  await requireAdminUser();
+
   await reorderImportantLinks(orderedIds);
 
   revalidatePath("/admin/important-links");

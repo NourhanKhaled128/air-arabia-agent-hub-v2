@@ -1,5 +1,9 @@
 import { prisma } from "@/lib/prisma";
 
+export async function getDraftNotificationCount() {
+  return prisma.notification.count({ where: { status: "Draft" } });
+}
+
 export async function getSentNotifications(limit = 20) {
   return prisma.notification.findMany({
     where: {

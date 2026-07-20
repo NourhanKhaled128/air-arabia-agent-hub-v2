@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -11,6 +11,8 @@ async function currentUserName() {
 }
 
 export async function deleteArticleAction(id: number) {
+  await requireAdminUser();
+
   await prisma.article.delete({
     where: {
       id,
@@ -23,6 +25,8 @@ export async function deleteArticleAction(id: number) {
 }
 
 export async function deleteManyArticlesAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.article.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "Article", null, await currentUserName());
@@ -31,6 +35,8 @@ export async function deleteManyArticlesAction(ids: number[]) {
 }
 
 export async function publishArticleAction(id: number) {
+  await requireAdminUser();
+
   await prisma.article.update({
     where: {
       id,
@@ -46,6 +52,8 @@ export async function publishArticleAction(id: number) {
 }
 
 export async function archiveArticleAction(id: number) {
+  await requireAdminUser();
+
   await prisma.article.update({
     where: {
       id,
@@ -61,6 +69,8 @@ export async function archiveArticleAction(id: number) {
 }
 
 export async function publishManyArticlesAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.article.updateMany({
     where: { id: { in: ids } },
     data: { status: "Published" },
@@ -72,6 +82,8 @@ export async function publishManyArticlesAction(ids: number[]) {
 }
 
 export async function archiveManyArticlesAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.article.updateMany({
     where: { id: { in: ids } },
     data: { status: "Archived" },
@@ -87,6 +99,8 @@ export async function moveArticleToFolderAction(
   folderId: number | null,
   categoryId: number
 ) {
+  await requireAdminUser();
+
   await prisma.article.update({
     where: { id: articleId },
     data: { folderId },
@@ -104,6 +118,8 @@ export async function moveManyArticlesToFolderAction(
   folderId: number | null,
   categoryId: number
 ) {
+  await requireAdminUser();
+
   await prisma.article.updateMany({
     where: { id: { in: articleIds } },
     data: { folderId },
@@ -117,6 +133,8 @@ export async function moveManyArticlesToFolderAction(
 }
 
 export async function duplicateArticleAction(id: number) {
+  await requireAdminUser();
+
   const article = await prisma.article.findUnique({
     where: {
       id,

@@ -9,7 +9,7 @@ import {
   updateDisruption,
 } from "@/lib/disruption-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -17,6 +17,8 @@ async function currentUserName() {
 }
 
 export async function createDisruptionAction(formData: FormData) {
+  await requireAdminUser();
+
   const disruption = await createDisruption({
     airportCode: formData.get("airportCode") as string,
     message: formData.get("message") as string,
@@ -36,6 +38,8 @@ export async function updateDisruptionAction(
   id: number,
   formData: FormData
 ) {
+  await requireAdminUser();
+
   await updateDisruption(id, {
     airportCode: formData.get("airportCode") as string,
     message: formData.get("message") as string,
@@ -52,6 +56,8 @@ export async function updateDisruptionAction(
 }
 
 export async function deleteDisruptionAction(id: number) {
+  await requireAdminUser();
+
   await deleteDisruption(id);
 
   await logAction("Deleted", "Disruption", id, await currentUserName());
@@ -62,6 +68,8 @@ export async function deleteDisruptionAction(id: number) {
 }
 
 export async function deleteManyDisruptionsAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.disruption.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "Disruption", null, await currentUserName());

@@ -9,7 +9,7 @@ import {
   deleteAnnouncement,
 } from "@/lib/announcement-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -25,6 +25,8 @@ function parseDate(value: FormDataEntryValue | null) {
 export async function createAnnouncementAction(
   formData: FormData
 ) {
+  await requireAdminUser();
+
   const announcement = await createAnnouncement({
     title: formData.get("title") as string,
     content: formData.get("content") as string,
@@ -46,6 +48,8 @@ export async function updateAnnouncementAction(
   id: number,
   formData: FormData
 ) {
+  await requireAdminUser();
+
   await updateAnnouncement(id, {
     title: formData.get("title") as string,
     content: formData.get("content") as string,
@@ -64,6 +68,8 @@ export async function updateAnnouncementAction(
 }
 
 export async function deleteAnnouncementAction(id: number) {
+  await requireAdminUser();
+
   await deleteAnnouncement(id);
 
   await logAction("Deleted", "Announcement", id, await currentUserName());
@@ -73,6 +79,8 @@ export async function deleteAnnouncementAction(id: number) {
 }
 
 export async function deleteManyAnnouncementsAction(ids: number[]) {
+  await requireAdminUser();
+
   await prisma.announcement.deleteMany({ where: { id: { in: ids } } });
 
   await logAction("Deleted", "Announcement", null, await currentUserName());
