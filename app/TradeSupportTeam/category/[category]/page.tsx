@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
 import PageHeader from "@/components/PageHeader";
+import Breadcrumb from "@/components/Breadcrumb";
 import ArticleCard from "@/components/ArticleCard";
 import { getArticlesByCategoryId } from "@/lib/article-service";
 import { getCategoryBySlug, getCategoryFolders } from "@/lib/category-service";
@@ -40,6 +41,14 @@ export default async function TradeSupportTeamCategoryPage({
 
   return (
     <>
+      <Breadcrumb
+        items={[
+          { label: "Trade Support Team", href: "/TradeSupportTeam" },
+          { label: categoryRow.name, href: activeFolder ? `/TradeSupportTeam/category/${categoryRow.slug}` : undefined },
+          ...(activeFolder ? [{ label: activeFolder.name }] : []),
+        ]}
+      />
+
       <PageHeader
         title={activeFolder ? `${categoryRow.name} / ${activeFolder.name}` : categoryRow.name}
         subtitle={`${categoryArticles.length} knowledge articles available`}

@@ -18,6 +18,7 @@ export default async function NewArticlePage() {
       <AdminPageHeader
         title="Create Knowledge Article"
         description="Add a new article to the Air Arabia knowledge base."
+        breadcrumbs={[{ label: "Articles", href: "/admin/articles" }, { label: "New Article" }]}
         actions={
           <Link
             href="/admin/articles"

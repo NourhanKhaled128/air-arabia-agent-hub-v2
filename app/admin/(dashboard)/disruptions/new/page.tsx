@@ -6,7 +6,10 @@ import { createDisruptionAction } from "@/app/admin/actions/disruption-actions";
 export default function NewDisruptionPage() {
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="New Alert" />
+      <AdminPageHeader
+        title="New Alert"
+        breadcrumbs={[{ label: "Disruptions", href: "/admin/disruptions" }, { label: "New Alert" }]}
+      />
 
       <AdminFormCard title="Alert Details">
         <DisruptionForm action={createDisruptionAction} />

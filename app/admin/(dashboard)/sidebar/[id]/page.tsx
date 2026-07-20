@@ -27,7 +27,10 @@ export default async function EditSidebarLinkPage({ params }: Props) {
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="Edit Sidebar Link" />
+      <AdminPageHeader
+        title="Edit Sidebar Link"
+        breadcrumbs={[{ label: "Sidebar Links", href: "/admin/sidebar" }, { label: link.label }]}
+      />
 
       <AdminFormCard title="Link Details">
         <SidebarLinkForm

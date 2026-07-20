@@ -12,7 +12,10 @@ export default async function NewCategoryPage({ searchParams }: Props) {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="New Category" />
+      <AdminPageHeader
+        title="New Category"
+        breadcrumbs={[{ label: "Categories", href: "/admin/categories" }, { label: "New Category" }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <CategoryForm action={createCategoryAction} defaultGroup={group} />

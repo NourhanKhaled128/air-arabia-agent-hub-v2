@@ -27,7 +27,10 @@ export default async function EditAirportPage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="Edit Airport" />
+      <AdminPageHeader
+        title="Edit Airport"
+        breadcrumbs={[{ label: "Airport Codes", href: "/admin/airport-codes" }, { label: airport.code }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <AirportComposer

@@ -23,6 +23,7 @@ import {
 import { getSidebarIcon } from "@/lib/sidebar-icons";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
 import CopyButton from "@/components/CopyButton";
+import TeamSwitcher from "@/components/TeamSwitcher";
 
 interface SidebarFolder {
   id: number;
@@ -335,6 +336,8 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
         )}
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden px-3">
+
+          <TeamSwitcher collapsed={collapsed} onNavigate={closeMobile} />
 
           <Link
             href="/"

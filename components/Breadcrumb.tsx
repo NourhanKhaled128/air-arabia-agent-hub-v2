@@ -1,52 +1,32 @@
-interface Props{
+import Link from "next/link";
 
-category:string;
-
-title:string;
-
+export interface Crumb {
+  label: string;
+  href?: string;
 }
 
-export default function Breadcrumb({
-category,
-title,
-}:Props){
+interface Props {
+  items: Crumb[];
+}
 
-return(
+export default function Breadcrumb({ items }: Props) {
+  return (
+    <nav className="mb-8 flex flex-wrap items-center gap-2 text-sm text-gray-500 dark:text-slate-400">
+      {items.map((item, index) => (
+        <span key={`${item.label}-${index}`} className="flex items-center gap-2">
+          {index > 0 && <span className="text-gray-300 dark:text-slate-600">/</span>}
 
-<div className="mb-8 text-sm text-gray-500 dark:text-slate-400">
-
-Home
-
-<span className="mx-2">
-
-/
-
-</span>
-
-Knowledge
-
-<span className="mx-2">
-
-/
-
-</span>
-
-{category}
-
-<span className="mx-2">
-
-/
-
-</span>
-
-<span className="font-semibold text-black dark:text-slate-100">
-
-{title}
-
-</span>
-
-</div>
-
-);
-
+          {item.href ? (
+            <Link href={item.href} className="hover:text-brand">
+              {item.label}
+            </Link>
+          ) : (
+            <span className="font-semibold text-black dark:text-slate-100">
+              {item.label}
+            </span>
+          )}
+        </span>
+      ))}
+    </nav>
+  );
 }

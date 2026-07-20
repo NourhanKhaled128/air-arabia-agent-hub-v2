@@ -6,7 +6,10 @@ import { createImportantLinkAction } from "@/app/admin/actions/important-link-ac
 export default function NewImportantLinkPage() {
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="New Important Link" />
+      <AdminPageHeader
+        title="New Important Link"
+        breadcrumbs={[{ label: "Important Links", href: "/admin/important-links" }, { label: "New Important Link" }]}
+      />
 
       <AdminFormCard title="Link Details">
         <ImportantLinkForm action={createImportantLinkAction} />

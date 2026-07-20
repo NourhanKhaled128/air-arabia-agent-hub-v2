@@ -18,6 +18,7 @@ export default async function TradeSupportTeamArticlePage({ params }: Props) {
       decisionTreeBasePath="/TradeSupportTeam/decision-trees"
       backHref="/TradeSupportTeam"
       backLabel="Trade Support Team"
+      categoryBasePath="/TradeSupportTeam/category"
     />
   );
 }

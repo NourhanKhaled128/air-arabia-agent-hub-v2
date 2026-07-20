@@ -6,7 +6,10 @@ export default function NewAnnouncementPage() {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="New Announcement" />
+      <AdminPageHeader
+        title="New Announcement"
+        breadcrumbs={[{ label: "Announcements", href: "/admin/announcements" }, { label: "New Announcement" }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <AnnouncementComposer action={createAnnouncementAction} />

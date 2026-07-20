@@ -9,7 +9,10 @@ export default async function NewUserPage() {
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="New User" />
+      <AdminPageHeader
+        title="New User"
+        breadcrumbs={[{ label: "Users", href: "/admin/users" }, { label: "New User" }]}
+      />
 
       <AdminFormCard title="User Details">
         <UserForm action={createUserAction} roles={roles} />

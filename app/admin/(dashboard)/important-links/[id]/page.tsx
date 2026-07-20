@@ -27,7 +27,10 @@ export default async function EditImportantLinkPage({ params }: Props) {
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="Edit Important Link" />
+      <AdminPageHeader
+        title="Edit Important Link"
+        breadcrumbs={[{ label: "Important Links", href: "/admin/important-links" }, { label: link.title }]}
+      />
 
       <AdminFormCard title="Link Details">
         <ImportantLinkForm

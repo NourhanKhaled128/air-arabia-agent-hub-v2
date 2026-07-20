@@ -6,7 +6,10 @@ export default function NewEscalationContactPage() {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="New Escalation Contact" />
+      <AdminPageHeader
+        title="New Escalation Contact"
+        breadcrumbs={[{ label: "Escalation Contacts", href: "/admin/escalation" }, { label: "New Escalation Contact" }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <EscalationComposer action={createEscalationContactAction} submitLabel="Create Escalation Contact" />

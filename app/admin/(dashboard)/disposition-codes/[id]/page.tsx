@@ -28,7 +28,10 @@ export default async function EditDispositionCodePage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="Edit Disposition Code" />
+      <AdminPageHeader
+        title="Edit Disposition Code"
+        breadcrumbs={[{ label: "Disposition Codes", href: "/admin/disposition-codes" }, { label: disposition.code }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <DispositionComposer

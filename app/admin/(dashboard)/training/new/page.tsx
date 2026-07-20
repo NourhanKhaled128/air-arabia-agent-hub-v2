@@ -6,7 +6,10 @@ export default function NewCoursePage() {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="New Course" />
+      <AdminPageHeader
+        title="New Course"
+        breadcrumbs={[{ label: "Training", href: "/admin/training" }, { label: "New Course" }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <CourseBuilder action={createTrainingCourseAction} />

@@ -61,6 +61,7 @@ interface Props {
   decisionTreeBasePath?: string;
   backHref?: string;
   backLabel?: string;
+  categoryBasePath?: string;
 }
 
 export default async function ArticleDetailView({
@@ -69,6 +70,7 @@ export default async function ArticleDetailView({
   decisionTreeBasePath = "/decision-trees",
   backHref = "/Knowledge",
   backLabel = "Knowledge Base",
+  categoryBasePath = "/category",
 }: Props) {
   const summary = await prisma.article.findUnique({
     where: { slug },
@@ -126,7 +128,13 @@ export default async function ArticleDetailView({
 
       <div className="mx-auto max-w-5xl space-y-8">
 
-        <Breadcrumb category={categoryName} title={article.title} />
+        <Breadcrumb
+          items={[
+            { label: backLabel, href: backHref },
+            ...(category ? [{ label: categoryName, href: `${categoryBasePath}/${category.slug}` }] : []),
+            { label: article.title },
+          ]}
+        />
 
         <div className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm">
 

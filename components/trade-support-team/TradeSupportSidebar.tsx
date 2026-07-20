@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
-  ArrowLeft,
   Briefcase,
   ChevronDown,
   ChevronRight,
@@ -20,6 +19,7 @@ import {
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
 import { getSidebarIcon } from "@/lib/sidebar-icons";
 import CopyButton from "@/components/CopyButton";
+import TeamSwitcher from "@/components/TeamSwitcher";
 
 interface TradeSupportFolder {
   id: number;
@@ -129,17 +129,7 @@ export default function TradeSupportSidebar({ categories, importantLinks }: Prop
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4">
 
-          <Link
-            href="/"
-            onClick={closeMobile}
-            title={collapsed ? "Back to Main Hub" : undefined}
-            className={`mb-6 flex items-center gap-3 rounded-xl px-4 py-3 text-gray-800 dark:text-slate-200 transition hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-brand ${
-              collapsed ? "justify-center px-0" : ""
-            }`}
-          >
-            <ArrowLeft size={20} />
-            {!collapsed && <span className="font-medium">Back to Main Hub</span>}
-          </Link>
+          <TeamSwitcher collapsed={collapsed} onNavigate={closeMobile} />
 
           {!collapsed && (
             <div className="mb-6 flex items-center gap-3 px-4">

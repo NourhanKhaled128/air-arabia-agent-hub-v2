@@ -9,7 +9,10 @@ export default async function NewDispositionCodePage() {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="New Disposition Code" />
+      <AdminPageHeader
+        title="New Disposition Code"
+        breadcrumbs={[{ label: "Disposition Codes", href: "/admin/disposition-codes" }, { label: "New Disposition Code" }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <DispositionComposer

@@ -109,6 +109,17 @@ export default function AdminHeader({ articles, user }: Props) {
 
         </div>
 
+        <button
+          onClick={() => window.dispatchEvent(new Event("admin:open-command-palette"))}
+          title="Jump to a page or article (Ctrl+K)"
+          className="hidden items-center gap-2 rounded-xl border border-slate-200 dark:border-border-subtle px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-surface-muted sm:flex"
+        >
+          <span className="text-sm">Jump to...</span>
+          <kbd className="rounded-md border border-slate-200 dark:border-border-subtle px-1.5 py-0.5 text-xs">
+            Ctrl K
+          </kbd>
+        </button>
+
         <ThemeToggle />
 
         <button className="relative rounded-full bg-slate-100 dark:bg-background p-3 transition hover:bg-red-50 dark:hover:bg-red-950/40">

@@ -43,6 +43,25 @@ async function seedReferenceToolLinks() {
   console.log("Seeded disposition/escalation sidebar links.");
 }
 
+async function seedRecentChangesLink() {
+  const existing = await prisma.sidebarLink.findFirst({
+    where: { href: "/recent-changes" },
+  });
+  if (existing) return;
+
+  await prisma.sidebarLink.create({
+    data: {
+      label: "Recent Changes",
+      href: "/recent-changes",
+      icon: "History",
+      section: "tools",
+      order: 8,
+    },
+  });
+
+  console.log("Seeded Recent Changes sidebar link.");
+}
+
 async function seedCustomerSupportLink() {
   const existing = await prisma.sidebarLink.findFirst({
     where: { href: "/CustomerSupport" },
@@ -314,6 +333,7 @@ async function seedRolesAndAdmin() {
 async function main() {
   await seedSidebarLinks();
   await seedReferenceToolLinks();
+  await seedRecentChangesLink();
   await seedCustomerSupportLink();
   await seedCustomerSupportTeamSection();
   await seedTradeSupportTeamSection();

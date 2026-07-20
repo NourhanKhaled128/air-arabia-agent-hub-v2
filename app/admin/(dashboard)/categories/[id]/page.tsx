@@ -35,7 +35,10 @@ export default async function EditCategoryPage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="Edit Category" />
+      <AdminPageHeader
+        title="Edit Category"
+        breadcrumbs={[{ label: "Categories", href: "/admin/categories" }, { label: category.name }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <CategoryForm

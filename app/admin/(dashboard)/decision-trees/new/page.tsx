@@ -17,6 +17,7 @@ export default async function NewDecisionTreePage() {
       <AdminPageHeader
         title="Create Decision Tree"
         description="Build an interactive, click-through decision flow for champions."
+        breadcrumbs={[{ label: "Decision Trees", href: "/admin/decision-trees" }, { label: "New Decision Tree" }]}
         actions={
           <Link
             href="/admin/decision-trees"

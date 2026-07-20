@@ -27,7 +27,10 @@ export default async function EditRolePage({ params }: Props) {
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="Edit Role" />
+      <AdminPageHeader
+        title="Edit Role"
+        breadcrumbs={[{ label: "Roles", href: "/admin/roles" }, { label: role.name }]}
+      />
 
       <AdminFormCard title="Role Details">
         <RoleForm

@@ -27,7 +27,10 @@ export default async function EditAnnouncementPage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="Edit Announcement" />
+      <AdminPageHeader
+        title="Edit Announcement"
+        breadcrumbs={[{ label: "Announcements", href: "/admin/announcements" }, { label: announcement.title }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <AnnouncementComposer

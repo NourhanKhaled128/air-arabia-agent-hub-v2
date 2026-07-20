@@ -27,7 +27,10 @@ export default async function EditNotificationPage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="Edit Notification" />
+      <AdminPageHeader
+        title="Edit Notification"
+        breadcrumbs={[{ label: "Notifications", href: "/admin/notifications" }, { label: notification.title }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <NotificationComposer

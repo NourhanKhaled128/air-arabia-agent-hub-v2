@@ -27,7 +27,10 @@ export default async function EditDisruptionPage({ params }: Props) {
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="Edit Alert" />
+      <AdminPageHeader
+        title="Edit Alert"
+        breadcrumbs={[{ label: "Disruptions", href: "/admin/disruptions" }, { label: disruption.airportCode }]}
+      />
 
       <AdminFormCard title="Alert Details">
         <DisruptionForm

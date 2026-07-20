@@ -27,7 +27,10 @@ export default async function EditEscalationContactPage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="Edit Escalation Contact" />
+      <AdminPageHeader
+        title="Edit Escalation Contact"
+        breadcrumbs={[{ label: "Escalation Contacts", href: "/admin/escalation" }, { label: escalation.issueType }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <EscalationComposer

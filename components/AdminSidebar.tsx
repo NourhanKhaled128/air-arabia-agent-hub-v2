@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -17,6 +18,8 @@ import {
   LogOut,
   ChevronsLeft,
   ChevronsRight,
+  ChevronDown,
+  ChevronRight,
   ArrowLeftRight,
   X,
   Plane,
@@ -32,35 +35,84 @@ import {
   BookOpen,
   ListChecks,
   Briefcase,
+  BarChart3,
+  Search,
+  Bell,
+  History,
+  Database,
+  Plug,
+  Activity,
 } from "lucide-react";
 import { logoutAction } from "@/app/admin/actions/auth-actions";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
 
-const menu = [
-  { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { title: "Customer Support Team", href: "/admin/customer-support-team", icon: PhoneCall },
-  { title: "Trade Support Team", href: "/admin/trade-support-team", icon: Briefcase },
-  { title: "Articles", href: "/admin/articles", icon: FileText },
-  { title: "Categories", href: "/admin/categories", icon: Folder },
-  { title: "Sidebar Links", href: "/admin/sidebar", icon: PanelLeft },
-  { title: "Important Links", href: "/admin/important-links", icon: Link2 },
-  { title: "Home Widgets", href: "/admin/home-widgets", icon: LayoutGrid },
-  { title: "Disruptions", href: "/admin/disruptions", icon: AlertTriangle },
-  { title: "Announcements", href: "/admin/announcements", icon: Megaphone },
-  { title: "Training", href: "/admin/training", icon: GraduationCap },
-  { title: "Decision Trees", href: "/admin/decision-trees", icon: GitBranch },
-  { title: "Airport Codes", href: "/admin/airport-codes", icon: Plane },
-  { title: "Excess Baggage Rates", href: "/admin/excess-baggage-rates", icon: Luggage },
-  { title: "Glossary", href: "/admin/glossary", icon: BookOpen },
-  { title: "Quick Reference", href: "/admin/quick-reference", icon: ListChecks },
-  { title: "Disposition Codes", href: "/admin/disposition-codes", icon: ClipboardList },
-  { title: "Escalation Contacts", href: "/admin/escalation", icon: PhoneCall },
-  { title: "Media Library", href: "/admin/media", icon: ImageIcon },
-  { title: "Comments", href: "/admin/comments", icon: MessageCircle },
-  { title: "Feedback", href: "/admin/feedback", icon: MessageSquare },
-  { title: "Users", href: "/admin/users", icon: Users },
-  { title: "Roles", href: "/admin/roles", icon: Shield },
-  { title: "Settings", href: "/admin/settings", icon: Settings },
+export const adminMenuGroups = [
+  {
+    label: "Overview",
+    items: [
+      { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
+      { title: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+      { title: "Global Search", href: "/admin/search", icon: Search },
+    ],
+  },
+  {
+    label: "Support Teams",
+    items: [
+      { title: "Customer Support Team", href: "/admin/customer-support-team", icon: PhoneCall },
+      { title: "Trade Support Team", href: "/admin/trade-support-team", icon: Briefcase },
+    ],
+  },
+  {
+    label: "Content",
+    items: [
+      { title: "Articles", href: "/admin/articles", icon: FileText },
+      { title: "Categories", href: "/admin/categories", icon: Folder },
+      { title: "Decision Trees", href: "/admin/decision-trees", icon: GitBranch },
+      { title: "Training", href: "/admin/training", icon: GraduationCap },
+      { title: "Glossary", href: "/admin/glossary", icon: BookOpen },
+      { title: "Quick Reference", href: "/admin/quick-reference", icon: ListChecks },
+      { title: "Media Library", href: "/admin/media", icon: ImageIcon },
+    ],
+  },
+  {
+    label: "Reference Data",
+    items: [
+      { title: "Airport Codes", href: "/admin/airport-codes", icon: Plane },
+      { title: "Excess Baggage Rates", href: "/admin/excess-baggage-rates", icon: Luggage },
+      { title: "Disposition Codes", href: "/admin/disposition-codes", icon: ClipboardList },
+      { title: "Escalation Contacts", href: "/admin/escalation", icon: PhoneCall },
+      { title: "Important Links", href: "/admin/important-links", icon: Link2 },
+    ],
+  },
+  {
+    label: "Engagement",
+    items: [
+      { title: "Announcements", href: "/admin/announcements", icon: Megaphone },
+      { title: "Notifications", href: "/admin/notifications", icon: Bell },
+      { title: "Home Widgets", href: "/admin/home-widgets", icon: LayoutGrid },
+      { title: "Comments", href: "/admin/comments", icon: MessageCircle },
+      { title: "Feedback", href: "/admin/feedback", icon: MessageSquare },
+    ],
+  },
+  {
+    label: "Operations",
+    items: [
+      { title: "Disruptions", href: "/admin/disruptions", icon: AlertTriangle },
+      { title: "Audit Trail", href: "/admin/audit", icon: History },
+      { title: "Backup & Restore", href: "/admin/backup", icon: Database },
+      { title: "Integrations", href: "/admin/integrations", icon: Plug },
+      { title: "System Health", href: "/admin/system", icon: Activity },
+    ],
+  },
+  {
+    label: "People & Settings",
+    items: [
+      { title: "Sidebar Links", href: "/admin/sidebar", icon: PanelLeft },
+      { title: "Users", href: "/admin/users", icon: Users },
+      { title: "Roles", href: "/admin/roles", icon: Shield },
+      { title: "Settings", href: "/admin/settings", icon: Settings },
+    ],
+  },
 ];
 
 export default function AdminSidebar() {
@@ -75,6 +127,22 @@ export default function AdminSidebar() {
     setDock,
     closeMobile,
   } = useSidebarPrefs();
+
+  const activeGroupLabel = adminMenuGroups.find((group) =>
+    group.items.some((item) => item.href === pathname)
+  )?.label;
+
+  const [closedGroups, setClosedGroups] = useState<Record<string, boolean>>({});
+
+  function isGroupOpen(label: string) {
+    if (closedGroups[label] !== undefined) return !closedGroups[label];
+    // Auto-expand whichever group contains the current page.
+    return true;
+  }
+
+  function toggleGroup(label: string) {
+    setClosedGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+  }
 
   const sideClasses = dock === "left" ? "left-0 border-r" : "right-0 border-l";
 
@@ -156,27 +224,52 @@ export default function AdminSidebar() {
 
         <nav className="flex-1 overflow-y-auto overflow-x-hidden p-5">
 
-          {menu.map((item) => {
-            const Icon = item.icon;
-            const active = pathname === item.href;
+          {adminMenuGroups.map((group) => {
+            const open = isGroupOpen(group.label);
 
             return (
-              <Link
-                key={item.title}
-                href={item.href}
-                onClick={closeMobile}
-                title={collapsed ? item.title : undefined}
-                className={`mb-2 flex items-center gap-3 rounded-xl px-4 py-3 transition ${
-                  collapsed ? "justify-center px-0" : ""
-                } ${
-                  active
-                    ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand"
-                    : "hover:bg-red-50 dark:hover:bg-red-950/40"
-                }`}
-              >
-                <Icon size={20} />
-                {!collapsed && item.title}
-              </Link>
+              <div key={group.label} className="mb-4">
+
+                {!collapsed && (
+                  <button
+                    onClick={() => toggleGroup(group.label)}
+                    className={`mb-1 flex w-full items-center justify-between rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider transition ${
+                      activeGroupLabel === group.label
+                        ? "text-brand"
+                        : "text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300"
+                    }`}
+                  >
+                    {group.label}
+                    {open ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                  </button>
+                )}
+
+                {(collapsed || open) &&
+                  group.items.map((item) => {
+                    const Icon = item.icon;
+                    const active = pathname === item.href;
+
+                    return (
+                      <Link
+                        key={item.title}
+                        href={item.href}
+                        onClick={closeMobile}
+                        title={collapsed ? item.title : undefined}
+                        className={`mb-2 flex items-center gap-3 rounded-xl px-4 py-3 transition ${
+                          collapsed ? "justify-center px-0" : ""
+                        } ${
+                          active
+                            ? "border-l-4 border-brand bg-red-50 dark:bg-red-950/40 text-brand"
+                            : "hover:bg-red-50 dark:hover:bg-red-950/40"
+                        }`}
+                      >
+                        <Icon size={20} />
+                        {!collapsed && item.title}
+                      </Link>
+                    );
+                  })}
+
+              </div>
             );
           })}
 

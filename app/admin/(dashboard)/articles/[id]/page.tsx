@@ -33,6 +33,7 @@ export default async function EditArticlePage({ params }: Props) {
       <AdminPageHeader
         title="Edit Article"
         description="Update article information."
+        breadcrumbs={[{ label: "Articles", href: "/admin/articles" }, { label: article.title }]}
       />
 
       <EditArticleForm

@@ -27,7 +27,10 @@ export default async function EditCoursePage({ params }: Props) {
   return (
     <div className="space-y-8">
 
-      <AdminPageHeader title="Edit Course" />
+      <AdminPageHeader
+        title="Edit Course"
+        breadcrumbs={[{ label: "Training", href: "/admin/training" }, { label: course.title }]}
+      />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
         <CourseBuilder

@@ -31,7 +31,10 @@ export default async function EditUserPage({ params }: Props) {
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="Edit User" />
+      <AdminPageHeader
+        title="Edit User"
+        breadcrumbs={[{ label: "Users", href: "/admin/users" }, { label: user.name }]}
+      />
 
       <AdminFormCard title="User Details">
         <UserForm

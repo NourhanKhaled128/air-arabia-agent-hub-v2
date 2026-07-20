@@ -29,6 +29,7 @@ export default async function EditDecisionTreePage({ params }: Props) {
       <AdminPageHeader
         title="Edit Decision Tree"
         description="Update the tree's questions, options and outcomes."
+        breadcrumbs={[{ label: "Decision Trees", href: "/admin/decision-trees" }, { label: tree.title }]}
       />
 
       <EditDecisionTreeForm
