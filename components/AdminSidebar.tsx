@@ -31,12 +31,15 @@ import {
   Luggage,
   BookOpen,
   ListChecks,
+  Briefcase,
 } from "lucide-react";
 import { logoutAction } from "@/app/admin/actions/auth-actions";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
 
 const menu = [
   { title: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { title: "Customer Support Team", href: "/admin/customer-support-team", icon: PhoneCall },
+  { title: "Trade Support Team", href: "/admin/trade-support-team", icon: Briefcase },
   { title: "Articles", href: "/admin/articles", icon: FileText },
   { title: "Categories", href: "/admin/categories", icon: Folder },
   { title: "Sidebar Links", href: "/admin/sidebar", icon: PanelLeft },

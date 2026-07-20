@@ -7,6 +7,7 @@ import { getVisibleCategoriesForSidebar } from "@/lib/category-service";
 import { getVisibleSidebarLinksBySection } from "@/lib/sidebar-service";
 import { getVisibleImportantLinks } from "@/lib/important-link-service";
 import { CUSTOMER_SUPPORT_TEAM_GROUP } from "@/lib/customer-support-team";
+import { TRADE_SUPPORT_TEAM_GROUP } from "@/lib/trade-support-team";
 
 interface Props {
   children: React.ReactNode;
@@ -21,9 +22,12 @@ export default async function PortalLayout({ children }: Props) {
     getVisibleImportantLinks(),
   ]);
 
-  // Any category in the Customer Support Team sidebar group belongs to the separated
-  // section (see app/CustomerSupportTeam/), reached via the pinned sidebar link instead.
-  const categories = allCategories.filter((c) => c.group !== CUSTOMER_SUPPORT_TEAM_GROUP);
+  // Any category in the Customer Support Team or Trade Support Team sidebar group
+  // belongs to its own separated section (see app/CustomerSupportTeam/ and
+  // app/TradeSupportTeam/), reached via the pinned sidebar link instead.
+  const categories = allCategories.filter(
+    (c) => c.group !== CUSTOMER_SUPPORT_TEAM_GROUP && c.group !== TRADE_SUPPORT_TEAM_GROUP
+  );
 
   return (
     <SidebarPrefsProvider>

@@ -20,6 +20,7 @@ import {
   GraduationCap,
   Luggage,
   MessageSquare,
+  Briefcase,
   type LucideIcon,
 } from "lucide-react";
 
@@ -45,6 +46,7 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   GraduationCap,
   Luggage,
   MessageSquare,
+  Briefcase,
 };
 
 export const SIDEBAR_ICON_KEYS = Object.keys(SIDEBAR_ICONS);

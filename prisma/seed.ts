@@ -101,6 +101,45 @@ async function seedCustomerSupportTeamSection() {
   }
 }
 
+async function seedTradeSupportTeamSection() {
+  const existingCategory = await prisma.category.findUnique({
+    where: { name: "Trade Support Team" },
+  });
+
+  if (!existingCategory) {
+    await prisma.category.create({
+      data: {
+        name: "Trade Support Team",
+        slug: "trade-support-team",
+        description: "Resources and procedures for the trade support team.",
+        color: "bg-blue-100 text-blue-700",
+        icon: "Briefcase",
+        visible: true,
+        order: 9,
+        group: "Knowledge Base",
+      },
+    });
+    console.log("Seeded Trade Support Team category.");
+  }
+
+  const existingLink = await prisma.sidebarLink.findFirst({
+    where: { href: "/TradeSupportTeam" },
+  });
+
+  if (!existingLink) {
+    await prisma.sidebarLink.create({
+      data: {
+        label: "Trade Support Team",
+        href: "/TradeSupportTeam",
+        icon: "Briefcase",
+        section: "pinned",
+        order: 5,
+      },
+    });
+    console.log("Seeded Trade Support Team sidebar link.");
+  }
+}
+
 async function seedQuickActions() {
   const count = await prisma.sidebarLink.count({
     where: { section: "quickActions" },
@@ -277,6 +316,7 @@ async function main() {
   await seedReferenceToolLinks();
   await seedCustomerSupportLink();
   await seedCustomerSupportTeamSection();
+  await seedTradeSupportTeamSection();
   await seedQuickActions();
   await seedDisruptions();
   await seedNotifications();

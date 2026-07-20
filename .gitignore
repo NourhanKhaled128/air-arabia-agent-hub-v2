@@ -46,6 +46,7 @@ next-env.d.ts
 PPT/*.zip
 Files/*.zip
 Files/**/*.pptx
+Emails/*.zip
 
 # stray portable Node.js distribution (belongs one level up, outside the repo)
 /node-v24.18.0-win-x64/

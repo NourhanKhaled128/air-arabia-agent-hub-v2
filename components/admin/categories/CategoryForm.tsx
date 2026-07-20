@@ -17,12 +17,14 @@ interface Props {
   action: (formData: FormData) => void;
   submitLabel?: string;
   category?: Category;
+  defaultGroup?: string;
 }
 
 export default function CategoryForm({
   action,
   submitLabel = "Save Category",
   category,
+  defaultGroup,
 }: Props) {
   return (
     <form action={action} className="space-y-6">
@@ -76,7 +78,7 @@ export default function CategoryForm({
           name="group"
           label="Sidebar Group"
           placeholder="Knowledge Base"
-          defaultValue={category?.group ?? "Knowledge Base"}
+          defaultValue={category?.group ?? defaultGroup ?? "Knowledge Base"}
         />
 
         <AdminInput
