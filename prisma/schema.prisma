@@ -466,13 +466,14 @@ model QuizAttempt {
   name                  String
   email                 String
   previousClassFeedback String?
-  score                 Int
-  totalPoints           Int
-  percentage            Float
-  passed                Boolean
+  status                String       @default("InProgress")
+  score                 Int?
+  totalPoints           Int?
+  percentage            Float?
+  passed                Boolean?
   startedAt             DateTime
-  submittedAt           DateTime     @default(now())
-  timeTakenSeconds      Int
+  submittedAt           DateTime?
+  timeTakenSeconds      Int?
   answers               QuizAnswer[]
 }
 
@@ -485,4 +486,6 @@ model QuizAnswer {
   choiceId   Int?
   choice     QuizChoice?  @relation(fields: [choiceId], references: [id], onDelete: SetNull)
   isCorrect  Boolean
+
+  @@unique([attemptId, questionId])
 }

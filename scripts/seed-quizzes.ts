@@ -929,31 +929,59 @@ interface QuizDef {
   questions: QuestionSeed[];
 }
 
+// QUIZ_1 (Modules 1–8) and QUIZ_2 (Modules 9–16) are written module-by-module,
+// so they split cleanly in half at the day boundary with no rewriting of
+// question text: QUIZ_1[0..13) = Modules 1–4, QUIZ_1[13..) = Modules 5–8;
+// QUIZ_2[0..15) = Modules 9–12, QUIZ_2[15..) = Modules 13–16.
 const QUIZZES: QuizDef[] = [
   {
-    title: "Quiz 1 — Days 1–2 Recap",
-    description: "Covers Modules 1–8: verification, ticket types, booking basics, visas, modification/cancellation, baggage fundamentals, onboard extras, and airport day. Taken at the start of Day 3.",
-    timeLimitMinutes: 30,
+    title: "Day 1 Recap",
+    description: "Covers Module 1–4: verification, ticket types, booking basics, and visas. Taken at the start of Day 2.",
+    timeLimitMinutes: 15,
     order: 1,
-    questions: QUIZ_1,
+    questions: QUIZ_1.slice(0, 13),
   },
   {
-    title: "Quiz 2 — Days 3–4 Recap",
-    description: "Covers Modules 9–16: disruptions, cargo/groups, AirRewards, baggage claims, fare bundles, excess baggage, name changes, and TV handling. Taken at the start of Day 5.",
-    timeLimitMinutes: 30,
+    title: "Day 2 Recap",
+    description: "Covers Modules 5–8: modification/cancellation, baggage fundamentals, onboard extras, and airport day. Taken at the start of Day 3.",
+    timeLimitMinutes: 15,
     order: 2,
-    questions: QUIZ_2,
+    questions: QUIZ_1.slice(13),
+  },
+  {
+    title: "Day 3 Recap",
+    description: "Covers Modules 9–12: disruptions, cargo/groups, AirRewards, and baggage claims. Taken at the start of Day 4.",
+    timeLimitMinutes: 15,
+    order: 3,
+    questions: QUIZ_2.slice(0, 15),
+  },
+  {
+    title: "Day 4 Recap",
+    description: "Covers Modules 13–16: fare bundles, excess baggage, name changes, and TV handling. Taken at the start of Day 5.",
+    timeLimitMinutes: 15,
+    order: 4,
+    questions: QUIZ_2.slice(15),
   },
   {
     title: "Final Exam — All 20 Modules",
     description: "Comprehensive final assessment across every module, plus 5 cross-module capstone scenarios. Taken at the end of Day 5.",
     timeLimitMinutes: 60,
-    order: 3,
+    order: 5,
     questions: QUIZ_3,
   },
 ];
 
+const RETIRED_TITLES = ["Quiz 1 — Days 1–2 Recap", "Quiz 2 — Days 3–4 Recap"];
+
 async function main() {
+  for (const title of RETIRED_TITLES) {
+    const retired = await prisma.quiz.findFirst({ where: { title } });
+    if (retired) {
+      await prisma.quiz.delete({ where: { id: retired.id } });
+      console.log(`Removed retired quiz: ${title}`);
+    }
+  }
+
   for (const quizDef of QUIZZES) {
     const existing = await prisma.quiz.findFirst({ where: { title: quizDef.title } });
     if (existing) {

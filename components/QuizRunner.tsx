@@ -10,8 +10,14 @@ import {
   ArrowRight,
   ArrowLeft,
   Trophy,
+  Loader2,
 } from "lucide-react";
-import { submitQuizAttemptAction } from "@/app/actions/quiz";
+import {
+  startQuizAttemptAction,
+  saveQuizAnswerAction,
+  getResumableAttemptAction,
+  finalizeQuizAttemptAction,
+} from "@/app/actions/quiz";
 
 interface Choice {
   id: number;
@@ -54,6 +60,32 @@ interface GradeResult {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const STORAGE_KEY = "airarabia_quiz_attempt";
+
+interface StoredAttempt {
+  quizId: number;
+  attemptId: number;
+}
+
+function readStoredAttempt(): StoredAttempt | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.quizId === "number" && typeof parsed?.attemptId === "number") return parsed;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function writeStoredAttempt(value: StoredAttempt) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
+}
+
+function clearStoredAttempt() {
+  localStorage.removeItem(STORAGE_KEY);
+}
 
 function formatTime(totalSeconds: number) {
   const m = Math.floor(totalSeconds / 60);
@@ -62,52 +94,110 @@ function formatTime(totalSeconds: number) {
 }
 
 export default function QuizRunner({ quiz }: { quiz: QuizData }) {
-  const [step, setStep] = useState<"intro" | "taking" | "result">("intro");
+  const [step, setStep] = useState<"loading" | "intro" | "taking" | "result">("loading");
 
   // Intro fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [feedback, setFeedback] = useState("");
   const [introError, setIntroError] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
 
   // Taking state
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [secondsLeft, setSecondsLeft] = useState(quiz.timeLimitMinutes * 60);
   const [submitting, setSubmitting] = useState(false);
+  const [resumed, setResumed] = useState(false);
 
   // Result state
   const [result, setResult] = useState<GradeResult | null>(null);
 
+  const attemptIdRef = useRef<number | null>(null);
   const startedAtRef = useRef<Date | null>(null);
-  const answersRef = useRef<Record<number, number>>({});
+  const pendingSaveRef = useRef<Promise<unknown> | null>(null);
   const submittingRef = useRef(false);
-
-  useEffect(() => {
-    answersRef.current = answers;
-  }, [answers]);
 
   async function doSubmit() {
     if (submittingRef.current) return;
     submittingRef.current = true;
     setSubmitting(true);
 
-    const graded = await submitQuizAttemptAction({
-      quizId: quiz.id,
-      name: name.trim(),
-      email: email.trim(),
-      previousClassFeedback: feedback.trim() || undefined,
-      startedAt: (startedAtRef.current ?? new Date()).toISOString(),
-      answers: quiz.questions.map((q) => ({
-        questionId: q.id,
-        choiceId: answersRef.current[q.id] ?? null,
-      })),
-    });
+    if (pendingSaveRef.current) await pendingSaveRef.current.catch(() => {});
 
+    const attemptId = attemptIdRef.current;
+    if (attemptId == null) {
+      submittingRef.current = false;
+      setSubmitting(false);
+      return;
+    }
+
+    const graded = await finalizeQuizAttemptAction(attemptId);
+    clearStoredAttempt();
     setResult(graded as GradeResult);
     setStep("result");
     setSubmitting(false);
   }
+
+  // On mount: resume this quiz's in-progress attempt if one exists on this
+  // browser, or — if the lingering attempt belongs to a *different* quiz —
+  // auto-finalize it first, then show a normal intro form for this one.
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const stored = readStoredAttempt();
+      if (!stored) {
+        if (!cancelled) setStep("intro");
+        return;
+      }
+
+      if (stored.quizId !== quiz.id) {
+        await finalizeQuizAttemptAction(stored.attemptId).catch(() => {});
+        clearStoredAttempt();
+        if (!cancelled) setStep("intro");
+        return;
+      }
+
+      const resumable = await getResumableAttemptAction({ attemptId: stored.attemptId, quizId: quiz.id });
+      if (!resumable) {
+        clearStoredAttempt();
+        if (!cancelled) setStep("intro");
+        return;
+      }
+
+      if (cancelled) return;
+
+      attemptIdRef.current = resumable.attemptId;
+      startedAtRef.current = new Date(resumable.startedAt);
+
+      const restoredAnswers: Record<number, number> = {};
+      for (const a of resumable.answers) {
+        if (a.choiceId != null) restoredAnswers[a.questionId] = a.choiceId;
+      }
+      setAnswers(restoredAnswers);
+
+      const elapsed = (Date.now() - startedAtRef.current.getTime()) / 1000;
+      const remaining = Math.floor(quiz.timeLimitMinutes * 60 - elapsed);
+
+      if (remaining <= 0) {
+        setStep("taking"); // doSubmit below will flip to "result" once graded
+        await doSubmit();
+        return;
+      }
+
+      const firstUnanswered = quiz.questions.findIndex((q) => !(q.id in restoredAnswers));
+      setIndex(firstUnanswered === -1 ? quiz.questions.length - 1 : firstUnanswered);
+      setSecondsLeft(remaining);
+      setResumed(true);
+      setStep("taking");
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quiz.id]);
 
   // Countdown timer — only runs while actively taking the quiz.
   useEffect(() => {
@@ -125,10 +215,9 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
     }, 1000);
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
-  function handleStart() {
+  async function handleStart() {
     if (!name.trim()) {
       setIntroError("Please enter your name.");
       return;
@@ -138,16 +227,54 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
       return;
     }
     setIntroError(null);
-    startedAtRef.current = new Date();
+    setStarting(true);
+
+    const { attemptId, startedAt } = await startQuizAttemptAction({
+      quizId: quiz.id,
+      name: name.trim(),
+      email: email.trim(),
+      previousClassFeedback: feedback.trim() || undefined,
+    });
+
+    attemptIdRef.current = attemptId;
+    startedAtRef.current = new Date(startedAt);
+    writeStoredAttempt({ quizId: quiz.id, attemptId });
+
     setSecondsLeft(quiz.timeLimitMinutes * 60);
+    setStarting(false);
     setStep("taking");
+  }
+
+  async function startOver() {
+    const attemptId = attemptIdRef.current;
+    if (attemptId != null) {
+      await finalizeQuizAttemptAction(attemptId).catch(() => {});
+    }
+    clearStoredAttempt();
+    attemptIdRef.current = null;
+    startedAtRef.current = null;
+    setAnswers({});
+    setIndex(0);
+    setResumed(false);
+    setName("");
+    setEmail("");
+    setFeedback("");
+    setStep("intro");
   }
 
   function selectChoice(questionId: number, choiceId: number) {
     setAnswers((prev) => ({ ...prev, [questionId]: choiceId }));
+
+    const attemptId = attemptIdRef.current;
+    if (attemptId == null) return;
+    pendingSaveRef.current = saveQuizAnswerAction({ attemptId, questionId, choiceId }).catch((e) => {
+      console.error("Failed to save answer", e);
+    });
   }
 
-  function goNext() {
+  async function goNext() {
+    if (pendingSaveRef.current) await pendingSaveRef.current.catch(() => {});
+
     if (index + 1 >= quiz.questions.length) {
       doSubmit();
       return;
@@ -157,6 +284,15 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
 
   function goPrev() {
     setIndex((i) => Math.max(0, i - 1));
+  }
+
+  // ---- Step: loading (resume check) ----
+  if (step === "loading") {
+    return (
+      <div className="flex items-center justify-center py-24 text-gray-400 dark:text-slate-500">
+        <Loader2 size={28} className="animate-spin" />
+      </div>
+    );
   }
 
   // ---- Step: intro ----
@@ -219,10 +355,11 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
 
           <button
             onClick={handleStart}
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+            disabled={starting}
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Start Quiz
-            <ArrowRight size={18} />
+            {starting ? "Starting..." : "Start Quiz"}
+            {!starting && <ArrowRight size={18} />}
           </button>
         </div>
       </div>
@@ -237,6 +374,15 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
 
     return (
       <div className="mx-auto max-w-2xl">
+        {resumed && (
+          <div className="mb-4 flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/30 px-4 py-2.5 text-sm text-amber-800 dark:text-amber-300">
+            <span>Resumed where you left off — the timer kept running.</span>
+            <button onClick={startOver} className="font-semibold underline shrink-0 ml-3">
+              Not you? Start a new attempt
+            </button>
+          </div>
+        )}
+
         <div className="mb-4 flex items-center justify-between text-sm">
           <span className="font-semibold text-gray-500 dark:text-slate-400">
             Question {index + 1} of {quiz.questions.length}

@@ -1,21 +1,43 @@
 "use server";
 
-import { submitQuizAttempt } from "@/lib/quiz-service";
+import {
+  startQuizAttempt,
+  saveQuizAnswer,
+  getResumableAttempt,
+  finalizeQuizAttempt,
+} from "@/lib/quiz-service";
 
-export async function submitQuizAttemptAction(data: {
+export async function startQuizAttemptAction(data: {
   quizId: number;
   name: string;
   email: string;
   previousClassFeedback?: string;
-  startedAt: string;
-  answers: { questionId: number; choiceId: number | null }[];
 }) {
-  return submitQuizAttempt({
+  const result = await startQuizAttempt({
     quizId: data.quizId,
     name: data.name.trim(),
     email: data.email.trim(),
     previousClassFeedback: data.previousClassFeedback?.trim() || undefined,
-    startedAt: new Date(data.startedAt),
-    answers: data.answers,
   });
+
+  return { attemptId: result.attemptId, startedAt: result.startedAt.toISOString() };
+}
+
+export async function saveQuizAnswerAction(data: {
+  attemptId: number;
+  questionId: number;
+  choiceId: number | null;
+}) {
+  await saveQuizAnswer(data);
+}
+
+export async function getResumableAttemptAction(data: { attemptId: number; quizId: number }) {
+  const result = await getResumableAttempt(data);
+  if (!result) return null;
+
+  return { ...result, startedAt: result.startedAt.toISOString() };
+}
+
+export async function finalizeQuizAttemptAction(attemptId: number) {
+  return finalizeQuizAttempt(attemptId);
 }
