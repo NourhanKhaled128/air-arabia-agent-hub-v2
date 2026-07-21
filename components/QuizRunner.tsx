@@ -1,0 +1,398 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import {
+  ClipboardCheck,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  ArrowRight,
+  ArrowLeft,
+  Trophy,
+} from "lucide-react";
+import { submitQuizAttemptAction } from "@/app/actions/quiz";
+
+interface Choice {
+  id: number;
+  text: string;
+  order: number;
+}
+
+interface Question {
+  id: number;
+  text: string;
+  order: number;
+  choices: Choice[];
+}
+
+interface QuizData {
+  id: number;
+  title: string;
+  description: string | null;
+  timeLimitMinutes: number;
+  passingScore: number;
+  questions: Question[];
+}
+
+interface GradedQuestion {
+  id: number;
+  text: string;
+  choices: { id: number; text: string; isCorrect: boolean }[];
+  submittedChoiceId: number | null;
+}
+
+interface GradeResult {
+  attemptId: number;
+  score: number;
+  totalPoints: number;
+  percentage: number;
+  passed: boolean;
+  passingScore: number;
+  showAnswers: boolean;
+  questions: GradedQuestion[];
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function formatTime(totalSeconds: number) {
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+export default function QuizRunner({ quiz }: { quiz: QuizData }) {
+  const [step, setStep] = useState<"intro" | "taking" | "result">("intro");
+
+  // Intro fields
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [introError, setIntroError] = useState<string | null>(null);
+
+  // Taking state
+  const [index, setIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [secondsLeft, setSecondsLeft] = useState(quiz.timeLimitMinutes * 60);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Result state
+  const [result, setResult] = useState<GradeResult | null>(null);
+
+  const startedAtRef = useRef<Date | null>(null);
+  const answersRef = useRef<Record<number, number>>({});
+  const submittingRef = useRef(false);
+
+  useEffect(() => {
+    answersRef.current = answers;
+  }, [answers]);
+
+  async function doSubmit() {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
+    setSubmitting(true);
+
+    const graded = await submitQuizAttemptAction({
+      quizId: quiz.id,
+      name: name.trim(),
+      email: email.trim(),
+      previousClassFeedback: feedback.trim() || undefined,
+      startedAt: (startedAtRef.current ?? new Date()).toISOString(),
+      answers: quiz.questions.map((q) => ({
+        questionId: q.id,
+        choiceId: answersRef.current[q.id] ?? null,
+      })),
+    });
+
+    setResult(graded as GradeResult);
+    setStep("result");
+    setSubmitting(false);
+  }
+
+  // Countdown timer — only runs while actively taking the quiz.
+  useEffect(() => {
+    if (step !== "taking") return;
+
+    const interval = setInterval(() => {
+      setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          doSubmit();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
+  function handleStart() {
+    if (!name.trim()) {
+      setIntroError("Please enter your name.");
+      return;
+    }
+    if (!EMAIL_RE.test(email.trim())) {
+      setIntroError("Please enter a valid email address.");
+      return;
+    }
+    setIntroError(null);
+    startedAtRef.current = new Date();
+    setSecondsLeft(quiz.timeLimitMinutes * 60);
+    setStep("taking");
+  }
+
+  function selectChoice(questionId: number, choiceId: number) {
+    setAnswers((prev) => ({ ...prev, [questionId]: choiceId }));
+  }
+
+  function goNext() {
+    if (index + 1 >= quiz.questions.length) {
+      doSubmit();
+      return;
+    }
+    setIndex((i) => i + 1);
+  }
+
+  function goPrev() {
+    setIndex((i) => Math.max(0, i - 1));
+  }
+
+  // ---- Step: intro ----
+  if (step === "intro") {
+    return (
+      <div className="mx-auto max-w-xl">
+        <div className="mb-8 flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-brand">
+            <ClipboardCheck size={24} />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-slate-100">{quiz.title}</h1>
+            {quiz.description && (
+              <p className="mt-1 text-sm text-gray-600 dark:text-slate-400">{quiz.description}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-6 shadow-sm">
+          <p className="mb-5 flex items-center gap-2 text-sm font-semibold text-amber-700 dark:text-amber-400">
+            <Clock size={16} />
+            {quiz.timeLimitMinutes} minutes · {quiz.questions.length} questions · starts as soon as you click Start Quiz
+          </p>
+
+          <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300">
+            Name
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your full name"
+              className="mt-1.5 w-full rounded-xl border border-gray-300 dark:border-border-subtle bg-white dark:bg-surface-muted px-4 py-2.5 text-gray-900 dark:text-slate-100 outline-none focus:border-red-500"
+            />
+          </label>
+
+          <label className="mt-4 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+            Email
+            <input
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@airarabia.com"
+              type="email"
+              className="mt-1.5 w-full rounded-xl border border-gray-300 dark:border-border-subtle bg-white dark:bg-surface-muted px-4 py-2.5 text-gray-900 dark:text-slate-100 outline-none focus:border-red-500"
+            />
+          </label>
+
+          <label className="mt-4 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+            Feedback on the previous class
+            <textarea
+              value={feedback}
+              onChange={(e) => setFeedback(e.target.value)}
+              placeholder="Optional — anything that would make the last session better"
+              rows={3}
+              className="mt-1.5 w-full resize-none rounded-xl border border-gray-300 dark:border-border-subtle bg-white dark:bg-surface-muted px-4 py-2.5 text-gray-900 dark:text-slate-100 outline-none focus:border-red-500"
+            />
+          </label>
+
+          {introError && (
+            <p className="mt-4 text-sm font-semibold text-red-600 dark:text-red-400">{introError}</p>
+          )}
+
+          <button
+            onClick={handleStart}
+            className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+          >
+            Start Quiz
+            <ArrowRight size={18} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- Step: taking ----
+  if (step === "taking") {
+    const question = quiz.questions[index];
+    const selectedChoiceId = answers[question.id];
+    const lowTime = secondsLeft <= 60;
+
+    return (
+      <div className="mx-auto max-w-2xl">
+        <div className="mb-4 flex items-center justify-between text-sm">
+          <span className="font-semibold text-gray-500 dark:text-slate-400">
+            Question {index + 1} of {quiz.questions.length}
+          </span>
+          <span
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1 font-bold ${
+              lowTime
+                ? "bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-400"
+                : "bg-gray-100 text-gray-700 dark:bg-surface-muted dark:text-slate-300"
+            }`}
+          >
+            <Clock size={14} />
+            {formatTime(secondsLeft)}
+          </span>
+        </div>
+
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-surface-muted">
+          <div
+            className="h-full rounded-full bg-red-700 transition-all"
+            style={{ width: `${((index + 1) / quiz.questions.length) * 100}%` }}
+          />
+        </div>
+
+        <div className="mt-6 rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 shadow-sm">
+          <p className="text-xl font-semibold text-gray-900 dark:text-slate-100">{question.text}</p>
+
+          <div className="mt-6 space-y-3">
+            {question.choices.map((choice) => {
+              const active = selectedChoiceId === choice.id;
+              return (
+                <button
+                  key={choice.id}
+                  type="button"
+                  onClick={() => selectChoice(question.id, choice.id)}
+                  className={`block w-full rounded-xl border px-5 py-3 text-left font-medium transition ${
+                    active
+                      ? "border-red-600 bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300"
+                      : "border-gray-300 dark:border-border-subtle text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-surface-muted"
+                  }`}
+                >
+                  {choice.text}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="mt-6 flex items-center justify-between">
+          <button
+            onClick={goPrev}
+            disabled={index === 0}
+            className="flex items-center gap-2 rounded-xl border border-gray-300 dark:border-border-subtle px-5 py-3 font-semibold text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ArrowLeft size={18} />
+            Back
+          </button>
+
+          <button
+            onClick={goNext}
+            disabled={submitting}
+            className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {index + 1 >= quiz.questions.length ? "Submit Quiz" : "Next"}
+            <ArrowRight size={18} />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- Step: result ----
+  if (!result) return null;
+
+  return (
+    <div className="mx-auto max-w-2xl">
+      <div className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-8 text-center shadow-sm">
+        <div
+          className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full ${
+            result.passed
+              ? "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400"
+              : "bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400"
+          }`}
+        >
+          <Trophy size={30} />
+        </div>
+
+        <p className="mt-4 text-4xl font-extrabold text-gray-900 dark:text-slate-100">
+          {Math.round(result.percentage)}%
+        </p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
+          {result.score} / {result.totalPoints} points · passing score {result.passingScore}%
+        </p>
+        <p
+          className={`mt-3 inline-block rounded-full px-4 py-1.5 text-sm font-bold ${
+            result.passed
+              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
+              : "bg-red-100 text-red-800 dark:bg-red-950/50 dark:text-red-300"
+          }`}
+        >
+          {result.passed ? "Passed" : "Not passed — review below and try again"}
+        </p>
+      </div>
+
+      {result.showAnswers && (
+        <div className="mt-6 space-y-4">
+          {result.questions.map((q, i) => (
+            <div
+              key={q.id}
+              className="rounded-2xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-5 shadow-sm"
+            >
+              <p className="text-sm font-semibold text-gray-500 dark:text-slate-400">Question {i + 1}</p>
+              <p className="mt-1 font-semibold text-gray-900 dark:text-slate-100">{q.text}</p>
+
+              <div className="mt-3 space-y-2">
+                {q.choices.map((c) => {
+                  const isSubmitted = q.submittedChoiceId === c.id;
+                  let classes =
+                    "border-gray-200 dark:border-border-subtle text-gray-500 dark:text-slate-400";
+                  if (c.isCorrect) {
+                    classes =
+                      "border-emerald-500 bg-emerald-50 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300";
+                  } else if (isSubmitted) {
+                    classes = "border-red-500 bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300";
+                  }
+
+                  return (
+                    <div
+                      key={c.id}
+                      className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium ${classes}`}
+                    >
+                      {c.isCorrect ? (
+                        <CheckCircle2 size={16} className="shrink-0" />
+                      ) : isSubmitted ? (
+                        <XCircle size={16} className="shrink-0" />
+                      ) : (
+                        <span className="w-4 shrink-0" />
+                      )}
+                      {c.text}
+                      {isSubmitted && !c.isCorrect && (
+                        <span className="ml-auto text-xs font-bold uppercase">Your answer</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <Link
+        href="/Quizzes"
+        className="mt-6 flex items-center justify-center gap-2 rounded-xl border border-gray-300 dark:border-border-subtle px-6 py-3 font-semibold text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-surface-muted"
+      >
+        Back to Quizzes
+      </Link>
+    </div>
+  );
+}

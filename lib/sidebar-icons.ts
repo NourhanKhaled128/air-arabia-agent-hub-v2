@@ -22,6 +22,7 @@ import {
   MessageSquare,
   Briefcase,
   History,
+  ClipboardCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -49,6 +50,7 @@ export const SIDEBAR_ICONS: Record<string, LucideIcon> = {
   MessageSquare,
   Briefcase,
   History,
+  ClipboardCheck,
 };
 
 export const SIDEBAR_ICON_KEYS = Object.keys(SIDEBAR_ICONS);

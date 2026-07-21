@@ -42,6 +42,7 @@ import {
   Database,
   Plug,
   Activity,
+  ClipboardCheck,
 } from "lucide-react";
 import { logoutAction } from "@/app/admin/actions/auth-actions";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
@@ -69,6 +70,7 @@ export const adminMenuGroups = [
       { title: "Categories", href: "/admin/categories", icon: Folder },
       { title: "Decision Trees", href: "/admin/decision-trees", icon: GitBranch },
       { title: "Training", href: "/admin/training", icon: GraduationCap },
+      { title: "Quizzes", href: "/admin/quizzes", icon: ClipboardCheck },
       { title: "Glossary", href: "/admin/glossary", icon: BookOpen },
       { title: "Quick Reference", href: "/admin/quick-reference", icon: ListChecks },
       { title: "Media Library", href: "/admin/media", icon: ImageIcon },
