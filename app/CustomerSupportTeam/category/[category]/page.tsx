@@ -1,9 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
-import PageHeader from "@/components/PageHeader";
-import Breadcrumb from "@/components/Breadcrumb";
-import ArticleCard from "@/components/ArticleCard";
+import CategoryBrowser from "@/components/CategoryBrowser";
 import { getArticlesByCategoryId } from "@/lib/article-service";
 import { getCategoryBySlug, getCategoryFolders } from "@/lib/category-service";
 import { CUSTOMER_SUPPORT_TEAM_GROUP } from "@/lib/customer-support-team";
@@ -28,93 +26,30 @@ export default async function CustomerSupportTeamCategoryPage({
     notFound();
   }
 
-  const folderId = folder ? Number(folder) : undefined;
-
-  const [categoryArticles, allFolders, portalUser] = await Promise.all([
-    getArticlesByCategoryId(categoryRow.id, folderId, { publishedOnly: true }),
+  const [articles, allFolders, portalUser] = await Promise.all([
+    getArticlesByCategoryId(categoryRow.id, undefined, { publishedOnly: true }),
     getCategoryFolders(categoryRow.id),
     getCurrentPortalUser(),
   ]);
 
   const viewedAt = portalUser
-    ? await getViewedTimestamps(portalUser.id, categoryArticles.map((a) => a.id))
+    ? await getViewedTimestamps(portalUser.id, articles.map((a) => a.id))
     : new Map<number, Date>();
 
   const folders = allFolders.filter((f) => f.visible);
 
-  const activeFolder = folderId
-    ? folders.find((f) => f.id === folderId)
-    : undefined;
-
   return (
-    <>
-      <Breadcrumb
-        items={[
-          { label: "Customer Support Team", href: "/CustomerSupportTeam" },
-          { label: categoryRow.name, href: activeFolder ? `/CustomerSupportTeam/category/${categoryRow.slug}` : undefined },
-          ...(activeFolder ? [{ label: activeFolder.name }] : []),
-        ]}
-      />
-
-      <PageHeader
-        title={activeFolder ? `${categoryRow.name} / ${activeFolder.name}` : categoryRow.name}
-        subtitle={`${categoryArticles.length} knowledge articles available`}
-      />
-
-      {folders.length > 0 && (
-        <div className="flex flex-wrap gap-3">
-          <a
-            href={`/CustomerSupportTeam/category/${categoryRow.slug}`}
-            className={`rounded-full px-4 py-2 text-sm font-semibold ${
-              !activeFolder
-                ? "bg-red-700 text-white"
-                : "bg-white text-gray-700 border border-gray-200 hover:bg-red-50"
-            }`}
-          >
-            All
-          </a>
-
-          {folders.map((f) => (
-            <a
-              key={f.id}
-              href={`/CustomerSupportTeam/category/${categoryRow.slug}?folder=${f.id}`}
-              className={`rounded-full px-4 py-2 text-sm font-semibold ${
-                activeFolder?.id === f.id
-                  ? "bg-red-700 text-white"
-                  : "bg-white text-gray-700 border border-gray-200 hover:bg-red-50"
-              }`}
-            >
-              {f.name}
-            </a>
-          ))}
-        </div>
-      )}
-
-      {categoryArticles.length === 0 ? (
-        <div className="rounded-3xl border border-gray-200 bg-white p-10 text-center shadow-sm">
-          <p className="text-lg font-semibold text-gray-700">
-            No articles in this category yet.
-          </p>
-          <p className="mt-2 text-gray-500">
-            Check back soon, or browse other sections from the sidebar.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-6">
-          {categoryArticles.map((article) => {
-            const lastViewed = viewedAt.get(article.id);
-            const isNew = !!portalUser && (!lastViewed || article.updatedAt > lastViewed);
-            return (
-              <ArticleCard
-                key={article.id}
-                article={article}
-                basePath="/CustomerSupportTeam"
-                isNew={isNew}
-              />
-            );
-          })}
-        </div>
-      )}
-    </>
+    <CategoryBrowser
+      categoryName={categoryRow.name}
+      categorySlug={categoryRow.slug}
+      basePath="/CustomerSupportTeam"
+      categoryHref={`/CustomerSupportTeam/category/${categoryRow.slug}`}
+      breadcrumbRoot={{ label: "Customer Support Team", href: "/CustomerSupportTeam" }}
+      folders={folders}
+      articles={articles}
+      folderParam={folder}
+      viewedAt={viewedAt}
+      hasPortalUser={!!portalUser}
+    />
   );
 }
