@@ -102,11 +102,130 @@ export async function updateQuiz(id: number, input: QuizInput) {
       },
     });
 
-    await tx.quizQuestion.deleteMany({ where: { quizId: id } });
-    await insertQuestionsAndChoicesTx(tx, id, input.questions);
+    await reconcileQuestionsTx(tx, id, input.questions);
 
     return quiz;
   });
+}
+
+/**
+ * Updates existing questions/choices in place (matched by clientKey === DB id,
+ * as set by the edit form) instead of deleting and recreating everything.
+ * Deleting and recreating would cascade-delete every QuizAnswer tied to the
+ * old rows, silently wiping already-submitted trainees' per-question results
+ * on every edit. Only questions/choices the admin actually removed are deleted.
+ */
+async function reconcileQuestionsTx(
+  tx: Prisma.TransactionClient,
+  quizId: number,
+  questions: QuizQuestionInput[]
+) {
+  const existingQuestions = await tx.quizQuestion.findMany({
+    where: { quizId },
+    select: { id: true, choices: { select: { id: true } } },
+  });
+  const existingQuestionIds = new Set(existingQuestions.map((q) => q.id));
+  const existingChoiceIdsByQuestion = new Map(
+    existingQuestions.map((q) => [q.id, new Set(q.choices.map((c) => c.id))])
+  );
+
+  const keptQuestionIds = new Set(
+    questions.filter((q) => existingQuestionIds.has(q.clientKey)).map((q) => q.clientKey)
+  );
+
+  const removedQuestionIds = [...existingQuestionIds].filter((qid) => !keptQuestionIds.has(qid));
+  if (removedQuestionIds.length > 0) {
+    await tx.quizQuestion.deleteMany({ where: { id: { in: removedQuestionIds } } });
+  }
+
+  const questionUpdates = questions
+    .map((q, qIndex) => ({ q, qIndex }))
+    .filter(({ q }) => keptQuestionIds.has(q.clientKey));
+
+  if (questionUpdates.length > 0) {
+    await tx.$executeRaw`
+      UPDATE "QuizQuestion" AS t
+      SET text = v.text, "order" = v."order", points = v.points
+      FROM UNNEST(
+        ${questionUpdates.map(({ q }) => q.clientKey)}::int[],
+        ${questionUpdates.map(({ q }) => q.text)}::text[],
+        ${questionUpdates.map(({ qIndex }) => qIndex)}::int[],
+        ${questionUpdates.map(({ q }) => q.points)}::int[]
+      ) AS v(id, text, "order", points)
+      WHERE t.id = v.id
+    `;
+  }
+
+  const newQuestionEntries = questions
+    .map((q, qIndex) => ({ q, qIndex }))
+    .filter(({ q }) => !keptQuestionIds.has(q.clientKey));
+
+  const createdQuestions =
+    newQuestionEntries.length > 0
+      ? await tx.quizQuestion.createManyAndReturn({
+          data: newQuestionEntries.map(({ q, qIndex }) => ({
+            quizId,
+            text: q.text,
+            order: qIndex,
+            points: q.points,
+          })),
+        })
+      : [];
+  const newQuestionIdByOrder = new Map(createdQuestions.map((cq) => [cq.order, cq.id]));
+
+  // clientKey -> the DB id it now maps to (unchanged for kept questions, freshly assigned for new ones)
+  const questionDbId = new Map<number, number>();
+  for (const { q } of questionUpdates) questionDbId.set(q.clientKey, q.clientKey);
+  for (const { q, qIndex } of newQuestionEntries) {
+    questionDbId.set(q.clientKey, newQuestionIdByOrder.get(qIndex)!);
+  }
+
+  const choiceUpdates: { id: number; text: string; isCorrect: boolean; order: number }[] = [];
+  const choiceCreates: { questionId: number; text: string; isCorrect: boolean; order: number }[] = [];
+  const keptChoiceIdsByQuestion = new Map<number, Set<number>>();
+
+  for (const question of questions) {
+    const dbQuestionId = questionDbId.get(question.clientKey)!;
+    const existingChoiceIds = existingChoiceIdsByQuestion.get(question.clientKey);
+    const kept = new Set<number>();
+
+    question.choices.forEach((choice, cIndex) => {
+      if (existingChoiceIds?.has(choice.clientKey)) {
+        kept.add(choice.clientKey);
+        choiceUpdates.push({ id: choice.clientKey, text: choice.text, isCorrect: choice.isCorrect, order: cIndex });
+      } else {
+        choiceCreates.push({ questionId: dbQuestionId, text: choice.text, isCorrect: choice.isCorrect, order: cIndex });
+      }
+    });
+
+    if (existingChoiceIds) keptChoiceIdsByQuestion.set(question.clientKey, kept);
+  }
+
+  const removedChoiceIds = [...existingChoiceIdsByQuestion.entries()].flatMap(([qId, ids]) => {
+    const kept = keptChoiceIdsByQuestion.get(qId) ?? new Set<number>();
+    return [...ids].filter((cid) => !kept.has(cid));
+  });
+  if (removedChoiceIds.length > 0) {
+    await tx.quizChoice.deleteMany({ where: { id: { in: removedChoiceIds } } });
+  }
+
+  if (choiceUpdates.length > 0) {
+    await tx.$executeRaw`
+      UPDATE "QuizChoice" AS t
+      SET text = v.text, "isCorrect" = v."isCorrect", "order" = v."order"
+      FROM UNNEST(
+        ${choiceUpdates.map((c) => c.id)}::int[],
+        ${choiceUpdates.map((c) => c.text)}::text[],
+        ${choiceUpdates.map((c) => c.isCorrect)}::boolean[],
+        ${choiceUpdates.map((c) => c.order)}::int[]
+      ) AS v(id, text, "isCorrect", "order")
+      WHERE t.id = v.id
+    `;
+  }
+
+  if (choiceCreates.length > 0) {
+    await tx.quizChoice.createMany({ data: choiceCreates });
+  }
 }
 
 async function insertQuestionsAndChoicesTx(
