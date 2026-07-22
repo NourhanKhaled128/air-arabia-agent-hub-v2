@@ -16,6 +16,7 @@ import { getCategoryById } from "@/lib/category-service";
 import { getApprovedCommentsForArticle } from "@/lib/comment-service";
 import { getDecisionTreesForArticle } from "@/lib/decision-tree-service";
 import { getExcessBaggageRatesByHub } from "@/lib/excess-baggage-service";
+import { getCurrentPortalUser } from "@/lib/portal-dal";
 import ExcessBaggageRateFinder from "@/components/excess-baggage/ExcessBaggageRateFinder";
 import { sortByModuleNumber, getCategoryBadgeClasses } from "@/lib/helpers";
 import { findConfusablePointer } from "@/lib/confusable-pairs";
@@ -103,6 +104,7 @@ export default async function ArticleDetailView({
   const relatedArticles = categoryArticles.filter((related) => related.id !== article.id);
 
   const approvedComments = await getApprovedCommentsForArticle(article.id);
+  const portalUser = await getCurrentPortalUser();
   const relatedDecisionTrees = await getDecisionTreesForArticle(article.id);
   const confusablePointer = findConfusablePointer(article.slug);
 
@@ -501,11 +503,12 @@ export default async function ArticleDetailView({
           </section>
         )}
 
-        <ArticleFeedback articleId={article.id} slug={article.slug} />
+        <ArticleFeedback articleId={article.id} slug={article.slug} agentName={portalUser?.name ?? "Agent"} />
 
         <ArticleComments
           articleId={article.id}
           slug={article.slug}
+          agentName={portalUser?.name ?? "Agent"}
           comments={approvedComments}
         />
 

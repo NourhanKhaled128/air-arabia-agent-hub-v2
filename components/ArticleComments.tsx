@@ -14,11 +14,11 @@ interface Props {
   articleId: number;
   slug: string;
   comments: Comment[];
+  agentName: string;
 }
 
-export default function ArticleComments({ articleId, slug, comments }: Props) {
+export default function ArticleComments({ articleId, slug, comments, agentName }: Props) {
   const [content, setContent] = useState("");
-  const [authorName, setAuthorName] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -27,7 +27,7 @@ export default function ArticleComments({ articleId, slug, comments }: Props) {
 
     startTransition(async () => {
       try {
-        await submitCommentAction({ articleId, slug, authorName, content });
+        await submitCommentAction({ articleId, slug, content });
         setContent("");
         setSubmitted(true);
       } catch (error) {
@@ -79,13 +79,8 @@ export default function ArticleComments({ articleId, slug, comments }: Props) {
             className="w-full rounded-xl border border-gray-300 dark:border-border-subtle bg-transparent p-4 outline-none focus:border-brand"
           />
 
-          <div className="flex flex-wrap items-center gap-3">
-            <input
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              placeholder="Your name (optional)"
-              className="flex-1 min-w-[180px] rounded-xl border border-gray-300 dark:border-border-subtle bg-transparent px-4 py-2 outline-none focus:border-brand"
-            />
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-gray-500 dark:text-slate-400">Posting as {agentName}</p>
 
             <button
               disabled={isPending || !content.trim()}

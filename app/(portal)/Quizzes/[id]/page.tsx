@@ -1,8 +1,9 @@
 export const dynamic = "force-dynamic";
 
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getQuizForTaking } from "@/lib/quiz-service";
 import { isSidebarLinkEnabled } from "@/lib/sidebar-service";
+import { getCurrentPortalUser } from "@/lib/portal-dal";
 import QuizRunner from "@/components/QuizRunner";
 
 interface Props {
@@ -12,6 +13,9 @@ interface Props {
 export default async function QuizTakePage({ params }: Props) {
   if (!(await isSidebarLinkEnabled("/Quizzes"))) notFound();
 
+  const user = await getCurrentPortalUser();
+  if (!user) redirect("/login");
+
   const { id } = await params;
   const quizId = Number(id);
   if (!Number.isInteger(quizId)) notFound();
@@ -19,5 +23,5 @@ export default async function QuizTakePage({ params }: Props) {
   const quiz = await getQuizForTaking(quizId);
   if (!quiz || quiz.questions.length === 0) notFound();
 
-  return <QuizRunner quiz={quiz} />;
+  return <QuizRunner quiz={quiz} agentName={user.name} />;
 }

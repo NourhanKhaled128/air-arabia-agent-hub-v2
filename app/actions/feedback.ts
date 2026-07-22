@@ -2,19 +2,21 @@
 
 import { revalidatePath } from "next/cache";
 import { createFeedback } from "@/lib/feedback-service";
+import { requirePortalUser } from "@/lib/portal-dal";
 
 export async function submitFeedbackAction(data: {
   articleId: number;
   slug: string;
   helpful: boolean;
   message?: string;
-  authorName?: string;
 }) {
+  const user = await requirePortalUser();
+
   await createFeedback({
     articleId: data.articleId,
     helpful: data.helpful,
     message: data.message,
-    authorName: data.authorName,
+    authorName: user.name,
   });
 
   revalidatePath(`/Knowledge/${data.slug}`);

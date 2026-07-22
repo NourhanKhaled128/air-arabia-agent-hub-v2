@@ -5,6 +5,8 @@ import Hero from "@/components/Hero";
 
 import DashboardStats from "@/components/DashboardStats";
 
+import YourQuizProgress from "@/components/YourQuizProgress";
+
 import QuickActions from "@/components/QuickActions";
 
 import Announcements from "@/components/Announcements";
@@ -51,6 +53,8 @@ export default async function HomePage() {
       <Hero />
 
       <DashboardStats />
+
+      <YourQuizProgress />
 
       <div className="grid gap-8 lg:grid-cols-2">
 

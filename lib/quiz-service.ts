@@ -353,11 +353,20 @@ export interface SaveQuizAnswerInput {
   attemptId: number;
   questionId: number;
   choiceId: number | null;
+  email: string;
+}
+
+/** Every mutation here is scoped to the calling agent's own attempt — attemptId is a
+ * small sequential int, so without this check one agent could tamper with another's
+ * in-progress answers just by guessing/incrementing the id. */
+function isOwnAttempt(attempt: { email: string }, email: string) {
+  return attempt.email.toLowerCase() === email.trim().toLowerCase();
 }
 
 export async function saveQuizAnswer(input: SaveQuizAnswerInput) {
   const attempt = await prisma.quizAttempt.findUnique({ where: { id: input.attemptId } });
   if (!attempt || attempt.status !== "InProgress") return; // stale/finalized attempt — ignore
+  if (!isOwnAttempt(attempt, input.email)) return; // not this agent's attempt — ignore
 
   const question = await prisma.quizQuestion.findUnique({
     where: { id: input.questionId },
@@ -399,13 +408,30 @@ export async function getAttemptsByEmail(email: string) {
   }));
 }
 
-/** Returns the resumable state for an in-progress attempt, or null if it's missing/finalized/belongs to a different quiz. */
-export async function getResumableAttempt(input: { attemptId: number; quizId: number }) {
+/** Aggregate quiz stats for one agent's email, for the personalized home page summary. */
+export async function getAgentQuizStats(email: string) {
+  const attempts = await prisma.quizAttempt.findMany({
+    where: { email: { equals: email.trim(), mode: "insensitive" }, status: "Submitted" },
+    select: { percentage: true, passed: true },
+  });
+
+  const completed = attempts.length;
+  const passed = attempts.filter((a) => a.passed).length;
+  const avgPercentage =
+    completed > 0
+      ? Math.round(attempts.reduce((sum, a) => sum + (a.percentage ?? 0), 0) / completed)
+      : null;
+
+  return { completed, passed, avgPercentage };
+}
+
+/** Returns the resumable state for an in-progress attempt, or null if it's missing/finalized/belongs to a different quiz or agent. */
+export async function getResumableAttempt(input: { attemptId: number; quizId: number; email: string }) {
   const attempt = await prisma.quizAttempt.findFirst({
     where: { id: input.attemptId, quizId: input.quizId, status: "InProgress" },
     include: { answers: true },
   });
-  if (!attempt) return null;
+  if (!attempt || !isOwnAttempt(attempt, input.email)) return null;
 
   return {
     attemptId: attempt.id,
@@ -414,12 +440,14 @@ export async function getResumableAttempt(input: { attemptId: number; quizId: nu
   };
 }
 
-export async function finalizeQuizAttempt(attemptId: number) {
+export async function finalizeQuizAttempt(attemptId: number, email: string) {
   const attempt = await prisma.quizAttempt.findUnique({
     where: { id: attemptId },
     include: { answers: true },
   });
-  if (!attempt) throw new Error("Attempt not found.");
+  // Same "not found" message either way — an ownership mismatch shouldn't reveal
+  // that the attemptId belongs to someone else.
+  if (!attempt || !isOwnAttempt(attempt, email)) throw new Error("Attempt not found.");
 
   const quiz = await prisma.quiz.findUnique({
     where: { id: attempt.quizId },
