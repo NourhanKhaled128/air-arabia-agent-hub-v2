@@ -38,6 +38,7 @@ model Article {
   chatTemplates  ChatTemplate[]
   emailTemplates EmailTemplate[]
   decisionTrees  DecisionTree[]
+  articleViews   ArticleView[]
 }
 
 model ArticleUpdate {
@@ -373,13 +374,41 @@ model User {
 /// Login is restricted to @airarabia.com / @gocozmo.com emails, enforced in
 /// lib/portal-user-service.ts wherever an account is created or edited.
 model PortalUser {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   name         String
-  email        String   @unique
+  email        String    @unique
   passwordHash String
-  status       String   @default("Active")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  status       String    @default("Active")
+  lastLoginAt  DateTime?
+  teamId       Int?
+  team         Team?     @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  articleViews ArticleView[]
+  comments     Comment[]  @relation("PortalUserComments")
+  feedback     Feedback[] @relation("PortalUserFeedback")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Team {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique
+  members   PortalUser[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+/// One row per agent per article, upserted on each view — `viewedAt` always reflects
+/// the latest visit, which is what both "recently viewed" and "continue where you left
+/// off" read from.
+model ArticleView {
+  id           Int        @id @default(autoincrement())
+  portalUserId Int
+  portalUser   PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  articleId    Int
+  article      Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  viewedAt     DateTime   @default(now())
+
+  @@unique([portalUserId, articleId])
 }
 
 model Airport {
@@ -417,24 +446,28 @@ model EscalationContact {
 }
 
 model Comment {
-  id         Int      @id @default(autoincrement())
-  articleId  Int
-  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  authorName String   @default("Agent")
-  content    String
-  status     String   @default("Pending")
-  createdAt  DateTime @default(now())
+  id           Int         @id @default(autoincrement())
+  articleId    Int
+  article      Article     @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  authorName   String      @default("Agent")
+  portalUserId Int?
+  portalUser   PortalUser? @relation("PortalUserComments", fields: [portalUserId], references: [id], onDelete: SetNull)
+  content      String
+  status       String      @default("Pending")
+  createdAt    DateTime    @default(now())
 }
 
 model Feedback {
-  id         Int      @id @default(autoincrement())
-  articleId  Int
-  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  authorName String?
-  helpful    Boolean
-  message    String?
-  status     String   @default("New")
-  createdAt  DateTime @default(now())
+  id           Int         @id @default(autoincrement())
+  articleId    Int
+  article      Article     @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  authorName   String?
+  portalUserId Int?
+  portalUser   PortalUser? @relation("PortalUserFeedback", fields: [portalUserId], references: [id], onDelete: SetNull)
+  helpful      Boolean
+  message      String?
+  status       String      @default("New")
+  createdAt    DateTime    @default(now())
 }
 
 model Quiz {

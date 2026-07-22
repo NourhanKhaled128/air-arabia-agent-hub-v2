@@ -2,22 +2,22 @@
 
 import { useTransition } from "react";
 import Link from "next/link";
-import { Pencil, Trash2, Activity } from "lucide-react";
-import { deletePortalUserAction } from "@/app/admin/actions/portal-user-actions";
+import { Pencil, Trash2 } from "lucide-react";
+import { deleteTeamAction } from "@/app/admin/actions/team-actions";
 
 interface Props {
   id: number;
 }
 
-export default function PortalUserRowActions({ id }: Props) {
+export default function TeamRowActions({ id }: Props) {
   const [isPending, startTransition] = useTransition();
 
   function handleDelete() {
-    if (!confirm("Delete this agent account permanently?")) return;
+    if (!confirm("Delete this team? Members keep their account but lose this team assignment.")) return;
 
     startTransition(async () => {
       try {
-        await deletePortalUserAction(id);
+        await deleteTeamAction(id);
       } catch (error) {
         console.error(error);
         alert("Operation failed.");
@@ -28,15 +28,7 @@ export default function PortalUserRowActions({ id }: Props) {
   return (
     <div className="flex gap-3">
       <Link
-        href={`/admin/portal-users/${id}/activity`}
-        className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 font-semibold text-slate-700 hover:bg-slate-50"
-      >
-        <Activity size={18} />
-        Activity
-      </Link>
-
-      <Link
-        href={`/admin/portal-users/${id}`}
+        href={`/admin/teams/${id}`}
         className="flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-2 font-semibold text-slate-700 hover:bg-slate-50"
       >
         <Pencil size={18} />

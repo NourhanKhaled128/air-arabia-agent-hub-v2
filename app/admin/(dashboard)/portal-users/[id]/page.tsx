@@ -3,6 +3,7 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormCard from "@/components/admin/AdminFormCard";
 import PortalUserForm from "@/components/admin/portal-users/PortalUserForm";
 import { getPortalUserById } from "@/lib/portal-user-service";
+import { getTeams } from "@/lib/team-service";
 import { updatePortalUserAction } from "@/app/admin/actions/portal-user-actions";
 
 interface Props {
@@ -17,7 +18,7 @@ export default async function EditPortalUserPage({ params }: Props) {
     notFound();
   }
 
-  const user = await getPortalUserById(userId);
+  const [user, teams] = await Promise.all([getPortalUserById(userId), getTeams()]);
 
   if (!user) {
     notFound();
@@ -37,6 +38,7 @@ export default async function EditPortalUserPage({ params }: Props) {
           action={boundUpdate}
           submitLabel="Save Changes"
           user={user}
+          teams={teams}
           passwordRequired={false}
         />
       </AdminFormCard>

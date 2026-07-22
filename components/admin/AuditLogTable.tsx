@@ -17,31 +17,55 @@ interface Props {
 
 export default function AuditLogTable({ logs }: Props) {
   const [query, setQuery] = useState("");
+  const [entityFilter, setEntityFilter] = useState("");
+
+  const entityOptions = useMemo(
+    () => Array.from(new Set(logs.map((l) => l.entity))).sort(),
+    [logs]
+  );
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
-    if (!q) return logs;
 
-    return logs.filter(
-      (log) =>
+    return logs.filter((log) => {
+      if (entityFilter && log.entity !== entityFilter) return false;
+      if (!q) return true;
+
+      return (
         log.action.toLowerCase().includes(q) ||
         log.entity.toLowerCase().includes(q) ||
         log.userName.toLowerCase().includes(q)
-    );
-  }, [query, logs]);
+      );
+    });
+  }, [query, entityFilter, logs]);
 
   return (
     <div className="rounded-3xl bg-white p-6 shadow-sm">
 
-      <div className="mb-6 flex items-center gap-3 rounded-xl border px-4 py-3">
-        <Search size={18} />
+      <div className="mb-6 flex flex-wrap items-center gap-3">
+        <div className="flex flex-1 min-w-[200px] items-center gap-3 rounded-xl border px-4 py-3">
+          <Search size={18} />
 
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="w-full outline-none"
-          placeholder="Search audit logs..."
-        />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full outline-none"
+            placeholder="Search audit logs..."
+          />
+        </div>
+
+        <select
+          value={entityFilter}
+          onChange={(e) => setEntityFilter(e.target.value)}
+          className="rounded-xl border px-4 py-3 outline-none"
+        >
+          <option value="">All modules</option>
+          {entityOptions.map((entity) => (
+            <option key={entity} value={entity}>
+              {entity}
+            </option>
+          ))}
+        </select>
       </div>
 
       <table className="w-full">

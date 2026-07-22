@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { saveSettings } from "@/lib/settings-service";
-import { requireAdminUser } from "@/lib/admin-dal";
+import { requirePermission } from "@/lib/admin-dal";
 
 export async function saveSettingsAction(formData: FormData) {
-  await requireAdminUser();
+  await requirePermission("manage_settings");
 
   await saveSettings({
     appName: formData.get("appName") as string,

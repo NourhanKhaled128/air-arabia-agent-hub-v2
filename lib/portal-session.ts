@@ -24,7 +24,7 @@ async function encrypt(payload: PortalSessionPayload) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
-    .setExpirationTime("30d")
+    .setExpirationTime("12h")
     .sign(encodedKey);
 }
 
@@ -47,7 +47,7 @@ export async function verifyPortalSessionToken(token: string | undefined) {
 }
 
 export async function createPortalSession(portalUserId: number) {
-  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 12 * 60 * 60 * 1000);
   const session = await encrypt({ portalUserId });
 
   const cookieStore = await cookies();

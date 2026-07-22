@@ -10,6 +10,8 @@ interface PortalUser {
   name: string;
   email: string;
   status: string;
+  lastLoginAt: Date | null;
+  team: { name: string } | null;
 }
 
 interface Props {
@@ -23,6 +25,8 @@ export default function PortalUsersTable({ users }: Props) {
         { key: "name", label: "Name" },
         { key: "email", label: "Email" },
         { key: "status", label: "Status" },
+        { key: "team", label: "Team" },
+        { key: "lastLoginAt", label: "Last Login" },
       ]}
       data={users}
       searchPlaceholder="Search agents..."
@@ -57,6 +61,10 @@ export default function PortalUsersTable({ users }: Props) {
             <AdminBadge color={user.status === "Active" ? "green" : "gray"}>
               {user.status}
             </AdminBadge>
+          </td>
+          <td className="px-6 py-5 text-slate-600">{user.team?.name ?? "—"}</td>
+          <td className="px-6 py-5 text-slate-600">
+            {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}
           </td>
           <td className="px-6 py-5">
             <PortalUserRowActions id={user.id} />

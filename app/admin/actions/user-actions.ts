@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { createUser, deleteUser, updateUser } from "@/lib/user-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requirePermission } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -13,7 +13,7 @@ async function currentUserName() {
 }
 
 export async function createUserAction(formData: FormData) {
-  await requireAdminUser();
+  await requirePermission("manage_users");
 
   const user = await createUser({
     name: formData.get("name") as string,
@@ -30,7 +30,7 @@ export async function createUserAction(formData: FormData) {
 }
 
 export async function updateUserAction(id: number, formData: FormData) {
-  await requireAdminUser();
+  await requirePermission("manage_users");
 
   const password = formData.get("password") as string;
 
@@ -49,7 +49,7 @@ export async function updateUserAction(id: number, formData: FormData) {
 }
 
 export async function deleteUserAction(id: number) {
-  await requireAdminUser();
+  await requirePermission("manage_users");
 
   await deleteUser(id);
 
@@ -59,7 +59,7 @@ export async function deleteUserAction(id: number) {
 }
 
 export async function deleteManyUsersAction(ids: number[]) {
-  await requireAdminUser();
+  await requirePermission("manage_users");
 
   await prisma.user.deleteMany({ where: { id: { in: ids } } });
 

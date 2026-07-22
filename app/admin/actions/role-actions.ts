@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { createRole, deleteRole, updateRole } from "@/lib/role-service";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requirePermission } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -13,7 +13,7 @@ async function currentUserName() {
 }
 
 export async function createRoleAction(formData: FormData) {
-  await requireAdminUser();
+  await requirePermission("manage_roles");
 
   const role = await createRole({
     name: formData.get("name") as string,
@@ -28,7 +28,7 @@ export async function createRoleAction(formData: FormData) {
 }
 
 export async function updateRoleAction(id: number, formData: FormData) {
-  await requireAdminUser();
+  await requirePermission("manage_roles");
 
   await updateRole(id, {
     name: formData.get("name") as string,
@@ -43,7 +43,7 @@ export async function updateRoleAction(id: number, formData: FormData) {
 }
 
 export async function deleteRoleAction(id: number) {
-  await requireAdminUser();
+  await requirePermission("manage_roles");
 
   await deleteRole(id);
 
@@ -53,7 +53,7 @@ export async function deleteRoleAction(id: number) {
 }
 
 export async function deleteManyRolesAction(ids: number[]) {
-  await requireAdminUser();
+  await requirePermission("manage_roles");
 
   await prisma.role.deleteMany({ where: { id: { in: ids } } });
 

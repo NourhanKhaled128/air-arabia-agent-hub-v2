@@ -17,14 +17,24 @@ export async function getApprovedCommentsForArticle(articleId: number) {
 export async function createComment(data: {
   articleId: number;
   authorName?: string;
+  portalUserId?: number;
   content: string;
 }) {
   return prisma.comment.create({
     data: {
       articleId: data.articleId,
       authorName: data.authorName?.trim() || "Champion",
+      portalUserId: data.portalUserId,
       content: data.content,
     },
+  });
+}
+
+export async function getCommentsByPortalUser(portalUserId: number) {
+  return prisma.comment.findMany({
+    where: { portalUserId },
+    include: { article: { select: { title: true, slug: true } } },
+    orderBy: { createdAt: "desc" },
   });
 }
 

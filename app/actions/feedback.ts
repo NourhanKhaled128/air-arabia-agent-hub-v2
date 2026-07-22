@@ -17,6 +17,7 @@ export async function submitFeedbackAction(data: {
     helpful: data.helpful,
     message: data.message,
     authorName: user.name,
+    portalUserId: user.id,
   });
 
   revalidatePath(`/Knowledge/${data.slug}`);

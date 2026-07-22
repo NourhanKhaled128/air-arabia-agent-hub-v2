@@ -16,9 +16,14 @@ export default async function PortalUsersPage() {
         title="Agent Accounts"
         description="Manage who can log in to the Champion Hub portal (Knowledge Base, Quizzes, etc.)."
         actions={
-          <AdminButton href="/admin/portal-users/new">
-            + New Agent
-          </AdminButton>
+          <div className="flex gap-3">
+            <AdminButton href="/admin/portal-users/import" variant="secondary">
+              Bulk Import
+            </AdminButton>
+            <AdminButton href="/admin/portal-users/new">
+              + New Agent
+            </AdminButton>
+          </div>
         }
       />
 

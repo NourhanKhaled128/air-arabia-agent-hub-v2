@@ -6,12 +6,14 @@ interface PortalUserData {
   name: string;
   email: string;
   status: string;
+  teamId?: number | null;
 }
 
 interface Props {
   action: (formData: FormData) => void;
   submitLabel?: string;
   user?: PortalUserData;
+  teams: { id: number; name: string }[];
   passwordRequired?: boolean;
 }
 
@@ -19,6 +21,7 @@ export default function PortalUserForm({
   action,
   submitLabel = "Save Agent",
   user,
+  teams,
   passwordRequired = true,
 }: Props) {
   return (
@@ -58,6 +61,16 @@ export default function PortalUserForm({
         options={[
           { label: "Active", value: "Active" },
           { label: "Inactive", value: "Inactive" },
+        ]}
+      />
+
+      <AdminSelect
+        name="teamId"
+        label="Team"
+        defaultValue={user?.teamId ? String(user.teamId) : ""}
+        options={[
+          { label: "No team", value: "" },
+          ...teams.map((team) => ({ label: team.name, value: String(team.id) })),
         ]}
       />
 

@@ -10,6 +10,7 @@ export async function getFeedback() {
 export async function createFeedback(data: {
   articleId: number;
   authorName?: string;
+  portalUserId?: number;
   helpful: boolean;
   message?: string;
 }) {
@@ -17,9 +18,18 @@ export async function createFeedback(data: {
     data: {
       articleId: data.articleId,
       authorName: data.authorName?.trim() || null,
+      portalUserId: data.portalUserId,
       helpful: data.helpful,
       message: data.message?.trim() || null,
     },
+  });
+}
+
+export async function getFeedbackByPortalUser(portalUserId: number) {
+  return prisma.feedback.findMany({
+    where: { portalUserId },
+    include: { article: { select: { title: true, slug: true } } },
+    orderBy: { createdAt: "desc" },
   });
 }
 

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/password";
 import { createPortalSession, deletePortalSession } from "@/lib/portal-session";
+import { logAction } from "@/lib/audit-service";
 
 export async function portalLoginAction(formData: FormData) {
   const email = formData.get("email");
@@ -21,6 +22,8 @@ export async function portalLoginAction(formData: FormData) {
     redirect("/login?error=1");
   }
 
+  await prisma.portalUser.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+  await logAction("Login", "PortalUser", user.id, user.name);
   await createPortalSession(user.id);
 
   redirect("/");

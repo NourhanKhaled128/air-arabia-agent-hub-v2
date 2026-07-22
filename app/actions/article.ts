@@ -1,6 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getCurrentPortalUser } from "@/lib/portal-dal";
+import { recordArticleView } from "@/lib/article-view-service";
 
 export interface CreateArticleData {
   title: string;
@@ -23,6 +25,9 @@ export async function incrementArticleViewAction(articleId: number) {
     where: { id: articleId },
     data: { viewCount: { increment: 1 } },
   });
+
+  const user = await getCurrentPortalUser();
+  if (user) await recordArticleView(user.id, articleId);
 }
 
 export async function createArticle(data: CreateArticleData) {

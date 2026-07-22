@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import ExcelJS from "exceljs";
 import type { Prisma } from "@prisma/client";
+import { logAction } from "@/lib/audit-service";
 
 export interface QuizChoiceInput {
   clientKey: number;
@@ -425,6 +426,30 @@ export async function getAgentQuizStats(email: string) {
   return { completed, passed, avgPercentage };
 }
 
+/** Aggregate quiz stats across every agent on a team. */
+export async function getTeamQuizStats(teamId: number) {
+  const members = await prisma.portalUser.findMany({ where: { teamId }, select: { email: true } });
+  const emails = members.map((m) => m.email);
+
+  if (emails.length === 0) {
+    return { completed: 0, passed: 0, avgPercentage: null as number | null };
+  }
+
+  const attempts = await prisma.quizAttempt.findMany({
+    where: { email: { in: emails, mode: "insensitive" }, status: "Submitted" },
+    select: { percentage: true, passed: true },
+  });
+
+  const completed = attempts.length;
+  const passed = attempts.filter((a) => a.passed).length;
+  const avgPercentage =
+    completed > 0
+      ? Math.round(attempts.reduce((sum, a) => sum + (a.percentage ?? 0), 0) / completed)
+      : null;
+
+  return { completed, passed, avgPercentage };
+}
+
 /** Returns the resumable state for an in-progress attempt, or null if it's missing/finalized/belongs to a different quiz or agent. */
 export async function getResumableAttempt(input: { attemptId: number; quizId: number; email: string }) {
   const attempt = await prisma.quizAttempt.findFirst({
@@ -480,6 +505,8 @@ export async function finalizeQuizAttempt(attemptId: number, email: string) {
       data: { status: "Submitted", score, totalPoints, percentage, passed, submittedAt, timeTakenSeconds },
       include: { answers: true },
     });
+
+    await logAction("Submitted", "QuizAttempt", finalAttempt.id, attempt.name);
   }
 
   return {

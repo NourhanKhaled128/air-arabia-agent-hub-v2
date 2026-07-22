@@ -25,3 +25,15 @@ export async function requireAdminUser() {
 
   return user;
 }
+
+/** Gates high-risk areas (Users, Roles, Settings, Agent Accounts) — routine content
+ * actions (articles, quizzes, etc.) intentionally keep using requireAdminUser() alone. */
+export async function requirePermission(key: string) {
+  const user = await requireAdminUser();
+
+  if (!user.role.permissions.includes(key)) {
+    throw new Error(`Unauthorized: missing "${key}" permission.`);
+  }
+
+  return user;
+}

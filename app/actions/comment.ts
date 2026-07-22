@@ -18,6 +18,7 @@ export async function submitCommentAction(data: {
   await createComment({
     articleId: data.articleId,
     authorName: user.name,
+    portalUserId: user.id,
     content: data.content.trim(),
   });
 
