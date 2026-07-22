@@ -10,9 +10,10 @@ interface Props {
     updatedAt: Date;
   };
   basePath?: string;
+  isNew?: boolean;
 }
 
-export default function ArticleCard({ article, basePath = "/Knowledge" }: Props) {
+export default function ArticleCard({ article, basePath = "/Knowledge", isNew = false }: Props) {
   return (
     <Link
       href={`${basePath}/${article.slug}`}
@@ -22,8 +23,13 @@ export default function ArticleCard({ article, basePath = "/Knowledge" }: Props)
 
         <div>
 
-          <h2 className="text-3xl font-bold">
+          <h2 className="flex items-center gap-2 text-3xl font-bold">
             {article.title}
+            {isNew && (
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                Updated
+              </span>
+            )}
           </h2>
 
           <p className="text-gray-600 dark:text-slate-400 mt-4">

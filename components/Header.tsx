@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, Search, LogOut } from "lucide-react";
@@ -36,6 +37,34 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [hubFilter, setHubFilter] = useState("");
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [searchFocused, setSearchFocused] = useState(false);
+
+  const RECENT_SEARCHES_KEY = "airarabia_recent_searches";
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(RECENT_SEARCHES_KEY);
+      if (raw) setRecentSearches(JSON.parse(raw));
+    } catch {
+      // ignore malformed/unavailable storage
+    }
+  }, []);
+
+  function saveRecentSearch(term: string) {
+    const trimmed = term.trim();
+    if (!trimmed) return;
+
+    setRecentSearches((prev) => {
+      const next = [trimmed, ...prev.filter((s) => s.toLowerCase() !== trimmed.toLowerCase())].slice(0, 5);
+      try {
+        localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next));
+      } catch {
+        // ignore storage errors (e.g. private browsing quota)
+      }
+      return next;
+    });
+  }
 
   const hubOptions = useMemo(
     () => Array.from(new Set(articles.map((a) => a.category))).sort(),
@@ -138,11 +167,17 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
             ref={inputRef}
             value={query}
             onChange={(e)=>setQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => {
+              setSearchFocused(false);
+              if (query.trim()) saveRecentSearch(query);
+            }}
             onKeyDown={(e) => {
               if (e.key === "Escape") {
                 setQuery("");
                 e.currentTarget.blur();
               } else if (e.key === "Enter" && results[0]) {
+                saveRecentSearch(query);
                 router.push(`${basePath}/${results[0].slug}`);
                 setQuery("");
               }
@@ -173,6 +208,29 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
 
           )}
 
+          {!query && searchFocused && recentSearches.length > 0 && (
+            <div className="absolute left-0 right-0 top-full z-20 mt-2 rounded-xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-3 shadow-lg">
+              <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-slate-500">
+                Recent searches
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {recentSearches.map((term) => (
+                  <button
+                    key={term}
+                    type="button"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setQuery(term);
+                    }}
+                    className="rounded-full border border-gray-300 dark:border-border-subtle px-3 py-1.5 text-sm text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-surface-muted"
+                  >
+                    {term}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
 
         <ThemeToggle />
@@ -191,7 +249,13 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
 
             <p className="font-semibold">
 
-              {portalUserName ?? "Air Arabia Champion Hub"}
+              {portalUserName ? (
+                <Link href="/account" className="hover:underline">
+                  {portalUserName}
+                </Link>
+              ) : (
+                "Air Arabia Champion Hub"
+              )}
 
             </p>
 

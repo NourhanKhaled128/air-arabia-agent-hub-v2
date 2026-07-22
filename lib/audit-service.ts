@@ -29,6 +29,16 @@ export async function getAuditLogs() {
   });
 }
 
+/** Portal (agent-facing) activity only — logins and quiz submissions — for a compact
+ * dashboard feed, separate from the full content-change audit trail at /admin/audit. */
+export async function getRecentPortalActivity(limit = 8) {
+  return prisma.auditLog.findMany({
+    where: { entity: { in: ["PortalUser", "QuizAttempt"] } },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+}
+
 export async function getAuditLogsForEntity(entity: string, entityId: number) {
   return prisma.auditLog.findMany({
     where: { entity, entityId },

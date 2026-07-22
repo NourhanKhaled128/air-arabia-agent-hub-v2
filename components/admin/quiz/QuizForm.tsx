@@ -25,12 +25,14 @@ interface QuizFormState {
   showAnswers: boolean;
   status: string;
   order: number;
+  teamId: number | null;
   questions: QuestionFormState[];
 }
 
 interface Props {
   quizId?: number;
   initial?: QuizFormState;
+  teams: { id: number; name: string }[];
 }
 
 let clientKeySeq = 0;
@@ -60,10 +62,11 @@ const emptyForm: QuizFormState = {
   showAnswers: true,
   status: "Draft",
   order: 0,
+  teamId: null,
   questions: [emptyQuestion()],
 };
 
-export default function QuizForm({ quizId, initial }: Props) {
+export default function QuizForm({ quizId, initial, teams }: Props) {
   const [form, setForm] = useState<QuizFormState>(initial ?? emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -170,6 +173,7 @@ export default function QuizForm({ quizId, initial }: Props) {
       showAnswers: form.showAnswers,
       status: form.status,
       order: form.order,
+      teamId: form.teamId,
       questions: form.questions.map((q) => ({
         clientKey: q.clientKey,
         text: q.text.trim(),
@@ -271,6 +275,22 @@ export default function QuizForm({ quizId, initial }: Props) {
               onChange={(e) => updateField("order", Number(e.target.value))}
               className="w-full rounded-xl border p-4"
             />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-gray-700">Team (optional)</label>
+            <select
+              value={form.teamId ?? ""}
+              onChange={(e) => updateField("teamId", e.target.value ? Number(e.target.value) : null)}
+              className="w-full rounded-xl border p-4"
+            >
+              <option value="">All Teams</option>
+              {teams.map((team) => (
+                <option key={team.id} value={team.id}>
+                  {team.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="md:col-span-2 flex items-center gap-3 rounded-xl border p-4">

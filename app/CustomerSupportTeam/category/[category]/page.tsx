@@ -7,6 +7,8 @@ import ArticleCard from "@/components/ArticleCard";
 import { getArticlesByCategoryId } from "@/lib/article-service";
 import { getCategoryBySlug, getCategoryFolders } from "@/lib/category-service";
 import { CUSTOMER_SUPPORT_TEAM_GROUP } from "@/lib/customer-support-team";
+import { getCurrentPortalUser } from "@/lib/portal-dal";
+import { getViewedTimestamps } from "@/lib/article-view-service";
 
 export default async function CustomerSupportTeamCategoryPage({
   params,
@@ -28,10 +30,15 @@ export default async function CustomerSupportTeamCategoryPage({
 
   const folderId = folder ? Number(folder) : undefined;
 
-  const [categoryArticles, allFolders] = await Promise.all([
+  const [categoryArticles, allFolders, portalUser] = await Promise.all([
     getArticlesByCategoryId(categoryRow.id, folderId, { publishedOnly: true }),
     getCategoryFolders(categoryRow.id),
+    getCurrentPortalUser(),
   ]);
+
+  const viewedAt = portalUser
+    ? await getViewedTimestamps(portalUser.id, categoryArticles.map((a) => a.id))
+    : new Map<number, Date>();
 
   const folders = allFolders.filter((f) => f.visible);
 
@@ -94,13 +101,18 @@ export default async function CustomerSupportTeamCategoryPage({
         </div>
       ) : (
         <div className="space-y-6">
-          {categoryArticles.map((article) => (
-            <ArticleCard
-              key={article.id}
-              article={article}
-              basePath="/CustomerSupportTeam"
-            />
-          ))}
+          {categoryArticles.map((article) => {
+            const lastViewed = viewedAt.get(article.id);
+            const isNew = !!portalUser && (!lastViewed || article.updatedAt > lastViewed);
+            return (
+              <ArticleCard
+                key={article.id}
+                article={article}
+                basePath="/CustomerSupportTeam"
+                isNew={isNew}
+              />
+            );
+          })}
         </div>
       )}
     </>

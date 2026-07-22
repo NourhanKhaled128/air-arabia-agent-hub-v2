@@ -5,11 +5,13 @@ import PageHeader from "@/components/PageHeader";
 import AnnouncementsList from "@/components/AnnouncementsList";
 import { getPublishedAnnouncements } from "@/lib/announcement-service";
 import { isSidebarLinkEnabled } from "@/lib/sidebar-service";
+import { getCurrentPortalUser } from "@/lib/portal-dal";
 
 export default async function AnnouncementsPage() {
   if (!(await isSidebarLinkEnabled("/Announcements"))) notFound();
 
-  const announcements = await getPublishedAnnouncements();
+  const user = await getCurrentPortalUser();
+  const announcements = await getPublishedAnnouncements(user?.teamId ?? null);
 
   return (
     <>

@@ -1,9 +1,11 @@
 import { getLatestAnnouncements } from "@/lib/dashboard-service";
 import AnnouncementItem from "@/components/AnnouncementItem";
+import { getCurrentPortalUser } from "@/lib/portal-dal";
 
 export default async function Announcements() {
 
-  const announcements = await getLatestAnnouncements();
+  const user = await getCurrentPortalUser();
+  const announcements = await getLatestAnnouncements(user?.teamId ?? null);
 
   return (
 

@@ -1,10 +1,17 @@
 import Link from "next/link";
 import DashboardCards from "@/components/AdminDashboardCard";
+import AgentQuickFind from "@/components/admin/AgentQuickFind";
+import QuizTrendChart from "@/components/admin/QuizTrendChart";
 import {
   getDashboardStats,
   getLatestArticles,
   getLatestAnnouncements,
+  getModerationCounts,
+  getAgentEngagementSummary,
 } from "@/lib/dashboard-service";
+import { getStaleAgentCount, getRecentAgents, getPortalUsers } from "@/lib/portal-user-service";
+import { getQuizPassRateTrend } from "@/lib/quiz-service";
+import { getRecentPortalActivity } from "@/lib/audit-service";
 
 const modules = [
   {
@@ -46,10 +53,28 @@ const modules = [
 ];
 
 export default async function AdminDashboard() {
-  const [stats, latestArticles, latestAnnouncements] = await Promise.all([
+  const [
+    stats,
+    latestArticles,
+    latestAnnouncements,
+    moderationCounts,
+    staleAgentCount,
+    engagement,
+    recentAgents,
+    quizTrend,
+    recentPortalActivity,
+    agents,
+  ] = await Promise.all([
     getDashboardStats(),
     getLatestArticles(),
     getLatestAnnouncements(),
+    getModerationCounts(),
+    getStaleAgentCount(),
+    getAgentEngagementSummary(),
+    getRecentAgents(),
+    getQuizPassRateTrend(),
+    getRecentPortalActivity(),
+    getPortalUsers(),
   ]);
 
   const activity = [
@@ -105,6 +130,119 @@ export default async function AdminDashboard() {
       </div>
 
       <DashboardCards stats={stats} />
+
+      {(staleAgentCount > 0 || moderationCounts.pendingComments > 0 || moderationCounts.newFeedback > 0) && (
+        <div className="grid gap-4 sm:grid-cols-3">
+          {staleAgentCount > 0 && (
+            <Link
+              href="/admin/portal-users"
+              className="rounded-2xl border border-amber-200 bg-amber-50 p-5 hover:bg-amber-100"
+            >
+              <p className="text-3xl font-bold text-amber-800">{staleAgentCount}</p>
+              <p className="mt-1 font-semibold text-amber-700">Agent{staleAgentCount === 1 ? "" : "s"} inactive 30+ days</p>
+            </Link>
+          )}
+          {moderationCounts.pendingComments > 0 && (
+            <Link
+              href="/admin/comments"
+              className="rounded-2xl border border-blue-200 bg-blue-50 p-5 hover:bg-blue-100"
+            >
+              <p className="text-3xl font-bold text-blue-800">{moderationCounts.pendingComments}</p>
+              <p className="mt-1 font-semibold text-blue-700">Comment{moderationCounts.pendingComments === 1 ? "" : "s"} pending review</p>
+            </Link>
+          )}
+          {moderationCounts.newFeedback > 0 && (
+            <Link
+              href="/admin/feedback"
+              className="rounded-2xl border border-violet-200 bg-violet-50 p-5 hover:bg-violet-100"
+            >
+              <p className="text-3xl font-bold text-violet-800">{moderationCounts.newFeedback}</p>
+              <p className="mt-1 font-semibold text-violet-700">New feedback item{moderationCounts.newFeedback === 1 ? "" : "s"}</p>
+            </Link>
+          )}
+        </div>
+      )}
+
+      <section className="rounded-3xl bg-white p-8 shadow-sm">
+        <h2 className="mb-6 text-2xl font-bold text-slate-900">Agent Insights</h2>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="rounded-2xl border border-slate-200 p-5">
+            <p className="text-sm text-slate-500">Logins this week</p>
+            <p className="mt-1 text-3xl font-bold text-slate-900">{engagement.loginsThisWeek}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 p-5">
+            <p className="text-sm text-slate-500">Quizzes submitted this week</p>
+            <p className="mt-1 text-3xl font-bold text-slate-900">{engagement.quizSubmissionsThisWeek}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 p-5">
+            <p className="text-sm text-slate-500">Most active team this week</p>
+            <p className="mt-1 text-xl font-bold text-slate-900">
+              {engagement.topTeam ? `${engagement.topTeam.name} (${engagement.topTeam.attempts})` : "—"}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-8 xl:grid-cols-2">
+          <div>
+            <h3 className="mb-4 text-lg font-bold text-slate-900">Quiz Pass-Rate Trend</h3>
+            <QuizTrendChart data={quizTrend} />
+          </div>
+
+          <div>
+            <h3 className="mb-4 text-lg font-bold text-slate-900">Recently Created Agents</h3>
+            {recentAgents.length === 0 ? (
+              <p className="text-slate-500">No agent accounts yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {recentAgents.map((agent) => (
+                  <li key={agent.id}>
+                    <Link
+                      href={`/admin/portal-users/${agent.id}/activity`}
+                      className="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 hover:bg-slate-50"
+                    >
+                      <span className="font-medium text-slate-800">{agent.name}</span>
+                      <span className="text-sm text-slate-500">
+                        {agent.createdAt.toLocaleDateString("en-GB")}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-8 xl:grid-cols-2">
+          <div>
+            <h3 className="mb-4 text-lg font-bold text-slate-900">Find an Agent</h3>
+            <AgentQuickFind agents={agents} />
+          </div>
+
+          <div>
+            <h3 className="mb-4 text-lg font-bold text-slate-900">Recent Portal Activity</h3>
+            {recentPortalActivity.length === 0 ? (
+              <p className="text-slate-500">No portal activity yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {recentPortalActivity.map((log) => (
+                  <li
+                    key={log.id}
+                    className="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3"
+                  >
+                    <span className="font-medium text-slate-800">
+                      {log.action} {log.entity} — {log.userName}
+                    </span>
+                    <span className="text-sm text-slate-500">
+                      {log.createdAt.toLocaleString("en-GB")}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      </section>
 
       <section>
         <h2 className="mb-6 text-2xl font-bold text-slate-900">

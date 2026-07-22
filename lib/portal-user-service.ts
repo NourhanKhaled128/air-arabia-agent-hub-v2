@@ -61,3 +61,19 @@ export async function updatePortalUser(
 export async function deletePortalUser(id: number) {
   return prisma.portalUser.delete({ where: { id } });
 }
+
+/** Agents who've never logged in, or haven't in `days` — for the admin dashboard's stale-account alert. */
+export async function getStaleAgentCount(days = 30) {
+  const cutoff = new Date(Date.now() - days * 86_400_000);
+  return prisma.portalUser.count({
+    where: { OR: [{ lastLoginAt: null }, { lastLoginAt: { lt: cutoff } }] },
+  });
+}
+
+export async function getRecentAgents(limit = 5) {
+  return prisma.portalUser.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    include: { team: true },
+  });
+}

@@ -10,6 +10,7 @@ import ArticleFeedback from "@/components/ArticleFeedback";
 import ArticleTemplateTabs from "@/components/ArticleTemplateTabs";
 import ArticleComments from "@/components/ArticleComments";
 import ArticleViewTracker from "@/components/ArticleViewTracker";
+import BookmarkButton from "@/components/BookmarkButton";
 import { prisma } from "@/lib/prisma";
 import { getArticleById, getArticlesByCategoryId } from "@/lib/article-service";
 import { getCategoryById } from "@/lib/category-service";
@@ -17,6 +18,7 @@ import { getApprovedCommentsForArticle } from "@/lib/comment-service";
 import { getDecisionTreesForArticle } from "@/lib/decision-tree-service";
 import { getExcessBaggageRatesByHub } from "@/lib/excess-baggage-service";
 import { getCurrentPortalUser } from "@/lib/portal-dal";
+import { isBookmarked } from "@/lib/article-bookmark-service";
 import ExcessBaggageRateFinder from "@/components/excess-baggage/ExcessBaggageRateFinder";
 import { sortByModuleNumber, getCategoryBadgeClasses } from "@/lib/helpers";
 import { findConfusablePointer } from "@/lib/confusable-pairs";
@@ -105,6 +107,7 @@ export default async function ArticleDetailView({
 
   const approvedComments = await getApprovedCommentsForArticle(article.id);
   const portalUser = await getCurrentPortalUser();
+  const bookmarked = portalUser ? await isBookmarked(portalUser.id, article.id) : false;
   const relatedDecisionTrees = await getDecisionTreesForArticle(article.id);
   const confusablePointer = findConfusablePointer(article.slug);
 
@@ -168,6 +171,8 @@ export default async function ArticleDetailView({
               </span>
 
             </div>
+
+            <BookmarkButton articleId={article.id} initialBookmarked={bookmarked} />
 
             <PrintButton />
 

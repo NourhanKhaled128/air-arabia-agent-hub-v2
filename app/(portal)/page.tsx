@@ -9,6 +9,8 @@ import YourQuizProgress from "@/components/YourQuizProgress";
 
 import ContinueReading from "@/components/ContinueReading";
 
+import QuizzesToTake from "@/components/QuizzesToTake";
+
 import QuickActions from "@/components/QuickActions";
 
 import Announcements from "@/components/Announcements";
@@ -30,6 +32,7 @@ import UpcomingTraining from "@/components/UpcomingTraining";
 import ImportantLinks from "@/components/ImportantLinks";
 
 import { getVisibleHomeWidgets } from "@/lib/home-widget-service";
+import HomeWidgetsGrid from "@/components/HomeWidgetsGrid";
 
 const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   quickActions: QuickActions,
@@ -58,26 +61,18 @@ export default async function HomePage() {
 
       <YourQuizProgress />
 
+      <QuizzesToTake />
+
       <ContinueReading />
 
-      <div className="grid gap-8 lg:grid-cols-2">
-
-        {widgets.map((widget) => {
-          const Widget = WIDGET_COMPONENTS[widget.type];
-
-          if (!Widget) return null;
-
-          return (
-            <div
-              key={widget.id}
-              className={widget.size === "full" ? "lg:col-span-2" : ""}
-            >
-              <Widget />
-            </div>
-          );
-        })}
-
-      </div>
+      <HomeWidgetsGrid
+        widgets={widgets
+          .filter((widget) => WIDGET_COMPONENTS[widget.type])
+          .map((widget) => {
+            const Widget = WIDGET_COMPONENTS[widget.type];
+            return { id: widget.id, size: widget.size, node: <Widget /> };
+          })}
+      />
 
     </>
 

@@ -1,8 +1,11 @@
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AnnouncementComposer from "@/components/admin/announcement/AnnouncementComposer";
 import { createAnnouncementAction } from "@/app/admin/actions/announcement-actions";
+import { getTeams } from "@/lib/team-service";
 
-export default function NewAnnouncementPage() {
+export default async function NewAnnouncementPage() {
+  const teams = await getTeams();
+
   return (
     <div className="space-y-8">
 
@@ -12,7 +15,7 @@ export default function NewAnnouncementPage() {
       />
 
       <div className="rounded-3xl bg-white p-8 shadow-sm">
-        <AnnouncementComposer action={createAnnouncementAction} />
+        <AnnouncementComposer action={createAnnouncementAction} teams={teams} />
       </div>
 
     </div>

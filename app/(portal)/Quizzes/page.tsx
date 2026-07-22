@@ -6,11 +6,13 @@ import { ClipboardCheck, Clock, ListChecks, ArrowRight } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { getPublishedQuizzes } from "@/lib/quiz-service";
 import { isSidebarLinkEnabled } from "@/lib/sidebar-service";
+import { getCurrentPortalUser } from "@/lib/portal-dal";
 
 export default async function QuizzesPage() {
   if (!(await isSidebarLinkEnabled("/Quizzes"))) notFound();
 
-  const quizzes = await getPublishedQuizzes();
+  const user = await getCurrentPortalUser();
+  const quizzes = await getPublishedQuizzes(user?.teamId ?? null);
 
   return (
     <>

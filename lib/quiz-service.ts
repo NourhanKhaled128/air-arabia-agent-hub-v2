@@ -24,6 +24,7 @@ export interface QuizInput {
   showAnswers: boolean;
   status: string;
   order: number;
+  teamId?: number | null;
   questions: QuizQuestionInput[];
 }
 
@@ -79,6 +80,7 @@ export async function createQuiz(input: QuizInput) {
         showAnswers: input.showAnswers,
         status: input.status,
         order: input.order,
+        teamId: input.teamId ?? null,
       },
     });
 
@@ -100,6 +102,7 @@ export async function updateQuiz(id: number, input: QuizInput) {
         showAnswers: input.showAnswers,
         status: input.status,
         order: input.order,
+        teamId: input.teamId ?? null,
       },
     });
 
@@ -278,9 +281,14 @@ export async function unpublishQuiz(id: number) {
 
 // ---- Public: list / take ----
 
-export async function getPublishedQuizzes() {
+/** `teamId` is the viewing agent's own team — pass null if they have none. Quizzes with
+ * no team set are visible to everyone; team-scoped quizzes only to that team. */
+export async function getPublishedQuizzes(teamId?: number | null) {
   const quizzes = await prisma.quiz.findMany({
-    where: { status: "Published" },
+    where: {
+      status: "Published",
+      ...(teamId !== undefined ? { OR: [{ teamId: null }, { teamId }] } : {}),
+    },
     include: { _count: { select: { questions: true } } },
     orderBy: [{ order: "asc" }, { createdAt: "asc" }],
   });
@@ -301,6 +309,7 @@ export async function getQuizForTaking(id: number) {
       description: true,
       timeLimitMinutes: true,
       passingScore: true,
+      teamId: true,
       questions: {
         orderBy: { order: "asc" },
         select: {
@@ -409,6 +418,20 @@ export async function getAttemptsByEmail(email: string) {
   }));
 }
 
+/** Published quizzes (respecting team-scoping) this agent hasn't attempted yet. */
+export async function getUnattemptedQuizzes(email: string, teamId: number | null) {
+  const [published, attempts] = await Promise.all([
+    getPublishedQuizzes(teamId),
+    prisma.quizAttempt.findMany({
+      where: { email: { equals: email.trim(), mode: "insensitive" } },
+      select: { quizId: true },
+    }),
+  ]);
+
+  const attemptedIds = new Set(attempts.map((a) => a.quizId));
+  return published.filter((quiz) => !attemptedIds.has(quiz.id));
+}
+
 /** Aggregate quiz stats for one agent's email, for the personalized home page summary. */
 export async function getAgentQuizStats(email: string) {
   const attempts = await prisma.quizAttempt.findMany({
@@ -424,6 +447,38 @@ export async function getAgentQuizStats(email: string) {
       : null;
 
   return { completed, passed, avgPercentage };
+}
+
+/** Weekly pass-rate trend across all quizzes, for the admin dashboard chart. */
+export async function getQuizPassRateTrend(weeks = 8) {
+  const since = new Date(Date.now() - weeks * 7 * 86_400_000);
+
+  const attempts = await prisma.quizAttempt.findMany({
+    where: { status: "Submitted", submittedAt: { gte: since } },
+    select: { submittedAt: true, passed: true },
+  });
+
+  const buckets = new Map<string, { total: number; passed: number }>();
+  for (const a of attempts) {
+    if (!a.submittedAt) continue;
+    const weekStart = new Date(a.submittedAt);
+    weekStart.setHours(0, 0, 0, 0);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+    const key = weekStart.toISOString().slice(0, 10);
+
+    const bucket = buckets.get(key) ?? { total: 0, passed: 0 };
+    bucket.total += 1;
+    if (a.passed) bucket.passed += 1;
+    buckets.set(key, bucket);
+  }
+
+  return Array.from(buckets.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([week, { total, passed }]) => ({
+      week,
+      passRate: total > 0 ? Math.round((passed / total) * 100) : 0,
+      attempts: total,
+    }));
 }
 
 /** Aggregate quiz stats across every agent on a team. */

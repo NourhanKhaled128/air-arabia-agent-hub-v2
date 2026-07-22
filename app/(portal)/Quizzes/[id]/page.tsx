@@ -22,6 +22,7 @@ export default async function QuizTakePage({ params }: Props) {
 
   const quiz = await getQuizForTaking(quizId);
   if (!quiz || quiz.questions.length === 0) notFound();
+  if (quiz.teamId && quiz.teamId !== user.teamId) notFound();
 
   return <QuizRunner quiz={quiz} agentName={user.name} />;
 }

@@ -22,6 +22,11 @@ function parseDate(value: FormDataEntryValue | null) {
   return Number.isNaN(date.getTime()) ? undefined : date;
 }
 
+function parseTeamId(formData: FormData): number | null {
+  const raw = formData.get("teamId") as string;
+  return raw ? Number(raw) : null;
+}
+
 export async function createAnnouncementAction(
   formData: FormData
 ) {
@@ -33,6 +38,7 @@ export async function createAnnouncementAction(
     priority: formData.get("priority") as string,
     status: formData.get("status") as string,
     audience: formData.get("audience") as string,
+    teamId: parseTeamId(formData),
     publishDate: parseDate(formData.get("publishDate")),
     expiryDate: parseDate(formData.get("expiryDate")),
   });
@@ -56,6 +62,7 @@ export async function updateAnnouncementAction(
     priority: formData.get("priority") as string,
     status: formData.get("status") as string,
     audience: formData.get("audience") as string,
+    teamId: parseTeamId(formData),
     publishDate: parseDate(formData.get("publishDate")),
     expiryDate: parseDate(formData.get("expiryDate")),
   });

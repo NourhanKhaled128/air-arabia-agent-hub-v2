@@ -8,11 +8,12 @@ export async function getAnnouncements() {
   });
 }
 
-/** Published announcements for the portal-facing Announcements page — mirrors the Article status convention (Draft/Scheduled never shown to champions). */
-export async function getPublishedAnnouncements() {
+/** Published announcements for the portal-facing Announcements page — mirrors the Article status convention (Draft/Scheduled never shown to champions). `teamId` is the viewing agent's own team — pass null if they have none. */
+export async function getPublishedAnnouncements(teamId?: number | null) {
   return prisma.announcement.findMany({
     where: {
       status: "Published",
+      ...(teamId !== undefined ? { OR: [{ teamId: null }, { teamId }] } : {}),
     },
     orderBy: {
       createdAt: "desc",
@@ -34,6 +35,7 @@ export async function createAnnouncement(data: {
   priority: string;
   status: string;
   audience?: string;
+  teamId?: number | null;
   publishDate?: Date;
   expiryDate?: Date;
 }) {
@@ -50,6 +52,7 @@ export async function updateAnnouncement(
     priority: string;
     status: string;
     audience: string;
+    teamId: number | null;
     publishDate: Date;
     expiryDate: Date;
   }>

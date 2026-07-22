@@ -15,7 +15,7 @@ export default async function ContinueReading() {
   return (
     <section className="grid gap-6 lg:grid-cols-2">
       <Link
-        href={`/Knowledge/${latest.slug}`}
+        href={`${latest.basePath}/${latest.slug}`}
         className="flex items-center gap-4 rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-6 shadow-sm transition hover:shadow-lg"
       >
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-brand">
@@ -37,7 +37,7 @@ export default async function ContinueReading() {
             {rest.map((article) => (
               <li key={article.articleId}>
                 <Link
-                  href={`/Knowledge/${article.slug}`}
+                  href={`${article.basePath}/${article.slug}`}
                   className="block truncate rounded-lg px-2 py-1.5 font-medium text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-surface-muted"
                 >
                   {article.title}

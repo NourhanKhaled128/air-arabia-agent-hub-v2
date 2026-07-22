@@ -1,8 +1,9 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { getCurrentPortalUser } from "@/lib/portal-dal";
+import { getCurrentPortalUser, requirePortalUser } from "@/lib/portal-dal";
 import { recordArticleView } from "@/lib/article-view-service";
+import { toggleBookmark, isBookmarked } from "@/lib/article-bookmark-service";
 
 export interface CreateArticleData {
   title: string;
@@ -28,6 +29,17 @@ export async function incrementArticleViewAction(articleId: number) {
 
   const user = await getCurrentPortalUser();
   if (user) await recordArticleView(user.id, articleId);
+}
+
+export async function toggleBookmarkAction(articleId: number) {
+  const user = await requirePortalUser();
+  return toggleBookmark(user.id, articleId);
+}
+
+export async function getIsBookmarkedAction(articleId: number) {
+  const user = await getCurrentPortalUser();
+  if (!user) return false;
+  return isBookmarked(user.id, articleId);
 }
 
 export async function createArticle(data: CreateArticleData) {

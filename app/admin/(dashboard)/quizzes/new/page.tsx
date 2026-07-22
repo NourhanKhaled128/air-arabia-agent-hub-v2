@@ -1,7 +1,10 @@
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import QuizForm from "@/components/admin/quiz/QuizForm";
+import { getTeams } from "@/lib/team-service";
 
-export default function NewQuizPage() {
+export default async function NewQuizPage() {
+  const teams = await getTeams();
+
   return (
     <div className="space-y-8">
       <AdminPageHeader
@@ -9,7 +12,7 @@ export default function NewQuizPage() {
         breadcrumbs={[{ label: "Quizzes", href: "/admin/quizzes" }, { label: "New Quiz" }]}
       />
 
-      <QuizForm />
+      <QuizForm teams={teams} />
     </div>
   );
 }

@@ -8,6 +8,7 @@ interface Announcement {
   priority: string;
   status: string;
   audience: string | null;
+  teamId?: number | null;
   publishDate: Date | null;
   expiryDate: Date | null;
 }
@@ -16,6 +17,7 @@ interface Props {
   action: (formData: FormData) => void;
   submitLabel?: string;
   announcement?: Announcement;
+  teams: { id: number; name: string }[];
 }
 
 function toDateInputValue(date: Date | null | undefined) {
@@ -26,6 +28,7 @@ export default function AnnouncementComposer({
   action,
   submitLabel = "Publish Announcement",
   announcement,
+  teams,
 }: Props) {
   return (
     <form action={action} className="space-y-6">
@@ -70,6 +73,16 @@ export default function AnnouncementComposer({
           { label: "Draft", value: "Draft" },
           { label: "Scheduled", value: "Scheduled" },
           { label: "Published", value: "Published" },
+        ]}
+      />
+
+      <AdminSelect
+        name="teamId"
+        label="Team (optional — restricts visibility to one team)"
+        defaultValue={announcement?.teamId ? String(announcement.teamId) : ""}
+        options={[
+          { label: "All Teams", value: "" },
+          ...teams.map((team) => ({ label: team.name, value: String(team.id) })),
         ]}
       />
 

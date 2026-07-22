@@ -8,7 +8,10 @@ export const getCurrentPortalUser = cache(async () => {
   const session = await verifyPortalSession();
   if (!session?.portalUserId) return null;
 
-  return prisma.portalUser.findUnique({ where: { id: session.portalUserId } });
+  return prisma.portalUser.findUnique({
+    where: { id: session.portalUserId },
+    include: { team: true },
+  });
 });
 
 // Server actions are independently callable endpoints, not protected by page-level

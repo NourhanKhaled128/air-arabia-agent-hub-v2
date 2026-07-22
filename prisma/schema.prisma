@@ -39,6 +39,7 @@ model Article {
   emailTemplates EmailTemplate[]
   decisionTrees  DecisionTree[]
   articleViews   ArticleView[]
+  bookmarks      ArticleBookmark[]
 }
 
 model ArticleUpdate {
@@ -281,6 +282,8 @@ model Announcement {
   priority    String    @default("Medium")
   status      String    @default("Draft")
   audience    String?
+  teamId      Int?
+  team        Team?     @relation(fields: [teamId], references: [id], onDelete: SetNull)
   publishDate DateTime?
   expiryDate  DateTime?
   createdAt   DateTime  @default(now())
@@ -380,9 +383,12 @@ model PortalUser {
   passwordHash String
   status       String    @default("Active")
   lastLoginAt  DateTime?
+  notificationsSeenAt DateTime?
+  announcementsSeenAt DateTime?
   teamId       Int?
   team         Team?     @relation(fields: [teamId], references: [id], onDelete: SetNull)
   articleViews ArticleView[]
+  bookmarks    ArticleBookmark[]
   comments     Comment[]  @relation("PortalUserComments")
   feedback     Feedback[] @relation("PortalUserFeedback")
   createdAt    DateTime  @default(now())
@@ -390,11 +396,13 @@ model PortalUser {
 }
 
 model Team {
-  id        Int          @id @default(autoincrement())
-  name      String       @unique
-  members   PortalUser[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  id            Int            @id @default(autoincrement())
+  name          String         @unique
+  members       PortalUser[]
+  announcements Announcement[]
+  quizzes       Quiz[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 /// One row per agent per article, upserted on each view — `viewedAt` always reflects
@@ -407,6 +415,17 @@ model ArticleView {
   articleId    Int
   article      Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
   viewedAt     DateTime   @default(now())
+
+  @@unique([portalUserId, articleId])
+}
+
+model ArticleBookmark {
+  id           Int        @id @default(autoincrement())
+  portalUserId Int
+  portalUser   PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  articleId    Int
+  article      Article    @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
 
   @@unique([portalUserId, articleId])
 }
@@ -479,6 +498,8 @@ model Quiz {
   showAnswers      Boolean        @default(true)
   status           String         @default("Draft")
   order            Int            @default(0)
+  teamId           Int?
+  team             Team?          @relation(fields: [teamId], references: [id], onDelete: SetNull)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   questions        QuizQuestion[]

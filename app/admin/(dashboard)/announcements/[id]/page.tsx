@@ -3,6 +3,7 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AnnouncementComposer from "@/components/admin/announcement/AnnouncementComposer";
 import { getAnnouncementById } from "@/lib/announcement-service";
 import { updateAnnouncementAction } from "@/app/admin/actions/announcement-actions";
+import { getTeams } from "@/lib/team-service";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -16,7 +17,7 @@ export default async function EditAnnouncementPage({ params }: Props) {
     notFound();
   }
 
-  const announcement = await getAnnouncementById(announcementId);
+  const [announcement, teams] = await Promise.all([getAnnouncementById(announcementId), getTeams()]);
 
   if (!announcement) {
     notFound();
@@ -37,6 +38,7 @@ export default async function EditAnnouncementPage({ params }: Props) {
           action={boundUpdate}
           submitLabel="Save Changes"
           announcement={announcement}
+          teams={teams}
         />
       </div>
 

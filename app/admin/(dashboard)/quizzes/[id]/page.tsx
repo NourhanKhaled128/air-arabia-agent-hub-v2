@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import QuizForm from "@/components/admin/quiz/QuizForm";
 import { getQuizForEdit } from "@/lib/quiz-service";
+import { getTeams } from "@/lib/team-service";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -12,7 +13,7 @@ export default async function EditQuizPage({ params }: Props) {
   const quizId = Number(id);
   if (!Number.isInteger(quizId)) notFound();
 
-  const quiz = await getQuizForEdit(quizId);
+  const [quiz, teams] = await Promise.all([getQuizForEdit(quizId), getTeams()]);
   if (!quiz) notFound();
 
   return (
@@ -24,6 +25,7 @@ export default async function EditQuizPage({ params }: Props) {
 
       <QuizForm
         quizId={quiz.id}
+        teams={teams}
         initial={{
           title: quiz.title,
           description: quiz.description ?? "",
@@ -32,6 +34,7 @@ export default async function EditQuizPage({ params }: Props) {
           showAnswers: quiz.showAnswers,
           status: quiz.status,
           order: quiz.order,
+          teamId: quiz.teamId,
           questions: quiz.questions.map((q) => ({
             clientKey: q.id,
             text: q.text,
