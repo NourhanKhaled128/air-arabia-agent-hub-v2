@@ -114,26 +114,33 @@ async function insertQuestionsAndChoicesTx(
   quizId: number,
   questions: QuizQuestionInput[]
 ) {
-  for (const [qIndex, question] of questions.entries()) {
-    const createdQuestion = await tx.quizQuestion.create({
-      data: {
-        quizId,
-        text: question.text,
-        order: qIndex,
-        points: question.points,
-      },
-    });
+  // Batched instead of one create() per row: a large quiz (30+ questions) looped
+  // sequentially can rack up hundreds of round-trips and blow past Prisma's
+  // default 5s interactive-transaction timeout, which surfaces to the client
+  // as a generic sanitized "Server Components render" error.
+  const createdQuestions = await tx.quizQuestion.createManyAndReturn({
+    data: questions.map((question, qIndex) => ({
+      quizId,
+      text: question.text,
+      order: qIndex,
+      points: question.points,
+    })),
+  });
 
-    for (const [cIndex, choice] of question.choices.entries()) {
-      await tx.quizChoice.create({
-        data: {
-          questionId: createdQuestion.id,
-          text: choice.text,
-          isCorrect: choice.isCorrect,
-          order: cIndex,
-        },
-      });
-    }
+  const questionIdByOrder = new Map(createdQuestions.map((q) => [q.order, q.id]));
+
+  const choicesData = questions.flatMap((question, qIndex) => {
+    const questionId = questionIdByOrder.get(qIndex)!;
+    return question.choices.map((choice, cIndex) => ({
+      questionId,
+      text: choice.text,
+      isCorrect: choice.isCorrect,
+      order: cIndex,
+    }));
+  });
+
+  if (choicesData.length > 0) {
+    await tx.quizChoice.createMany({ data: choicesData });
   }
 }
 
