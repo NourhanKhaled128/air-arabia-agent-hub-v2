@@ -2,19 +2,21 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, LogOut } from "lucide-react";
 import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
 import NotificationBell from "./NotificationBell";
 import ThemeToggle from "./ThemeToggle";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
 import { sortByRelevance } from "@/lib/search-utils";
+import { portalLogoutAction } from "@/app/actions/portal-auth";
 
 interface Props {
   articles: SearchableArticle[];
   basePath?: string;
+  portalUserName?: string | null;
 }
 
-export default function Header({ articles, basePath = "/Knowledge" }: Props) {
+export default function Header({ articles, basePath = "/Knowledge", portalUserName }: Props) {
 
   const { toggleMobileOpen } = useSidebarPrefs();
 
@@ -97,7 +99,7 @@ export default function Header({ articles, basePath = "/Knowledge" }: Props) {
 
           <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100 sm:text-3xl">
 
-            {greeting}, Champion 👋
+            {greeting}, {portalUserName ? portalUserName.split(" ")[0] : "Champion"} 👋
 
           </h1>
 
@@ -189,7 +191,7 @@ export default function Header({ articles, basePath = "/Knowledge" }: Props) {
 
             <p className="font-semibold">
 
-              Air Arabia Champion Hub
+              {portalUserName ?? "Air Arabia Champion Hub"}
 
             </p>
 
@@ -200,6 +202,16 @@ export default function Header({ articles, basePath = "/Knowledge" }: Props) {
             </p>
 
           </div>
+
+          <form action={portalLogoutAction}>
+            <button
+              type="submit"
+              title="Logout"
+              className="rounded-lg p-2 text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-surface-muted"
+            >
+              <LogOut size={18} />
+            </button>
+          </form>
 
         </div>
 

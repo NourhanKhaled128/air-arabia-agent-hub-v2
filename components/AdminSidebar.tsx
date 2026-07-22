@@ -12,6 +12,7 @@ import {
   Megaphone,
   GraduationCap,
   Users,
+  UserCheck,
   Shield,
   Settings,
   Home,
@@ -111,6 +112,7 @@ export const adminMenuGroups = [
     items: [
       { title: "Sidebar Links", href: "/admin/sidebar", icon: PanelLeft },
       { title: "Users", href: "/admin/users", icon: Users },
+      { title: "Agent Accounts", href: "/admin/portal-users", icon: UserCheck },
       { title: "Roles", href: "/admin/roles", icon: Shield },
       { title: "Settings", href: "/admin/settings", icon: Settings },
     ],
