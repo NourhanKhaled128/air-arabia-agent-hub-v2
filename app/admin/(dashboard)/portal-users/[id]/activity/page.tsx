@@ -1,9 +1,12 @@
 import { notFound } from "next/navigation";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import QualityReviewSection from "@/components/admin/quality/QualityReviewSection";
 import { getPortalUserById } from "@/lib/portal-user-service";
 import { getAttemptsByEmail } from "@/lib/quiz-service";
 import { getCommentsByPortalUser } from "@/lib/comment-service";
 import { getFeedbackByPortalUser } from "@/lib/feedback-service";
+import { getQualityReviewsForAgent } from "@/lib/quality-review-service";
+import { getCurrentAdminUser } from "@/lib/admin-dal";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -17,11 +20,15 @@ export default async function PortalUserActivityPage({ params }: Props) {
   const agent = await getPortalUserById(userId);
   if (!agent) notFound();
 
-  const [quizAttempts, comments, feedback] = await Promise.all([
+  const [quizAttempts, comments, feedback, qualityReviews, admin] = await Promise.all([
     getAttemptsByEmail(agent.email),
     getCommentsByPortalUser(agent.id),
     getFeedbackByPortalUser(agent.id),
+    getQualityReviewsForAgent(agent.id),
+    getCurrentAdminUser(),
   ]);
+
+  const canManageQuality = admin?.role.permissions.includes("manage_quality") ?? false;
 
   return (
     <div className="space-y-8">
@@ -29,6 +36,12 @@ export default async function PortalUserActivityPage({ params }: Props) {
         title={`Activity: ${agent.name}`}
         description={agent.email}
         breadcrumbs={[{ label: "Agent Accounts", href: "/admin/portal-users" }, { label: "Activity" }]}
+      />
+
+      <QualityReviewSection
+        portalUserId={agent.id}
+        reviews={qualityReviews}
+        canManage={canManageQuality}
       />
 
       <section className="rounded-3xl bg-white p-6 shadow-sm">

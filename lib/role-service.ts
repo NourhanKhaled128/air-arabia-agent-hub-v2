@@ -11,6 +11,7 @@ export const PERMISSION_KEYS = [
   "manage_settings",
   "view_analytics",
   "manage_media",
+  "manage_quality",
 ];
 
 export async function getRoles() {

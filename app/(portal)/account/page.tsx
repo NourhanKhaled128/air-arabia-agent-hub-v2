@@ -2,13 +2,14 @@ export const dynamic = "force-dynamic";
 
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { User, Clock, Bookmark, MessageSquare, ThumbsUp } from "lucide-react";
+import { User, Clock, Bookmark, MessageSquare, ThumbsUp, Star } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { getCurrentPortalUser } from "@/lib/portal-dal";
 import { getAgentQuizStats } from "@/lib/quiz-service";
 import { getCommentsByPortalUser } from "@/lib/comment-service";
 import { getFeedbackByPortalUser } from "@/lib/feedback-service";
 import { getBookmarkedArticles } from "@/lib/article-bookmark-service";
+import { getQualityReviewsForAgent } from "@/lib/quality-review-service";
 
 function formatLastActive(date: Date | null) {
   if (!date) return "Never";
@@ -22,11 +23,12 @@ export default async function AccountPage() {
   const user = await getCurrentPortalUser();
   if (!user) redirect("/login");
 
-  const [stats, comments, feedback, bookmarks] = await Promise.all([
+  const [stats, comments, feedback, bookmarks, qualityReviews] = await Promise.all([
     getAgentQuizStats(user.email),
     getCommentsByPortalUser(user.id),
     getFeedbackByPortalUser(user.id),
     getBookmarkedArticles(user.id),
+    getQualityReviewsForAgent(user.id),
   ]);
 
   return (
@@ -84,6 +86,31 @@ export default async function AccountPage() {
               </p>
             </div>
           </div>
+        </section>
+
+        <section className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-6 shadow-sm lg:col-span-3">
+          <h2 className="mb-4 flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-slate-100">
+            <Star size={18} />
+            Quality Feedback ({qualityReviews.length})
+          </h2>
+          {qualityReviews.length === 0 ? (
+            <p className="text-sm text-gray-500 dark:text-slate-400">No quality feedback yet.</p>
+          ) : (
+            <ul className="space-y-3">
+              {qualityReviews.map((r) => (
+                <li key={r.id} className="rounded-xl border border-gray-200 dark:border-border-subtle p-4">
+                  <span className="flex items-center gap-1 font-bold text-amber-600 dark:text-amber-400">
+                    <Star size={14} fill="currentColor" />
+                    {r.rating}/5
+                  </span>
+                  <p className="mt-1 text-gray-800 dark:text-slate-200">{r.comment}</p>
+                  <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
+                    {r.reviewerName} · {r.createdAt.toLocaleDateString("en-GB")}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         <section className="rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-6 shadow-sm lg:col-span-1">

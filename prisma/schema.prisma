@@ -395,6 +395,7 @@ model PortalUser {
   comments     Comment[]  @relation("PortalUserComments")
   feedback     Feedback[] @relation("PortalUserFeedback")
   contentSuggestions ContentSuggestion[]
+  qualityReviews QualityReview[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
@@ -452,6 +453,18 @@ model SearchMiss {
   id        Int      @id @default(autoincrement())
   query     String
   createdAt DateTime @default(now())
+}
+
+/// A QA/team-lead rating + note left against an agent — visible to the agent themselves,
+/// submitted only by admins holding the manage_quality permission.
+model QualityReview {
+  id           Int        @id @default(autoincrement())
+  portalUserId Int
+  portalUser   PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
+  rating       Int
+  comment      String
+  reviewerName String
+  createdAt    DateTime   @default(now())
 }
 
 model Airport {
