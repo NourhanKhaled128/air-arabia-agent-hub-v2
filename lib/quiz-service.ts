@@ -438,6 +438,22 @@ export async function getAttemptReportText(attemptId: number): Promise<string | 
 export async function exportAttemptsWorkbook(quizId: number): Promise<Buffer> {
   const attempts = await getAttemptsForQuiz(quizId);
 
+  const quiz = await prisma.quiz.findUnique({
+    where: { id: quizId },
+    include: {
+      questions: {
+        orderBy: { order: "asc" },
+        include: { choices: { orderBy: { order: "asc" } } },
+      },
+    },
+  });
+
+  const submittedAttemptIds = attempts.filter((a) => a.status === "Submitted").map((a) => a.id);
+  const answers =
+    submittedAttemptIds.length > 0
+      ? await prisma.quizAnswer.findMany({ where: { attemptId: { in: submittedAttemptIds } } })
+      : [];
+
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Results");
 
@@ -468,6 +484,94 @@ export async function exportAttemptsWorkbook(quizId: number): Promise<Buffer> {
       submittedAt: a.submittedAt ? a.submittedAt.toLocaleString("en-GB") : "",
       feedback: a.previousClassFeedback ?? "",
     });
+  }
+
+  if (quiz) {
+    const statsByQuestion = new Map<number, { correct: number; incorrect: number }>();
+    const choiceCountsByQuestion = new Map<number, Map<number | null, number>>();
+    for (const a of answers) {
+      const s = statsByQuestion.get(a.questionId) ?? { correct: 0, incorrect: 0 };
+      if (a.isCorrect) s.correct += 1;
+      else s.incorrect += 1;
+      statsByQuestion.set(a.questionId, s);
+
+      const choiceCounts = choiceCountsByQuestion.get(a.questionId) ?? new Map<number | null, number>();
+      choiceCounts.set(a.choiceId, (choiceCounts.get(a.choiceId) ?? 0) + 1);
+      choiceCountsByQuestion.set(a.questionId, choiceCounts);
+    }
+
+    // Worst-first: the questions trainees miss most are what need coaching, so surface them at the top.
+    const questionStats = quiz.questions
+      .map((q, i) => {
+        const s = statsByQuestion.get(q.id) ?? { correct: 0, incorrect: 0 };
+        const answered = s.correct + s.incorrect;
+        return {
+          originalNumber: i + 1,
+          question: q,
+          answered,
+          correct: s.correct,
+          incorrect: s.incorrect,
+          pctCorrect: answered > 0 ? s.correct / answered : null,
+        };
+      })
+      .sort((a, b) => (a.pctCorrect ?? 1) - (b.pctCorrect ?? 1));
+
+    const questionSheet = workbook.addWorksheet("Question Analysis");
+    questionSheet.columns = [
+      { header: "Q#", key: "num", width: 6 },
+      { header: "Question", key: "text", width: 70 },
+      { header: "Points", key: "points", width: 8 },
+      { header: "Times Answered", key: "answered", width: 16 },
+      { header: "Correct", key: "correct", width: 10 },
+      { header: "Incorrect", key: "incorrect", width: 10 },
+      { header: "% Correct", key: "pctCorrect", width: 12 },
+    ];
+    questionSheet.getRow(1).font = { bold: true };
+
+    for (const qs of questionStats) {
+      questionSheet.addRow({
+        num: qs.originalNumber,
+        text: qs.question.text,
+        points: qs.question.points,
+        answered: qs.answered,
+        correct: qs.correct,
+        incorrect: qs.incorrect,
+        pctCorrect: qs.pctCorrect != null ? `${Math.round(qs.pctCorrect * 100)}%` : "",
+      });
+    }
+
+    const choiceSheet = workbook.addWorksheet("Choice Breakdown");
+    choiceSheet.columns = [
+      { header: "Q#", key: "num", width: 6 },
+      { header: "Question", key: "text", width: 70 },
+      { header: "Choice", key: "choice", width: 60 },
+      { header: "Correct Choice?", key: "isCorrect", width: 14 },
+      { header: "Times Picked", key: "picked", width: 12 },
+    ];
+    choiceSheet.getRow(1).font = { bold: true };
+
+    for (const qs of questionStats) {
+      const choiceCounts = choiceCountsByQuestion.get(qs.question.id) ?? new Map<number | null, number>();
+      for (const choice of qs.question.choices) {
+        choiceSheet.addRow({
+          num: qs.originalNumber,
+          text: qs.question.text,
+          choice: choice.text,
+          isCorrect: choice.isCorrect ? "Yes" : "",
+          picked: choiceCounts.get(choice.id) ?? 0,
+        });
+      }
+      const noAnswerCount = choiceCounts.get(null) ?? 0;
+      if (noAnswerCount > 0) {
+        choiceSheet.addRow({
+          num: qs.originalNumber,
+          text: qs.question.text,
+          choice: "(No answer)",
+          isCorrect: "",
+          picked: noAnswerCount,
+        });
+      }
+    }
   }
 
   const buffer = await workbook.xlsx.writeBuffer();
