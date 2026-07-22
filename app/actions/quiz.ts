@@ -5,6 +5,7 @@ import {
   saveQuizAnswer,
   getResumableAttempt,
   finalizeQuizAttempt,
+  getAttemptsByEmail,
 } from "@/lib/quiz-service";
 
 export async function startQuizAttemptAction(data: {
@@ -40,4 +41,9 @@ export async function getResumableAttemptAction(data: { attemptId: number; quizI
 
 export async function finalizeQuizAttemptAction(attemptId: number) {
   return finalizeQuizAttempt(attemptId);
+}
+
+export async function getAttemptsByEmailAction(email: string) {
+  const attempts = await getAttemptsByEmail(email);
+  return attempts.map((a) => ({ ...a, submittedAt: a.submittedAt ? a.submittedAt.toISOString() : null }));
 }

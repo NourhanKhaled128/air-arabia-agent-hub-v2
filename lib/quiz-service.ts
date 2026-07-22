@@ -380,6 +380,25 @@ export async function saveQuizAnswer(input: SaveQuizAnswerInput) {
   });
 }
 
+/** Submitted attempt history for an email, newest first, across all quizzes — matched case-insensitively since trainees self-report it with no account to normalize casing. */
+export async function getAttemptsByEmail(email: string) {
+  const attempts = await prisma.quizAttempt.findMany({
+    where: { email: { equals: email.trim(), mode: "insensitive" }, status: "Submitted" },
+    include: { quiz: { select: { id: true, title: true } } },
+    orderBy: { submittedAt: "desc" },
+  });
+
+  return attempts.map((a) => ({
+    quizId: a.quiz.id,
+    quizTitle: a.quiz.title,
+    score: a.score ?? 0,
+    totalPoints: a.totalPoints ?? 0,
+    percentage: a.percentage ?? 0,
+    passed: a.passed ?? false,
+    submittedAt: a.submittedAt,
+  }));
+}
+
 /** Returns the resumable state for an in-progress attempt, or null if it's missing/finalized/belongs to a different quiz. */
 export async function getResumableAttempt(input: { attemptId: number; quizId: number }) {
   const attempt = await prisma.quizAttempt.findFirst({

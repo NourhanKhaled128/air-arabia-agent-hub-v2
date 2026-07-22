@@ -11,12 +11,14 @@ import {
   ArrowLeft,
   Trophy,
   Loader2,
+  History,
 } from "lucide-react";
 import {
   startQuizAttemptAction,
   saveQuizAnswerAction,
   getResumableAttemptAction,
   finalizeQuizAttemptAction,
+  getAttemptsByEmailAction,
 } from "@/app/actions/quiz";
 
 interface Choice {
@@ -57,6 +59,16 @@ interface GradeResult {
   passingScore: number;
   showAnswers: boolean;
   questions: GradedQuestion[];
+}
+
+interface PreviousAttempt {
+  quizId: number;
+  quizTitle: string;
+  score: number;
+  totalPoints: number;
+  percentage: number;
+  passed: boolean;
+  submittedAt: string | null;
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -102,6 +114,8 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
   const [feedback, setFeedback] = useState("");
   const [introError, setIntroError] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
+  const [history, setHistory] = useState<PreviousAttempt[] | null>(null);
+  const [checkingHistory, setCheckingHistory] = useState(false);
 
   // Taking state
   const [index, setIndex] = useState(0);
@@ -217,6 +231,18 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
 
     return () => clearInterval(interval);
   }, [step]);
+
+  async function checkHistory() {
+    if (!EMAIL_RE.test(email.trim())) {
+      setIntroError("Enter a valid email address first.");
+      return;
+    }
+    setIntroError(null);
+    setCheckingHistory(true);
+    const result = await getAttemptsByEmailAction(email.trim());
+    setHistory(result as PreviousAttempt[]);
+    setCheckingHistory(false);
+  }
 
   async function handleStart() {
     if (!name.trim()) {
@@ -342,12 +368,62 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
             Email
             <input
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setHistory(null);
+              }}
               placeholder="you@airarabia.com"
               type="email"
               className="mt-1.5 w-full rounded-xl border border-gray-300 dark:border-border-subtle bg-white dark:bg-surface-muted px-4 py-2.5 text-gray-900 dark:text-slate-100 outline-none focus:border-red-500"
             />
           </label>
+
+          <button
+            type="button"
+            onClick={checkHistory}
+            disabled={checkingHistory}
+            className="mt-2 flex items-center gap-1.5 text-sm font-semibold text-red-700 dark:text-brand hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <History size={14} />
+            {checkingHistory ? "Checking..." : "View my previous quiz history"}
+          </button>
+
+          {history && (
+            <div className="mt-3 rounded-xl border border-gray-200 dark:border-border-subtle bg-gray-50 dark:bg-surface-muted p-4">
+              {history.length === 0 ? (
+                <p className="text-sm text-gray-500 dark:text-slate-400">
+                  No previous quiz attempts found for this email.
+                </p>
+              ) : (
+                <ul className="space-y-2">
+                  {history.map((h, i) => (
+                    <li
+                      key={`${h.quizId}-${i}`}
+                      className="flex flex-col gap-0.5 rounded-lg border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div>
+                        <p className="font-medium text-gray-800 dark:text-slate-200">{h.quizTitle}</p>
+                        {h.submittedAt && (
+                          <p className="text-xs text-gray-500 dark:text-slate-500">
+                            {new Date(h.submittedAt).toLocaleDateString("en-GB")}
+                          </p>
+                        )}
+                      </div>
+                      <span
+                        className={`text-sm font-bold ${
+                          h.passed
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-red-600 dark:text-red-400"
+                        }`}
+                      >
+                        {Math.round(h.percentage)}% · {h.passed ? "Passed" : "Failed"}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
 
           <label className="mt-4 block text-sm font-semibold text-gray-700 dark:text-slate-300">
             Feedback on the previous class
