@@ -117,6 +117,7 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
   const startedAtRef = useRef<Date | null>(null);
   const pendingSaveRef = useRef<Promise<unknown> | null>(null);
   const submittingRef = useRef(false);
+  const advancingRef = useRef(false);
 
   async function doSubmit() {
     if (submittingRef.current) return;
@@ -273,13 +274,23 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
   }
 
   async function goNext() {
-    if (pendingSaveRef.current) await pendingSaveRef.current.catch(() => {});
+    // Guards against a double-click (or an impatient repeat-tap while the
+    // pending answer save is still in flight) firing two overlapping calls —
+    // both would otherwise read the same stale `index` and each advance it,
+    // skipping a question or pushing `index` past the last one.
+    if (advancingRef.current) return;
+    advancingRef.current = true;
+    try {
+      if (pendingSaveRef.current) await pendingSaveRef.current.catch(() => {});
 
-    if (index + 1 >= quiz.questions.length) {
-      doSubmit();
-      return;
+      if (index + 1 >= quiz.questions.length) {
+        await doSubmit();
+        return;
+      }
+      setIndex((i) => i + 1);
+    } finally {
+      advancingRef.current = false;
     }
-    setIndex((i) => i + 1);
   }
 
   function goPrev() {
@@ -368,7 +379,17 @@ export default function QuizRunner({ quiz }: { quiz: QuizData }) {
 
   // ---- Step: taking ----
   if (step === "taking") {
+    // Defensive fallback: `index` should never leave [0, length), but if a
+    // stray render slips through before doSubmit() finishes, show the
+    // spinner instead of crashing on an undefined question.
     const question = quiz.questions[index];
+    if (!question) {
+      return (
+        <div className="flex items-center justify-center py-24 text-gray-400 dark:text-slate-500">
+          <Loader2 size={28} className="animate-spin" />
+        </div>
+      );
+    }
     const selectedChoiceId = answers[question.id];
     const lowTime = secondsLeft <= 60;
 
