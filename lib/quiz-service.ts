@@ -488,16 +488,11 @@ export async function exportAttemptsWorkbook(quizId: number): Promise<Buffer> {
 
   if (quiz) {
     const statsByQuestion = new Map<number, { correct: number; incorrect: number }>();
-    const choiceCountsByQuestion = new Map<number, Map<number | null, number>>();
     for (const a of answers) {
       const s = statsByQuestion.get(a.questionId) ?? { correct: 0, incorrect: 0 };
       if (a.isCorrect) s.correct += 1;
       else s.incorrect += 1;
       statsByQuestion.set(a.questionId, s);
-
-      const choiceCounts = choiceCountsByQuestion.get(a.questionId) ?? new Map<number | null, number>();
-      choiceCounts.set(a.choiceId, (choiceCounts.get(a.choiceId) ?? 0) + 1);
-      choiceCountsByQuestion.set(a.questionId, choiceCounts);
     }
 
     // Worst-first: the questions trainees miss most are what need coaching, so surface them at the top.
@@ -540,37 +535,68 @@ export async function exportAttemptsWorkbook(quizId: number): Promise<Buffer> {
       });
     }
 
-    const choiceSheet = workbook.addWorksheet("Choice Breakdown");
-    choiceSheet.columns = [
-      { header: "Q#", key: "num", width: 6 },
-      { header: "Question", key: "text", width: 70 },
-      { header: "Choice", key: "choice", width: 60 },
-      { header: "Correct Choice?", key: "isCorrect", width: 14 },
-      { header: "Times Picked", key: "picked", width: 12 },
-    ];
-    choiceSheet.getRow(1).font = { bold: true };
+    // Matrix view: one row per agent, one column per question — scanning down a
+    // question's column shows at a glance which one everyone's missing.
+    const breakdownSheet = workbook.addWorksheet("Agent Breakdown");
 
-    for (const qs of questionStats) {
-      const choiceCounts = choiceCountsByQuestion.get(qs.question.id) ?? new Map<number | null, number>();
-      for (const choice of qs.question.choices) {
-        choiceSheet.addRow({
-          num: qs.originalNumber,
-          text: qs.question.text,
-          choice: choice.text,
-          isCorrect: choice.isCorrect ? "Yes" : "",
-          picked: choiceCounts.get(choice.id) ?? 0,
-        });
+    const questionColumns = quiz.questions.map((q, i) => ({
+      header: `Q${i + 1}`,
+      key: `q${q.id}`,
+      width: 6,
+    }));
+    breakdownSheet.columns = [
+      { header: "Name", key: "name", width: 24 },
+      { header: "Email", key: "email", width: 30 },
+      ...questionColumns,
+      { header: "Score", key: "percentage", width: 10 },
+      { header: "Result", key: "result", width: 10 },
+    ];
+    breakdownSheet.getRow(1).font = { bold: true };
+    breakdownSheet.getRow(1).alignment = { horizontal: "center" };
+
+    quiz.questions.forEach((q, i) => {
+      breakdownSheet.getCell(1, 3 + i).note = q.text;
+    });
+
+    const answersByAttempt = new Map<number, Map<number, (typeof answers)[number]>>();
+    for (const a of answers) {
+      const byQuestion = answersByAttempt.get(a.attemptId) ?? new Map();
+      byQuestion.set(a.questionId, a);
+      answersByAttempt.set(a.attemptId, byQuestion);
+    }
+
+    const CORRECT_FILL = "FFC6EFCE";
+    const CORRECT_FONT = "FF006100";
+    const INCORRECT_FILL = "FFFFC7CE";
+    const INCORRECT_FONT = "FF9C0006";
+
+    for (const attempt of attempts.filter((a) => a.status === "Submitted")) {
+      const byQuestion = answersByAttempt.get(attempt.id) ?? new Map();
+
+      const rowData: Record<string, string | number> = {
+        name: attempt.name,
+        email: attempt.email,
+        percentage: attempt.percentage != null ? `${Math.round(attempt.percentage)}%` : "",
+        result: attempt.passed ? "Passed" : "Failed",
+      };
+      for (const q of quiz.questions) {
+        const answer = byQuestion.get(q.id);
+        rowData[`q${q.id}`] = answer ? (answer.isCorrect ? "Correct" : "Incorrect") : "-";
       }
-      const noAnswerCount = choiceCounts.get(null) ?? 0;
-      if (noAnswerCount > 0) {
-        choiceSheet.addRow({
-          num: qs.originalNumber,
-          text: qs.question.text,
-          choice: "(No answer)",
-          isCorrect: "",
-          picked: noAnswerCount,
-        });
-      }
+
+      const row = breakdownSheet.addRow(rowData);
+      quiz.questions.forEach((q, i) => {
+        const answer = byQuestion.get(q.id);
+        if (!answer) return;
+        const cell = row.getCell(3 + i);
+        cell.alignment = { horizontal: "center" };
+        cell.fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: answer.isCorrect ? CORRECT_FILL : INCORRECT_FILL },
+        };
+        cell.font = { color: { argb: answer.isCorrect ? CORRECT_FONT : INCORRECT_FONT } };
+      });
     }
   }
 
