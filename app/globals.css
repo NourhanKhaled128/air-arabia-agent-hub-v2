@@ -60,4 +60,12 @@ body {
   main {
     margin: 0 !important;
   }
+
+  .print-header {
+    display: block !important;
+  }
+}
+
+.print-header {
+  display: none;
 }

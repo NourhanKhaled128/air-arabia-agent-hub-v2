@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { verifyPassword } from "@/lib/password";
 import { createPortalSession, deletePortalSession } from "@/lib/portal-session";
 import { logAction } from "@/lib/audit-service";
+import { requirePortalUser } from "@/lib/portal-dal";
 
 export async function portalLoginAction(formData: FormData) {
   const email = formData.get("email");
@@ -32,4 +33,9 @@ export async function portalLoginAction(formData: FormData) {
 export async function portalLogoutAction() {
   await deletePortalSession();
   redirect("/login");
+}
+
+export async function markOnboardingSeenAction() {
+  const user = await requirePortalUser();
+  await prisma.portalUser.update({ where: { id: user.id }, data: { hasSeenOnboarding: true } });
 }

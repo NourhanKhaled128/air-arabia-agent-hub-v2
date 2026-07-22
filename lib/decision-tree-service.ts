@@ -37,6 +37,29 @@ export async function getAllDecisionTrees() {
   }));
 }
 
+/** Lightweight, search-only projection of published trees — flattens node text into
+ * one field so the generic sortByRelevance util can score it like any other corpus. */
+export async function getDecisionTreesForSearch() {
+  const trees = await prisma.decisionTree.findMany({
+    where: { status: "Published" },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      description: true,
+      nodes: { select: { text: true } },
+    },
+  });
+
+  return trees.map((tree) => ({
+    id: tree.id,
+    slug: tree.slug,
+    title: tree.title,
+    description: tree.description ?? "",
+    nodesText: tree.nodes.map((n) => n.text).join(" "),
+  }));
+}
+
 export async function getDecisionTreeById(id: number) {
   return prisma.decisionTree.findUnique({
     where: { id },

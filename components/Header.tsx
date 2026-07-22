@@ -5,19 +5,46 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Menu, Search, LogOut } from "lucide-react";
 import SearchDropdown, { type SearchableArticle } from "./SearchDropdown";
+import SimpleSearchDropdown, { type SimpleSearchResult } from "./SimpleSearchDropdown";
 import NotificationBell from "./NotificationBell";
 import ThemeToggle from "./ThemeToggle";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
 import { sortByRelevance } from "@/lib/search-utils";
 import { portalLogoutAction } from "@/app/actions/portal-auth";
+import { logSearchMissAction } from "@/app/actions/search";
+import { GLOSSARY_ENTRIES } from "@/lib/glossary-data";
+import { QUICK_REFERENCE_HUBS } from "@/lib/quick-reference-data";
+
+export interface DecisionTreeSearchItem {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  nodesText: string;
+}
+
+type SearchScope = "articles" | "trees" | "glossary" | "quickref";
+
+const SCOPE_LABELS: Record<SearchScope, string> = {
+  articles: "Articles",
+  trees: "Decision Trees",
+  glossary: "Glossary",
+  quickref: "Quick Reference",
+};
 
 interface Props {
   articles: SearchableArticle[];
+  decisionTrees?: DecisionTreeSearchItem[];
   basePath?: string;
   portalUserName?: string | null;
 }
 
-export default function Header({ articles, basePath = "/Knowledge", portalUserName }: Props) {
+export default function Header({
+  articles,
+  decisionTrees = [],
+  basePath = "/Knowledge",
+  portalUserName,
+}: Props) {
 
   const { toggleMobileOpen } = useSidebarPrefs();
 
@@ -37,6 +64,7 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [hubFilter, setHubFilter] = useState("");
+  const [scope, setScope] = useState<SearchScope>("articles");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [searchFocused, setSearchFocused] = useState(false);
 
@@ -111,6 +139,62 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
 
   }, [debouncedQuery, articles, hubFilter]);
 
+  const treeResults = useMemo<SimpleSearchResult[]>(() => {
+    if (!debouncedQuery.trim() || scope !== "trees") return [];
+
+    return sortByRelevance(decisionTrees, debouncedQuery, (tree) => [
+      { text: tree.title, weight: 5 },
+      { text: tree.description, weight: 3 },
+      { text: tree.nodesText, weight: 1 },
+    ]).map((tree) => ({
+      key: `tree-${tree.id}`,
+      title: tree.title,
+      excerpt: tree.description,
+      href: `/decision-trees/${tree.slug}`,
+    }));
+  }, [debouncedQuery, decisionTrees, scope]);
+
+  const glossaryResults = useMemo<SimpleSearchResult[]>(() => {
+    if (!debouncedQuery.trim() || scope !== "glossary") return [];
+
+    return sortByRelevance(GLOSSARY_ENTRIES, debouncedQuery, (entry) => [
+      { text: entry.term, weight: 5 },
+      { text: entry.definition, weight: 2 },
+      { text: entry.category, weight: 1 },
+    ]).map((entry) => ({
+      key: entry.term,
+      title: entry.term,
+      excerpt: entry.definition,
+      href: "/glossary",
+    }));
+  }, [debouncedQuery, scope]);
+
+  const quickRefFacts = useMemo(
+    () =>
+      QUICK_REFERENCE_HUBS.flatMap((hub) =>
+        hub.facts.map((fact) => ({ hub: hub.hub, label: fact.label, value: fact.value }))
+      ),
+    []
+  );
+
+  const quickRefResults = useMemo<SimpleSearchResult[]>(() => {
+    if (!debouncedQuery.trim() || scope !== "quickref") return [];
+
+    return sortByRelevance(quickRefFacts, debouncedQuery, (fact) => [
+      { text: fact.label, weight: 4 },
+      { text: fact.value, weight: 2 },
+      { text: fact.hub, weight: 1 },
+    ]).map((fact, i) => ({
+      key: `${fact.hub}-${fact.label}-${i}`,
+      title: fact.label,
+      excerpt: `${fact.value} (${fact.hub})`,
+      href: "/quick-reference",
+    }));
+  }, [debouncedQuery, scope, quickRefFacts]);
+
+  const nonArticleResults =
+    scope === "trees" ? treeResults : scope === "glossary" ? glossaryResults : scope === "quickref" ? quickRefResults : [];
+
   return (
 
     <header className="flex flex-col gap-4 rounded-3xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface px-4 py-4 shadow-sm sm:px-8 sm:py-5 lg:flex-row lg:items-center lg:justify-between">
@@ -134,7 +218,7 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
 
           <p className="mt-2 text-gray-500 dark:text-slate-400">
 
-            {today}
+            {today} · <Link href="/sitemap" className="underline hover:text-red-700 dark:hover:text-brand">Site Index</Link>
 
           </p>
 
@@ -158,9 +242,26 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
 
         <div className="relative w-full sm:w-72 lg:w-96">
 
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            {(Object.keys(SCOPE_LABELS) as SearchScope[]).map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setScope(s)}
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                  scope === s
+                    ? "bg-red-700 text-white"
+                    : "border border-gray-300 dark:border-border-subtle text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-surface-muted"
+                }`}
+              >
+                {SCOPE_LABELS[s]}
+              </button>
+            ))}
+          </div>
+
           <Search
             size={18}
-            className="absolute left-4 top-4 text-gray-400 dark:text-slate-500"
+            className="absolute left-4 top-[3.25rem] text-gray-400 dark:text-slate-500"
           />
 
           <input
@@ -170,15 +271,24 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
             onFocus={() => setSearchFocused(true)}
             onBlur={() => {
               setSearchFocused(false);
-              if (query.trim()) saveRecentSearch(query);
+              if (query.trim()) {
+                saveRecentSearch(query);
+                if (scope === "articles" && results.length === 0) {
+                  logSearchMissAction(query).catch(() => {});
+                }
+              }
             }}
             onKeyDown={(e) => {
               if (e.key === "Escape") {
                 setQuery("");
                 e.currentTarget.blur();
-              } else if (e.key === "Enter" && results[0]) {
+              } else if (e.key === "Enter" && scope === "articles" && results[0]) {
                 saveRecentSearch(query);
                 router.push(`${basePath}/${results[0].slug}`);
+                setQuery("");
+              } else if (e.key === "Enter" && scope !== "articles" && nonArticleResults[0]) {
+                saveRecentSearch(query);
+                router.push(nonArticleResults[0].href);
                 setQuery("");
               }
             }}
@@ -187,25 +297,22 @@ export default function Header({ articles, basePath = "/Knowledge", portalUserNa
           />
 
           {!query && (
-            <kbd className="pointer-events-none absolute right-4 top-3.5 hidden rounded-md border border-gray-300 dark:border-border-subtle px-1.5 py-0.5 text-xs text-gray-400 dark:text-slate-500 sm:block">
+            <kbd className="pointer-events-none absolute right-4 top-[3.6rem] hidden rounded-md border border-gray-300 dark:border-border-subtle px-1.5 py-0.5 text-xs text-gray-400 dark:text-slate-500 sm:block">
               ⌘K
             </kbd>
           )}
 
-          {query && (
-
+          {query && scope === "articles" && (
             <SearchDropdown
-
               results={results}
-
               query={query}
-
-              onClose={()=>setQuery("")}
-
+              onClose={() => setQuery("")}
               basePath={basePath}
-
             />
+          )}
 
+          {query && scope !== "articles" && (
+            <SimpleSearchDropdown results={nonArticleResults} onClose={() => setQuery("")} />
           )}
 
           {!query && searchFocused && recentSearches.length > 0 && (

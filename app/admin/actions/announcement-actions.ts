@@ -39,6 +39,7 @@ export async function createAnnouncementAction(
     status: formData.get("status") as string,
     audience: formData.get("audience") as string,
     teamId: parseTeamId(formData),
+    isPlatformUpdate: formData.get("isPlatformUpdate") === "on",
     publishDate: parseDate(formData.get("publishDate")),
     expiryDate: parseDate(formData.get("expiryDate")),
   });
@@ -47,6 +48,7 @@ export async function createAnnouncementAction(
 
   revalidatePath("/admin/announcements");
   revalidatePath("/", "layout");
+  revalidatePath("/whats-new");
   redirect("/admin/announcements");
 }
 
@@ -63,6 +65,7 @@ export async function updateAnnouncementAction(
     status: formData.get("status") as string,
     audience: formData.get("audience") as string,
     teamId: parseTeamId(formData),
+    isPlatformUpdate: formData.get("isPlatformUpdate") === "on",
     publishDate: parseDate(formData.get("publishDate")),
     expiryDate: parseDate(formData.get("expiryDate")),
   });
@@ -71,6 +74,7 @@ export async function updateAnnouncementAction(
 
   revalidatePath("/admin/announcements");
   revalidatePath("/", "layout");
+  revalidatePath("/whats-new");
   redirect("/admin/announcements");
 }
 
@@ -83,6 +87,7 @@ export async function deleteAnnouncementAction(id: number) {
 
   revalidatePath("/admin/announcements");
   revalidatePath("/", "layout");
+  revalidatePath("/whats-new");
 }
 
 export async function deleteManyAnnouncementsAction(ids: number[]) {
@@ -94,4 +99,5 @@ export async function deleteManyAnnouncementsAction(ids: number[]) {
 
   revalidatePath("/admin/announcements");
   revalidatePath("/", "layout");
+  revalidatePath("/whats-new");
 }

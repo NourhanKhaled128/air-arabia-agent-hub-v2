@@ -264,6 +264,18 @@ export async function getRecentArticleChanges(limit = 15) {
   return results;
 }
 
+/** Per-article change feed, reusing the same AuditLog data as getRecentArticleChanges
+ * (the ArticleUpdate model is legacy/unused — no code populates it any more). */
+export async function getArticleChangeHistory(articleId: number, limit = 10) {
+  const logs = await prisma.auditLog.findMany({
+    where: { entity: "Article", entityId: articleId, action: { in: ["Created", "Updated", "Published"] } },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  return logs.map((log) => ({ action: log.action, userName: log.userName, createdAt: log.createdAt }));
+}
+
 interface ArticleSectionsInput {
   procedures?: { title?: string; content: string; image?: string }[];
   dispositions?: { category?: string; code?: string; content: string; scenario?: string; images?: string[] }[];

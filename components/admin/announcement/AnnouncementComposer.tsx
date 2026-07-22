@@ -9,6 +9,7 @@ interface Announcement {
   status: string;
   audience: string | null;
   teamId?: number | null;
+  isPlatformUpdate?: boolean;
   publishDate: Date | null;
   expiryDate: Date | null;
 }
@@ -85,6 +86,19 @@ export default function AnnouncementComposer({
           ...teams.map((team) => ({ label: team.name, value: String(team.id) })),
         ]}
       />
+
+      <div className="flex items-center gap-3 rounded-xl border p-4">
+        <input
+          type="checkbox"
+          id="isPlatformUpdate"
+          name="isPlatformUpdate"
+          defaultChecked={announcement?.isPlatformUpdate ?? false}
+          className="h-5 w-5 rounded border-gray-300"
+        />
+        <label htmlFor="isPlatformUpdate" className="text-sm font-semibold">
+          This is a platform update (shows on the What&apos;s New page)
+        </label>
+      </div>
 
       <div className="grid gap-6 md:grid-cols-2">
 

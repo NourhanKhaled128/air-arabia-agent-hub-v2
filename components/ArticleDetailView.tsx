@@ -11,8 +11,9 @@ import ArticleTemplateTabs from "@/components/ArticleTemplateTabs";
 import ArticleComments from "@/components/ArticleComments";
 import ArticleViewTracker from "@/components/ArticleViewTracker";
 import BookmarkButton from "@/components/BookmarkButton";
+import SuggestEditButton from "@/components/SuggestEditButton";
 import { prisma } from "@/lib/prisma";
-import { getArticleById, getArticlesByCategoryId } from "@/lib/article-service";
+import { getArticleById, getArticlesByCategoryId, getArticleChangeHistory } from "@/lib/article-service";
 import { getCategoryById } from "@/lib/category-service";
 import { getApprovedCommentsForArticle } from "@/lib/comment-service";
 import { getDecisionTreesForArticle } from "@/lib/decision-tree-service";
@@ -108,6 +109,7 @@ export default async function ArticleDetailView({
   const approvedComments = await getApprovedCommentsForArticle(article.id);
   const portalUser = await getCurrentPortalUser();
   const bookmarked = portalUser ? await isBookmarked(portalUser.id, article.id) : false;
+  const changeHistory = await getArticleChangeHistory(article.id);
   const relatedDecisionTrees = await getDecisionTreesForArticle(article.id);
   const confusablePointer = findConfusablePointer(article.slug);
 
@@ -132,6 +134,14 @@ export default async function ArticleDetailView({
       <ArticleViewTracker articleId={article.id} />
 
       <div className="mx-auto max-w-5xl space-y-8">
+
+        <div className="print-header mb-4">
+          <p className="text-xl font-bold">{article.title}</p>
+          <p className="text-sm text-gray-500">
+            Air Arabia Champion Hub — printed {new Date().toLocaleDateString("en-GB")}
+          </p>
+          <hr className="my-3" />
+        </div>
 
         <Breadcrumb
           items={[
@@ -173,6 +183,8 @@ export default async function ArticleDetailView({
             </div>
 
             <BookmarkButton articleId={article.id} initialBookmarked={bookmarked} />
+
+            {portalUser && <SuggestEditButton articleId={article.id} />}
 
             <PrintButton />
 
@@ -508,14 +520,32 @@ export default async function ArticleDetailView({
           </section>
         )}
 
-        <ArticleFeedback articleId={article.id} slug={article.slug} agentName={portalUser?.name ?? "Agent"} />
+        <div className="print:hidden space-y-8">
+          <ArticleFeedback articleId={article.id} slug={article.slug} agentName={portalUser?.name ?? "Agent"} />
 
-        <ArticleComments
-          articleId={article.id}
-          slug={article.slug}
-          agentName={portalUser?.name ?? "Agent"}
-          comments={approvedComments}
-        />
+          <ArticleComments
+            articleId={article.id}
+            slug={article.slug}
+            agentName={portalUser?.name ?? "Agent"}
+            comments={approvedComments}
+          />
+        </div>
+
+        {changeHistory.length > 0 && (
+          <details className="print:hidden rounded-2xl border border-gray-200 dark:border-border-subtle bg-white dark:bg-surface p-5">
+            <summary className="cursor-pointer font-semibold text-gray-700 dark:text-slate-300">
+              Change History
+            </summary>
+            <ul className="mt-3 space-y-2">
+              {changeHistory.map((entry, i) => (
+                <li key={i} className="flex items-center justify-between text-sm text-gray-600 dark:text-slate-400">
+                  <span>{entry.action} by {entry.userName}</span>
+                  <span>{entry.createdAt.toLocaleDateString("en-GB")}</span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
 
         {relatedArticles.length > 0 && (
           <section>

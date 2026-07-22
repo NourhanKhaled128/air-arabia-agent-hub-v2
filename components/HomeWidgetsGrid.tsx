@@ -65,7 +65,9 @@ export default function HomeWidgetsGrid({ widgets }: Props) {
           key={widget.id}
           className={`group relative ${widget.size === "full" ? "lg:col-span-2" : ""}`}
         >
-          <div className="absolute right-3 top-3 z-10 hidden gap-1 group-hover:flex">
+          {/* Always visible on touch-sized screens (no hover to reveal them);
+              hidden-until-hover only kicks in at md+ where a mouse is likely. */}
+          <div className="absolute right-3 top-3 z-10 flex gap-1 md:hidden md:group-hover:flex">
             <button
               type="button"
               onClick={() => move(widget.id, -1)}

@@ -21,6 +21,13 @@ export async function getPublishedAnnouncements(teamId?: number | null) {
   });
 }
 
+export async function getPlatformUpdates() {
+  return prisma.announcement.findMany({
+    where: { isPlatformUpdate: true, status: "Published" },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
 export async function getAnnouncementById(id: number) {
   return prisma.announcement.findUnique({
     where: {
@@ -36,6 +43,7 @@ export async function createAnnouncement(data: {
   status: string;
   audience?: string;
   teamId?: number | null;
+  isPlatformUpdate?: boolean;
   publishDate?: Date;
   expiryDate?: Date;
 }) {
@@ -53,6 +61,7 @@ export async function updateAnnouncement(
     status: string;
     audience: string;
     teamId: number | null;
+    isPlatformUpdate: boolean;
     publishDate: Date;
     expiryDate: Date;
   }>

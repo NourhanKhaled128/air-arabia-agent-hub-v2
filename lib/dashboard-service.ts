@@ -45,11 +45,12 @@ export async function getLatestAnnouncements(teamId?: number | null) {
 }
 
 export async function getModerationCounts() {
-  const [pendingComments, newFeedback] = await Promise.all([
+  const [pendingComments, newFeedback, newContentSuggestions] = await Promise.all([
     prisma.comment.count({ where: { status: "Pending" } }),
     prisma.feedback.count({ where: { status: "New" } }),
+    prisma.contentSuggestion.count({ where: { status: "New" } }),
   ]);
-  return { pendingComments, newFeedback };
+  return { pendingComments, newFeedback, newContentSuggestions };
 }
 
 /** Logins/quiz submissions in the last 7 days, plus the most active team by attempt

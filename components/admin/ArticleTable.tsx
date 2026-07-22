@@ -8,6 +8,7 @@ import {
   Globe,
   Archive,
   Copy,
+  Send,
 } from "lucide-react";
 
 import {
@@ -18,6 +19,7 @@ import {
   publishManyArticlesAction,
   archiveManyArticlesAction,
   duplicateArticleAction,
+  submitArticleForReviewAction,
 } from "@/app/admin/actions/article-actions";
 import AdminListTable from "@/components/admin/AdminListTable";
 
@@ -83,6 +85,7 @@ export default function ArticleTable({ articles }: Props) {
           options: [
             { value: "Published", label: "Published" },
             { value: "Draft", label: "Draft" },
+            { value: "Review", label: "Review" },
             { value: "Archived", label: "Archived" },
           ],
         },
@@ -120,6 +123,8 @@ export default function ArticleTable({ articles }: Props) {
                   ? "bg-emerald-100 text-emerald-700"
                   : article.status === "Archived"
                   ? "bg-slate-200 text-slate-700"
+                  : article.status === "Review"
+                  ? "bg-blue-100 text-blue-700"
                   : "bg-amber-100 text-amber-700"
               }`}
             >
@@ -145,6 +150,21 @@ export default function ArticleTable({ articles }: Props) {
                 <Pencil size={18} />
               </Link>
 
+              {article.status === "Draft" && (
+                <button
+                  disabled={isPending}
+                  onClick={() =>
+                    run(() =>
+                      submitArticleForReviewAction(article.id)
+                    )
+                  }
+                  title="Submit for Review"
+                  className="rounded-lg border p-2 hover:bg-blue-50"
+                >
+                  <Send size={18} />
+                </button>
+              )}
+
               <button
                 disabled={isPending}
                 onClick={() =>
@@ -152,6 +172,7 @@ export default function ArticleTable({ articles }: Props) {
                     publishArticleAction(article.id)
                   )
                 }
+                title="Publish"
                 className="rounded-lg border p-2 hover:bg-green-50"
               >
                 <Globe size={18} />

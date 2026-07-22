@@ -9,19 +9,21 @@ import { getVisibleImportantLinks } from "@/lib/important-link-service";
 import { CUSTOMER_SUPPORT_TEAM_GROUP } from "@/lib/customer-support-team";
 import { TRADE_SUPPORT_TEAM_GROUP } from "@/lib/trade-support-team";
 import { getCurrentPortalUser } from "@/lib/portal-dal";
+import { getDecisionTreesForSearch } from "@/lib/decision-tree-service";
 
 interface Props {
   children: React.ReactNode;
 }
 
 export default async function PortalLayout({ children }: Props) {
-  const [articles, allCategories, pinnedLinks, toolLinks, importantLinks, portalUser] = await Promise.all([
+  const [articles, allCategories, pinnedLinks, toolLinks, importantLinks, portalUser, decisionTrees] = await Promise.all([
     getArticlesForSearch(),
     getVisibleCategoriesForSidebar(),
     getVisibleSidebarLinksBySection("pinned"),
     getVisibleSidebarLinksBySection("tools"),
     getVisibleImportantLinks(),
     getCurrentPortalUser(),
+    getDecisionTreesForSearch(),
   ]);
 
   // Any category in the Customer Support Team or Trade Support Team sidebar group
@@ -44,7 +46,7 @@ export default async function PortalLayout({ children }: Props) {
 
         <PortalMain>
 
-          <Header articles={articles} portalUserName={portalUser?.name ?? null} />
+          <Header articles={articles} decisionTrees={decisionTrees} portalUserName={portalUser?.name ?? null} />
 
           <div className="mt-4 space-y-8 sm:mt-8">
 

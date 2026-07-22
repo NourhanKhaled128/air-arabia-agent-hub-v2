@@ -30,7 +30,7 @@ export default function BookmarkButton({ articleId, initialBookmarked }: Props) 
       onClick={toggle}
       disabled={isPending}
       title={bookmarked ? "Remove bookmark" : "Bookmark this article"}
-      className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 font-semibold transition disabled:opacity-50 ${
+      className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 font-semibold transition disabled:opacity-50 print:hidden ${
         bookmarked
           ? "border-red-600 bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300"
           : "border-gray-300 dark:border-border-subtle text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-surface-muted"

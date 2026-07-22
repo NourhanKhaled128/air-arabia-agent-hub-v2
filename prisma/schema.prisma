@@ -40,6 +40,7 @@ model Article {
   decisionTrees  DecisionTree[]
   articleViews   ArticleView[]
   bookmarks      ArticleBookmark[]
+  contentSuggestions ContentSuggestion[]
 }
 
 model ArticleUpdate {
@@ -282,6 +283,7 @@ model Announcement {
   priority    String    @default("Medium")
   status      String    @default("Draft")
   audience    String?
+  isPlatformUpdate Boolean @default(false)
   teamId      Int?
   team        Team?     @relation(fields: [teamId], references: [id], onDelete: SetNull)
   publishDate DateTime?
@@ -385,12 +387,14 @@ model PortalUser {
   lastLoginAt  DateTime?
   notificationsSeenAt DateTime?
   announcementsSeenAt DateTime?
+  hasSeenOnboarding   Boolean   @default(false)
   teamId       Int?
   team         Team?     @relation(fields: [teamId], references: [id], onDelete: SetNull)
   articleViews ArticleView[]
   bookmarks    ArticleBookmark[]
   comments     Comment[]  @relation("PortalUserComments")
   feedback     Feedback[] @relation("PortalUserFeedback")
+  contentSuggestions ContentSuggestion[]
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
@@ -428,6 +432,26 @@ model ArticleBookmark {
   createdAt    DateTime   @default(now())
 
   @@unique([portalUserId, articleId])
+}
+
+/// Structured "suggest an edit" — distinct from the Yes/No Feedback rating, this is a
+/// correction request an agent files against a specific article.
+model ContentSuggestion {
+  id           Int         @id @default(autoincrement())
+  articleId    Int
+  article      Article     @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  portalUserId Int?
+  portalUser   PortalUser? @relation(fields: [portalUserId], references: [id], onDelete: SetNull)
+  description  String
+  status       String      @default("New")
+  createdAt    DateTime    @default(now())
+}
+
+/// Search queries that returned zero results — surfaced to admins as a content-gap signal.
+model SearchMiss {
+  id        Int      @id @default(autoincrement())
+  query     String
+  createdAt DateTime @default(now())
 }
 
 model Airport {

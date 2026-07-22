@@ -33,6 +33,8 @@ import ImportantLinks from "@/components/ImportantLinks";
 
 import { getVisibleHomeWidgets } from "@/lib/home-widget-service";
 import HomeWidgetsGrid from "@/components/HomeWidgetsGrid";
+import OnboardingTour from "@/components/OnboardingTour";
+import { getCurrentPortalUser } from "@/lib/portal-dal";
 
 const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   quickActions: QuickActions,
@@ -49,11 +51,13 @@ const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
 
 export default async function HomePage() {
 
-  const widgets = await getVisibleHomeWidgets();
+  const [widgets, user] = await Promise.all([getVisibleHomeWidgets(), getCurrentPortalUser()]);
 
   return (
 
     <>
+
+      {user && <OnboardingTour hasSeenOnboarding={user.hasSeenOnboarding} />}
 
       <Hero />
 

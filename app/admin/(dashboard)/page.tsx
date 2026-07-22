@@ -131,8 +131,8 @@ export default async function AdminDashboard() {
 
       <DashboardCards stats={stats} />
 
-      {(staleAgentCount > 0 || moderationCounts.pendingComments > 0 || moderationCounts.newFeedback > 0) && (
-        <div className="grid gap-4 sm:grid-cols-3">
+      {(staleAgentCount > 0 || moderationCounts.pendingComments > 0 || moderationCounts.newFeedback > 0 || moderationCounts.newContentSuggestions > 0) && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {staleAgentCount > 0 && (
             <Link
               href="/admin/portal-users"
@@ -158,6 +158,15 @@ export default async function AdminDashboard() {
             >
               <p className="text-3xl font-bold text-violet-800">{moderationCounts.newFeedback}</p>
               <p className="mt-1 font-semibold text-violet-700">New feedback item{moderationCounts.newFeedback === 1 ? "" : "s"}</p>
+            </Link>
+          )}
+          {moderationCounts.newContentSuggestions > 0 && (
+            <Link
+              href="/admin/content-suggestions"
+              className="rounded-2xl border border-teal-200 bg-teal-50 p-5 hover:bg-teal-100"
+            >
+              <p className="text-3xl font-bold text-teal-800">{moderationCounts.newContentSuggestions}</p>
+              <p className="mt-1 font-semibold text-teal-700">Content suggestion{moderationCounts.newContentSuggestions === 1 ? "" : "s"}</p>
             </Link>
           )}
         </div>

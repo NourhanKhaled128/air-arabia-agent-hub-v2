@@ -15,6 +15,8 @@ import {
   UserCheck,
   Layers,
   Shield,
+  ShieldCheck,
+  Pencil,
   Settings,
   Home,
   LogOut,
@@ -42,7 +44,6 @@ import {
   Bell,
   History,
   Database,
-  Plug,
   Activity,
   ClipboardCheck,
 } from "lucide-react";
@@ -96,16 +97,17 @@ export const adminMenuGroups = [
       { title: "Home Widgets", href: "/admin/home-widgets", icon: LayoutGrid },
       { title: "Comments", href: "/admin/comments", icon: MessageCircle },
       { title: "Feedback", href: "/admin/feedback", icon: MessageSquare },
+      { title: "Content Suggestions", href: "/admin/content-suggestions", icon: Pencil },
     ],
   },
   {
     label: "Operations",
     items: [
       { title: "Disruptions", href: "/admin/disruptions", icon: AlertTriangle },
+      { title: "Content Health", href: "/admin/content-health", icon: ShieldCheck },
       { title: "Audit Trail", href: "/admin/audit", icon: History },
-      { title: "Backup & Restore", href: "/admin/backup", icon: Database, badge: "Soon" },
-      { title: "Integrations", href: "/admin/integrations", icon: Plug, badge: "Soon" },
-      { title: "System Health", href: "/admin/system", icon: Activity, badge: "Soon" },
+      { title: "Backup & Restore", href: "/admin/backup", icon: Database },
+      { title: "System Health", href: "/admin/system", icon: Activity },
     ],
   },
   {

@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { logAction } from "@/lib/audit-service";
-import { getCurrentAdminUser, requireAdminUser } from "@/lib/admin-dal";
+import { getCurrentAdminUser, requireAdminUser, requirePermission } from "@/lib/admin-dal";
 
 async function currentUserName() {
   const user = await getCurrentAdminUser();
@@ -34,8 +34,21 @@ export async function deleteManyArticlesAction(ids: number[]) {
   revalidatePath("/admin/articles");
 }
 
-export async function publishArticleAction(id: number) {
+export async function submitArticleForReviewAction(id: number) {
   await requireAdminUser();
+
+  await prisma.article.update({
+    where: { id },
+    data: { status: "Review" },
+  });
+
+  await logAction("Submitted for Review", "Article", id, await currentUserName());
+
+  revalidatePath("/admin/articles");
+}
+
+export async function publishArticleAction(id: number) {
+  await requirePermission("manage_articles");
 
   await prisma.article.update({
     where: {
@@ -69,7 +82,7 @@ export async function archiveArticleAction(id: number) {
 }
 
 export async function publishManyArticlesAction(ids: number[]) {
-  await requireAdminUser();
+  await requirePermission("manage_articles");
 
   await prisma.article.updateMany({
     where: { id: { in: ids } },
