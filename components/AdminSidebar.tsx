@@ -272,16 +272,7 @@ export default function AdminSidebar() {
                         }`}
                       >
                         <Icon size={20} />
-                        {!collapsed && (
-                          <span className="flex flex-1 items-center justify-between gap-2">
-                            {item.title}
-                            {"badge" in item && item.badge && (
-                              <span className="rounded-full bg-amber-100 dark:bg-amber-950/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400">
-                                {item.badge}
-                              </span>
-                            )}
-                          </span>
-                        )}
+                        {!collapsed && <span className="flex-1">{item.title}</span>}
                       </Link>
                     );
                   })}
