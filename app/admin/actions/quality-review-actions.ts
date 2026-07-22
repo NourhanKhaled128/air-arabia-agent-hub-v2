@@ -25,6 +25,7 @@ export async function createQualityReviewAction(portalUserId: number, formData: 
   await logAction("Created", "QualityReview", portalUserId, reviewer.name);
 
   revalidatePath(`/admin/portal-users/${portalUserId}/activity`);
+  revalidatePath("/admin/quality-feedback");
 }
 
 export async function deleteQualityReviewAction(id: number, portalUserId: number) {
@@ -35,4 +36,5 @@ export async function deleteQualityReviewAction(id: number, portalUserId: number
   await logAction("Deleted", "QualityReview", id, reviewer.name);
 
   revalidatePath(`/admin/portal-users/${portalUserId}/activity`);
+  revalidatePath("/admin/quality-feedback");
 }

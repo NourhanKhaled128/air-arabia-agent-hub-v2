@@ -31,6 +31,8 @@ import UpcomingTraining from "@/components/UpcomingTraining";
 
 import ImportantLinks from "@/components/ImportantLinks";
 
+import QualityFeedbackWidget from "@/components/QualityFeedbackWidget";
+
 import { getVisibleHomeWidgets } from "@/lib/home-widget-service";
 import HomeWidgetsGrid from "@/components/HomeWidgetsGrid";
 import OnboardingTour from "@/components/OnboardingTour";
@@ -47,6 +49,7 @@ const WIDGET_COMPONENTS: Record<string, React.ComponentType> = {
   recentActivity: RecentActivity,
   upcomingTraining: UpcomingTraining,
   importantLinks: ImportantLinks,
+  qualityFeedback: QualityFeedbackWidget,
 };
 
 export default async function HomePage() {

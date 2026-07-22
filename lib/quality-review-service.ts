@@ -7,6 +7,13 @@ export async function getQualityReviewsForAgent(portalUserId: number) {
   });
 }
 
+export async function getAllQualityReviews() {
+  return prisma.qualityReview.findMany({
+    orderBy: { createdAt: "desc" },
+    include: { portalUser: { select: { id: true, name: true, email: true } } },
+  });
+}
+
 export async function getAgentQualityStats(portalUserId: number) {
   const result = await prisma.qualityReview.aggregate({
     where: { portalUserId },

@@ -9,6 +9,7 @@ export const HOME_WIDGET_CATALOG: Record<string, string> = {
   recentActivity: "Recent Activity",
   upcomingTraining: "Upcoming Training",
   importantLinks: "Important Links",
+  qualityFeedback: "Quality Feedback",
 };
 
 export const DEFAULT_HOME_WIDGETS: { type: string; order: number; size: string }[] = [
@@ -22,4 +23,5 @@ export const DEFAULT_HOME_WIDGETS: { type: string; order: number; size: string }
   { type: "recentActivity", order: 7, size: "half" },
   { type: "upcomingTraining", order: 8, size: "full" },
   { type: "importantLinks", order: 9, size: "half" },
+  { type: "qualityFeedback", order: 10, size: "half" },
 ];

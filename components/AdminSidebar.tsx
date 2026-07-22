@@ -46,6 +46,7 @@ import {
   Database,
   Activity,
   ClipboardCheck,
+  Star,
 } from "lucide-react";
 import { logoutAction } from "@/app/admin/actions/auth-actions";
 import { useSidebarPrefs } from "@/components/SidebarPrefsProvider";
@@ -98,6 +99,7 @@ export const adminMenuGroups = [
       { title: "Comments", href: "/admin/comments", icon: MessageCircle },
       { title: "Feedback", href: "/admin/feedback", icon: MessageSquare },
       { title: "Content Suggestions", href: "/admin/content-suggestions", icon: Pencil },
+      { title: "Quality Feedback", href: "/admin/quality-feedback", icon: Star },
     ],
   },
   {
