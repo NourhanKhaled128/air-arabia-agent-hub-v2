@@ -173,6 +173,7 @@ export default function EditArticleForm({
   const [loading, setLoading] = useState(false);
   const [scheduling, setScheduling] = useState(false);
   const [scheduleDate, setScheduleDate] = useState("");
+  const [scheduleText, setScheduleText] = useState("");
 
   const [form, setForm] = useState<EditFormData>(() => toFormData(article));
 
@@ -233,6 +234,10 @@ export default function EditArticleForm({
       alert("Pick an effective date first.");
       return;
     }
+    if (!scheduleText.trim()) {
+      alert("Enter the text to add after the Overview.");
+      return;
+    }
 
     setScheduling(true);
 
@@ -240,12 +245,15 @@ export default function EditArticleForm({
       await createScheduledChangeAction({
         entityType: "Article",
         entityId: article.id,
-        label: `${form.title} — scheduled edit`,
+        label: `${form.title} — scheduled overview update`,
         effectiveDate: new Date(scheduleDate),
-        payload: form,
+        payload: { appendToOverview: scheduleText.trim() },
       });
 
-      alert(`Scheduled — this edit will go live on ${new Date(scheduleDate).toLocaleString()}. The live article is unchanged until then.`);
+      alert(`Scheduled — this text will be added after the Overview on ${new Date(scheduleDate).toLocaleString()}. The live article is unchanged until then.`);
+
+      setScheduleDate("");
+      setScheduleText("");
 
       router.push("/admin/scheduled-changes");
 
@@ -335,26 +343,48 @@ export default function EditArticleForm({
         history={history}
       />
 
-      <div className="flex flex-wrap items-center justify-end gap-3">
+      <section className="rounded-3xl bg-white p-8 shadow-sm dark:bg-slate-900">
 
-        <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-          Effective date
-          <input
-            type="datetime-local"
-            value={scheduleDate}
-            onChange={(e) => setScheduleDate(e.target.value)}
-            className="rounded-lg border border-slate-300 px-2 py-1.5 dark:border-slate-700 dark:bg-slate-900"
+        <h2 className="mb-2 text-2xl font-bold">Schedule an Overview update</h2>
+        <p className="mb-6 text-sm text-slate-500 dark:text-slate-400">
+          Stages text to be appended after the current Overview, automatically, on the date below — it does not
+          touch anything else on this article, and the live article is unchanged until then.
+        </p>
+
+        <label className="mb-4 block text-sm font-semibold text-gray-700 dark:text-slate-300">
+          Text to add after the Overview
+          <textarea
+            rows={3}
+            value={scheduleText}
+            onChange={(e) => setScheduleText(e.target.value)}
+            placeholder="e.g. Effective 1 August 2026, ..."
+            className="mt-2 w-full rounded-xl border p-4 font-normal dark:border-slate-700 dark:bg-slate-950"
           />
         </label>
 
-        <button
-          onClick={scheduleForLater}
-          disabled={scheduling || loading}
-          className="rounded-xl border border-red-700 px-6 py-3 font-semibold text-red-700 dark:text-red-400"
-        >
-          {scheduling ? "Scheduling..." : "Schedule for later"}
-        </button>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+            Effective date
+            <input
+              type="datetime-local"
+              value={scheduleDate}
+              onChange={(e) => setScheduleDate(e.target.value)}
+              className="rounded-lg border border-slate-300 px-2 py-1.5 dark:border-slate-700 dark:bg-slate-900"
+            />
+          </label>
 
+          <button
+            onClick={scheduleForLater}
+            disabled={scheduling || loading}
+            className="rounded-xl border border-red-700 px-6 py-3 font-semibold text-red-700 dark:text-red-400"
+          >
+            {scheduling ? "Scheduling..." : "Schedule for later"}
+          </button>
+        </div>
+
+      </section>
+
+      <div className="flex justify-end">
         <button
           onClick={save}
           disabled={loading || scheduling}
@@ -362,7 +392,6 @@ export default function EditArticleForm({
         >
           {loading ? "Saving..." : "Save Changes"}
         </button>
-
       </div>
 
       </div>

@@ -1,30 +1,15 @@
 import { prisma } from "@/lib/prisma";
-import { buildArticleSectionsReplaceData } from "@/lib/article-service";
 import { updateDecisionTree, type DecisionTreeInput } from "@/lib/decision-tree-service";
 import { logAction } from "@/lib/audit-service";
 import type { ScheduledChange } from "@prisma/client";
 
+// Deliberately narrow: a scheduled Article change only appends text after the
+// article's Overview — it never replaces the article wholesale. Read at apply time,
+// not schedule time, so it composes safely with any other edits made to the article
+// in between (the append target is always the *current* overview, not a stale
+// snapshot from when this was scheduled).
 export interface ArticleChangePayload {
-  title: string;
-  categoryId?: number | null;
-  folderId?: number | null;
-  description: string;
-  overview: string;
-  author: string;
-  status: string;
-  coverImage?: string | null;
-  procedures?: { title?: string; content: string; image?: string }[];
-  dispositions?: { category?: string; code?: string; content: string; scenario?: string; images?: string[] }[];
-  escalations?: { department?: string; condition?: string; content: string; images?: string[] }[];
-  notes?: { type?: string; content: string; images?: string[] }[];
-  references?: { title: string; type?: string; link?: string; images?: string[] }[];
-  keywords?: string[];
-  scenarios?: { situation: string; response: string; images?: string[] }[];
-  images?: { url: string }[];
-  attachments?: { fileName: string; url: string; mimeType: string; size: number }[];
-  chatTemplates?: { title: string; content: string }[];
-  emailTemplates?: { title: string; subject: string; body: string }[];
-  updates?: { title: string; content: string; userName?: string }[];
+  appendToOverview: string;
 }
 
 export async function getPendingScheduledChanges() {
@@ -81,37 +66,16 @@ export async function applyScheduledChange(change: ScheduledChange): Promise<boo
   }
 }
 
-// Mirrors app/api/articles/[id]/route.ts's PUT handler exactly, so a scheduled edit
-// applies identically to a manual save — just reusing buildArticleSectionsReplaceData
-// rather than reimplementing it. The one addition: re-checking categoryId/folderId
-// still exist (both onDelete: SetNull on Article), since the payload was staged
-// earlier and either could have been deleted in the meantime.
+// Appends to whatever the article's overview reads *right now* — not a snapshot taken
+// when this was scheduled — so a concurrent manual edit to the rest of the article
+// (or even the overview itself) between scheduling and the effective date is preserved.
 async function applyArticleChange(articleId: number, payload: ArticleChangePayload) {
-  let categoryId = payload.categoryId ?? null;
-  if (categoryId != null && !(await prisma.category.findUnique({ where: { id: categoryId } }))) {
-    categoryId = null;
-  }
-  let folderId = payload.folderId ?? null;
-  if (folderId != null && !(await prisma.categoryFolder.findUnique({ where: { id: folderId } }))) {
-    folderId = null;
-  }
+  const article = await prisma.article.findUnique({ where: { id: articleId }, select: { overview: true } });
+  if (!article) throw new Error(`Article ${articleId} not found`);
 
   await prisma.article.update({
     where: { id: articleId },
-    data: {
-      title: payload.title,
-      categoryId,
-      folderId,
-      description: payload.description,
-      overview: payload.overview,
-      author: payload.author,
-      status: payload.status,
-      coverImage: payload.coverImage ?? null,
-      ...buildArticleSectionsReplaceData({
-        ...payload,
-        updates: (payload.updates ?? []).map((item) => ({ ...item, userName: item.userName ?? "System" })),
-      }),
-    },
+    data: { overview: `${article.overview}\n\n${payload.appendToOverview}` },
   });
 }
 

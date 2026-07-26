@@ -13,9 +13,12 @@ import type { Prisma } from "@prisma/client";
 //   1. Creates the 3L and E5 Name Change articles + decision trees now, Published,
 //      describing today's real (still-active) policy — neither hub had one before.
 //   2. Queues 8 ScheduledChange rows (G9/9P/3L/E5 x article+tree), effectiveDate
-//      2026-08-01T00:00:00Z, whose payload rewrites each into the suspended-policy
-//      wording. Nothing changes until the daily cron (app/api/cron/apply-scheduled-changes)
-//      picks these up on/after that date.
+//      2026-08-01T00:00:00Z. For articles, the payload only appends a banner
+//      paragraph after the current Overview — it never replaces the rest of the
+//      article (procedures, notes, chat/email templates, etc. are untouched). For
+//      decision trees, the payload replaces the relevant outcome node text, since
+//      the tree's nodes *are* its content. Nothing changes until the daily cron
+//      (app/api/cron/apply-scheduled-changes) picks these up on/after that date.
 //   3. Updates the EscalationContact "Free Name Spelling Amendment / Correction" entry
 //      now — informational guidance for agents, doesn't assert current availability,
 //      safe to broaden immediately to mention 3L/E5.
@@ -257,35 +260,14 @@ async function ensureE5ArticleAndTree() {
 // ---------------------------------------------------------------------------
 
 const SUSPENSION_BANNER =
-  "**Effective 1 August 2026:** the paid Name Change option (credit card/cash or previous credit voucher) is suspended. Passengers who need post-booking flexibility should be directed to book the Value or Ultimate bundle (includes a refund option, applicable fees apply) — this can't be retrofitted onto an existing booking. Free-of-charge exceptions continue unchanged: genuine spelling corrections, and genuine last-name changes with applicable proof documents. Applies across G9, E5, 3L and 9P.\n\n";
+  "**Effective 1 August 2026:** the paid Name Change option (credit card/cash or previous credit voucher) is suspended. Passengers who need post-booking flexibility should be directed to book the Value or Ultimate bundle (includes a refund option, applicable fees apply) — this can't be retrofitted onto an existing booking. Free-of-charge exceptions continue unchanged: genuine spelling corrections, and genuine last-name changes with applicable proof documents. Applies across G9, E5, 3L and 9P.";
 
-const SUSPENSION_NOTE =
-  "SUSPENDED EFFECTIVE 1 AUGUST 2026 — the paid Name Change option (credit card/cash or family credit voucher) is no longer offered. Redirect passengers who want post-booking flexibility to the Value or Ultimate bundle at time of booking (includes a refund option, applicable fees apply). Free exceptions (genuine spelling correction, genuine last-name change with proof) are unaffected and continue via the existing supervisor process.";
-
-async function scheduleArticleSuspension(
-  slug: string,
-  label: string,
-  overrides: {
-    chatTemplates: { title: string; content: string }[];
-    emailTemplates: { title: string; subject: string; body: string }[];
-  }
-) {
-  const article = await prisma.article.findUnique({
-    where: { slug },
-    include: {
-      procedures: true,
-      dispositions: true,
-      escalations: true,
-      notes: true,
-      references: true,
-      keywords: true,
-      scenarios: true,
-      images: true,
-      attachments: true,
-      chatTemplates: true,
-      emailTemplates: true,
-    },
-  });
+// Schedules a narrow, additive change: the banner is appended after whatever the
+// article's Overview reads at apply time (1 Aug) — it never touches procedures,
+// notes, chat/email templates, or any other section, so it can't clobber unrelated
+// edits made to the article between now and then.
+async function scheduleArticleSuspension(slug: string, label: string) {
+  const article = await prisma.article.findUnique({ where: { slug }, select: { id: true } });
   if (!article) throw new Error(`Article not found: ${slug}`);
 
   const existing = await prisma.scheduledChange.findFirst({
@@ -296,49 +278,7 @@ async function scheduleArticleSuspension(
     return;
   }
 
-  const payload: ArticleChangePayload = {
-    title: article.title,
-    categoryId: article.categoryId,
-    folderId: article.folderId,
-    description: article.description,
-    overview: article.overview.startsWith("**Effective 1 August 2026:**") ? article.overview : SUSPENSION_BANNER + article.overview,
-    author: article.author,
-    status: article.status,
-    coverImage: article.coverImage,
-    procedures: article.procedures.map((p) => ({ title: p.title ?? undefined, content: p.content, image: p.image ?? undefined })),
-    dispositions: article.dispositions.map((d) => ({
-      category: d.category ?? undefined,
-      code: d.code ?? undefined,
-      content: d.content,
-      scenario: d.scenario ?? undefined,
-      images: d.images,
-    })),
-    escalations: article.escalations.map((e) => ({
-      department: e.department ?? undefined,
-      condition: e.condition ?? undefined,
-      content: e.content,
-      images: e.images,
-    })),
-    notes: [
-      ...article.notes.map((n) => ({ type: n.type, content: n.content, images: n.images })),
-      { type: "Warning", content: SUSPENSION_NOTE },
-    ],
-    references: article.references.map((r) => ({ title: r.title, type: r.type, link: r.link ?? undefined, images: r.images })),
-    keywords: article.keywords.map((k) => k.value),
-    scenarios: article.scenarios.map((s) => ({ situation: s.situation, response: s.response, images: s.images })),
-    images: article.images.map((i) => ({ url: i.image })),
-    attachments: article.attachments.map((a) => ({ fileName: a.fileName, url: a.url, mimeType: a.mimeType, size: a.size })),
-    chatTemplates: overrides.chatTemplates,
-    emailTemplates: overrides.emailTemplates,
-    updates: [
-      {
-        title: "Paid Name Change suspended",
-        content:
-          "Per company memo: paid Name Change (credit card/cash or family credit voucher) suspended effective 1 Aug 2026 across G9, E5, 3L and 9P. Free exceptions (spelling correction, genuine last-name change with proof) unaffected.",
-        userName: AUTHOR,
-      },
-    ],
-  };
+  const payload: ArticleChangePayload = { appendToOverview: SUSPENSION_BANNER };
 
   const change = await prisma.scheduledChange.create({
     data: {
@@ -544,158 +484,17 @@ async function main() {
   await ensureThreeLArticleAndTree();
   await ensureE5ArticleAndTree();
 
-  await scheduleArticleSuspension("g9-name-change-g9", "G9 Name Change — paid option suspension", {
-    chatTemplates: [
-      {
-        title: "Paid name change no longer available (English)",
-        content:
-          "I'm sorry, but as of 1 August 2026 the paid Name Change option has been suspended, so this isn't something we can process for a fee anymore. If you'd like flexibility on a future booking, I'd recommend booking the Value or Ultimate bundle, which includes a refund option.",
-      },
-      {
-        title: "Name change via family credit no longer available (English)",
-        content:
-          "I understand you were hoping to use your sibling's credit voucher for this — but that paid name-change route was suspended on 1 August 2026 and isn't available anymore, regardless of the funding source.",
-      },
-      {
-        title: "Free spelling correction request (English)",
-        content:
-          "Not a problem at all — a spelling correction like that is completely free and unaffected by the recent suspension of paid name changes. I'll send this directly to a supervisor to process.",
-      },
-    ],
-    emailTemplates: [
-      {
-        title: "Paid name change no longer available",
-        subject: "Paid name change no longer available",
-        body: "Dear [Customer Name],\n\nThank you for your name change request.\n\nEffective 1 August 2026, the paid Name Change option has been suspended and can no longer be processed for a fee. For flexibility on a future booking, we'd recommend the Value or Ultimate bundle, which includes a refund option (applicable fees apply).\n\nBest regards,\nAir Arabia Customer Support",
-      },
-      {
-        title: "Name change via family credit no longer available",
-        subject: "Name change via family credit no longer available",
-        body: "Dear [Customer Name],\n\nThank you for your request to apply your family member's credit voucher to your booking with a name change.\n\nEffective 1 August 2026, paid name changes — including those funded by a family member's credit voucher — have been suspended and are no longer available.\n\nBest regards,\nAir Arabia Customer Support",
-      },
-      {
-        title: "Free spelling correction request",
-        subject: "Free spelling correction request",
-        body: "Dear [Customer Name],\n\nThank you for flagging the spelling discrepancy between your booking and passport.\n\nThis qualifies as a free spelling correction, which remains unaffected by the 1 August 2026 suspension of paid name changes. We've forwarded your request directly to a supervisor for processing — no charge applies.\n\nBest regards,\nAir Arabia Customer Support",
-      },
-    ],
-  });
-
-  await scheduleArticleSuspension("9p-name-change-9p", "9P Name Change — paid option suspension", {
-    chatTemplates: [
-      {
-        title: "Paid name change no longer available (English)",
-        content:
-          "I'm sorry, but as of 1 August 2026 the paid Name Change option has been suspended, so this isn't something we can process for a fee anymore, in AED or PKR. For flexibility on a future booking, I'd recommend the Value or Ultimate bundle, which includes a refund option.",
-      },
-      {
-        title: "Name change via family credit no longer available (English)",
-        content:
-          "I understand you were hoping to use your spouse's credit voucher for this — but that paid route was suspended on 1 August 2026 and isn't available anymore, regardless of the funding source.",
-      },
-      {
-        title: "Free name update after marriage (English)",
-        content:
-          "Congratulations on the wedding! Updating to your husband's last name is free of charge and unaffected by the recent suspension of paid name changes — please send proof of documents like the marriage certificate, and I'll forward this directly to a supervisor.",
-      },
-    ],
-    emailTemplates: [
-      {
-        title: "Paid name change no longer available",
-        subject: "Paid name change no longer available",
-        body: "Dear [Customer Name],\n\nThank you for asking about the name change fee.\n\nEffective 1 August 2026, the paid Name Change option has been suspended (both the AED and PKR fee) and can no longer be processed. For flexibility on a future booking, we'd recommend the Value or Ultimate bundle, which includes a refund option (applicable fees apply).\n\nBest regards,\nAir Arabia Customer Support",
-      },
-      {
-        title: "Name change via family credit no longer available",
-        subject: "Name change via family credit no longer available",
-        body: "Dear [Customer Name],\n\nThank you for your request to use a credit voucher for a name change on your international 9P sector for your spouse.\n\nEffective 1 August 2026, paid name changes — including those funded by a family member's credit voucher — have been suspended and are no longer available.\n\nBest regards,\nAir Arabia Customer Support",
-      },
-      {
-        title: "Free name update after marriage",
-        subject: "Free name update after marriage",
-        body: "Dear [Customer Name],\n\nThank you for your request to update your ticket to your husband's last name.\n\nThis update is free of charge and remains unaffected by the 1 August 2026 suspension of paid name changes. Please send proof of documents (e.g. marriage certificate) — we're forwarding this directly to a supervisor for processing.\n\nBest regards,\nAir Arabia Customer Support",
-      },
-    ],
-  });
+  await scheduleArticleSuspension("g9-name-change-g9", "G9 Name Change — paid option suspension");
+  await scheduleArticleSuspension("9p-name-change-9p", "9P Name Change — paid option suspension");
 
   const threeLArticle = await prisma.article.findUnique({ where: { slug: "3l-name-change-3l" } });
   if (threeLArticle) {
-    await scheduleArticleSuspension("3l-name-change-3l", "3L Name Change — paid option suspension", {
-      chatTemplates: [
-        {
-          title: "Paid name change no longer available (English)",
-          content:
-            "I'm sorry, but as of 1 August 2026 the paid Name Change option has been suspended on 3L, so this isn't something we can process for a fee anymore. For flexibility on a future booking, I'd recommend the Value or Ultimate bundle, which includes a refund option.",
-        },
-        {
-          title: "Name change via family credit no longer available (English)",
-          content:
-            "I understand you were hoping to use your spouse's credit voucher for this — but that paid route was suspended on 1 August 2026 and isn't available anymore, regardless of the funding source.",
-        },
-        {
-          title: "Free spelling correction request (English)",
-          content:
-            "Not a problem at all — a spelling correction like that is completely free and unaffected by the recent suspension of paid name changes. I'll send this directly to a supervisor to process.",
-        },
-      ],
-      emailTemplates: [
-        {
-          title: "Paid name change no longer available",
-          subject: "Paid name change no longer available",
-          body: "Dear [Customer Name],\n\nThank you for your name change request on your 3L booking.\n\nEffective 1 August 2026, the paid Name Change option has been suspended on 3L and can no longer be processed for a fee. For flexibility on a future booking, we'd recommend the Value or Ultimate bundle, which includes a refund option (applicable fees apply).\n\nBest regards,\nAir Arabia Customer Support",
-        },
-        {
-          title: "Name change via family credit no longer available",
-          subject: "Name change via family credit no longer available",
-          body: "Dear [Customer Name],\n\nThank you for your request to apply your spouse's credit voucher to your booking with a name change.\n\nEffective 1 August 2026, paid name changes — including those funded by a family member's credit voucher — have been suspended on 3L and are no longer available.\n\nBest regards,\nAir Arabia Customer Support",
-        },
-        {
-          title: "Free spelling correction request",
-          subject: "Free spelling correction request",
-          body: "Dear [Customer Name],\n\nThank you for flagging the spelling discrepancy between your booking and passport.\n\nThis qualifies as a free spelling correction, which remains unaffected by the 1 August 2026 suspension of paid name changes. We've forwarded your request directly to a supervisor for processing — no charge applies.\n\nBest regards,\nAir Arabia Customer Support",
-        },
-      ],
-    });
+    await scheduleArticleSuspension("3l-name-change-3l", "3L Name Change — paid option suspension");
   }
 
   const e5Article = await prisma.article.findUnique({ where: { slug: "e5-name-change-e5" } });
   if (e5Article) {
-    await scheduleArticleSuspension("e5-name-change-e5", "E5 Name Change — paid option suspension", {
-      chatTemplates: [
-        {
-          title: "Paid name change no longer available (English)",
-          content:
-            "I'm sorry, but the paid Name Change option was suspended on 1 August 2026 and isn't available anymore. If you'd like flexibility on a future booking, I'd recommend booking the Value or Ultimate bundle, which includes a refund option.",
-        },
-        {
-          title: "Free spelling correction request (English)",
-          content:
-            "Not a problem at all — a spelling correction like that is completely free and unaffected by the suspension of paid name changes. I'll send this directly to a supervisor to process.",
-        },
-        {
-          title: "Free name update after marriage (English)",
-          content:
-            "Congratulations on the wedding! Updating to your husband's last name is free of charge and unaffected by the suspension of paid name changes — please send proof of documents like the marriage certificate, and I'll forward this directly to a supervisor.",
-        },
-      ],
-      emailTemplates: [
-        {
-          title: "Paid name change no longer available",
-          subject: "Paid name change no longer available",
-          body: "Dear [Customer Name],\n\nThank you for your name change request.\n\nThe paid Name Change option was suspended effective 1 August 2026 and is no longer available. For flexibility on a future booking, we'd recommend the Value or Ultimate bundle, which includes a refund option (applicable fees apply).\n\nBest regards,\nAir Arabia Customer Support",
-        },
-        {
-          title: "Free spelling correction request",
-          subject: "Free spelling correction request",
-          body: "Dear [Customer Name],\n\nThank you for flagging the spelling discrepancy between your booking and passport.\n\nThis qualifies as a free spelling correction, which remains unaffected by the 1 August 2026 suspension of paid name changes. We've forwarded your request directly to a supervisor for processing — no charge applies.\n\nBest regards,\nAir Arabia Customer Support",
-        },
-        {
-          title: "Free name update after marriage",
-          subject: "Free name update after marriage",
-          body: "Dear [Customer Name],\n\nThank you for your request to update your ticket to your husband's last name.\n\nThis update is free of charge and remains unaffected by the 1 August 2026 suspension of paid name changes. Please send proof of documents (e.g. marriage certificate) — we're forwarding this directly to a supervisor for processing.\n\nBest regards,\nAir Arabia Customer Support",
-        },
-      ],
-    });
+    await scheduleArticleSuspension("e5-name-change-e5", "E5 Name Change — paid option suspension");
   }
 
   await scheduleTreeSuspension("G9 Name Change — How Is It Being Paid?", "G9 Name Change tree — paid option suspension", identifyNameChangeNodes);
