@@ -36,6 +36,13 @@ export async function createQualityReview(data: {
   return prisma.qualityReview.create({ data });
 }
 
+export async function updateQualityReview(
+  id: number,
+  data: { rating: number; comment: string }
+) {
+  return prisma.qualityReview.update({ where: { id }, data });
+}
+
 export async function deleteQualityReview(id: number) {
   return prisma.qualityReview.delete({ where: { id } });
 }
