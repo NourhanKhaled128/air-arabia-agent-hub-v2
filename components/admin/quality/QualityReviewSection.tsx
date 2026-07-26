@@ -60,22 +60,17 @@ export default function QualityReviewSection({ portalUserId, reviews, canManage 
           className="mb-6 space-y-3 rounded-xl border border-slate-200 p-4"
         >
           <div className="flex items-center gap-3">
-            <label className="font-semibold text-slate-700">Rating</label>
-            <select
+            <label className="font-semibold text-slate-700">Score (0-100)</label>
+            <input
+              type="number"
               name="rating"
               required
-              defaultValue=""
-              className="rounded-lg border border-slate-300 px-3 py-2"
-            >
-              <option value="" disabled>
-                Select...
-              </option>
-              <option value="1">1 - Poor</option>
-              <option value="2">2 - Below Average</option>
-              <option value="3">3 - Average</option>
-              <option value="4">4 - Good</option>
-              <option value="5">5 - Excellent</option>
-            </select>
+              min={0}
+              max={100}
+              step={0.1}
+              placeholder="92"
+              className="w-28 rounded-lg border border-slate-300 px-3 py-2"
+            />
           </div>
 
           <textarea
@@ -106,7 +101,7 @@ export default function QualityReviewSection({ portalUserId, reviews, canManage 
                 <div>
                   <span className="flex items-center gap-1 font-bold text-amber-600">
                     <Star size={16} fill="currentColor" />
-                    {r.rating}/5
+                    {r.rating}%
                   </span>
                   <p className="mt-1 text-slate-800">{r.comment}</p>
                   <p className="mt-2 text-sm text-slate-500">

@@ -11,8 +11,8 @@ export async function createQualityReviewAction(portalUserId: number, formData: 
   const rating = Number(formData.get("rating"));
   const comment = String(formData.get("comment") ?? "").trim();
 
-  if (!Number.isInteger(rating) || rating < 1 || rating > 5 || !comment) {
-    throw new Error("A rating (1-5) and a comment are required.");
+  if (!Number.isFinite(rating) || rating < 0 || rating > 100 || !comment) {
+    throw new Error("A score (0-100) and a comment are required.");
   }
 
   await createQualityReview({

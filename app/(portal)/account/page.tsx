@@ -101,7 +101,7 @@ export default async function AccountPage() {
                 <li key={r.id} className="rounded-xl border border-gray-200 dark:border-border-subtle p-4">
                   <span className="flex items-center gap-1 font-bold text-amber-600 dark:text-amber-400">
                     <Star size={14} fill="currentColor" />
-                    {r.rating}/5
+                    {r.rating}%
                   </span>
                   <p className="mt-1 text-gray-800 dark:text-slate-200">{r.comment}</p>
                   <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">

@@ -461,7 +461,7 @@ model QualityReview {
   id           Int        @id @default(autoincrement())
   portalUserId Int
   portalUser   PortalUser @relation(fields: [portalUserId], references: [id], onDelete: Cascade)
-  rating       Int
+  rating       Float
   comment      String
   reviewerName String
   createdAt    DateTime   @default(now())

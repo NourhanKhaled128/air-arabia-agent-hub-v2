@@ -24,7 +24,7 @@ export default async function QualityFeedbackPage() {
         title="Quality Feedback"
         subtitle={
           stats.count > 0
-            ? `${stats.count} review${stats.count === 1 ? "" : "s"} · average rating ${stats.avgRating}/5`
+            ? `${stats.count} review${stats.count === 1 ? "" : "s"} · average score ${stats.avgRating}%`
             : "Ratings and notes left by QA/team leads about your calls."
         }
       />
@@ -47,7 +47,7 @@ export default async function QualityFeedbackPage() {
             >
               <span className="flex items-center gap-1 font-bold text-amber-600 dark:text-amber-400">
                 <Star size={16} fill="currentColor" />
-                {r.rating}/5
+                {r.rating}%
               </span>
               <p className="mt-2 text-gray-800 dark:text-slate-200">{r.comment}</p>
               <p className="mt-3 text-sm text-gray-500 dark:text-slate-400">

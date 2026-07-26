@@ -25,7 +25,7 @@ export default async function QualityFeedbackWidget() {
         </h2>
         {stats.avgRating != null && (
           <span className="rounded-full bg-amber-100 dark:bg-amber-950/40 px-3 py-1 text-sm font-bold text-amber-700 dark:text-amber-400">
-            Avg {stats.avgRating}/5
+            Avg {stats.avgRating}%
           </span>
         )}
       </div>
@@ -35,7 +35,7 @@ export default async function QualityFeedbackWidget() {
           <li key={r.id} className="rounded-xl border border-gray-200 dark:border-border-subtle p-3">
             <span className="flex items-center gap-1 text-sm font-bold text-amber-600 dark:text-amber-400">
               <Star size={14} fill="currentColor" />
-              {r.rating}/5
+              {r.rating}%
             </span>
             <p className="mt-1 truncate text-sm text-gray-700 dark:text-slate-300">{r.comment}</p>
           </li>
