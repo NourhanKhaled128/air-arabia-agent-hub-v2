@@ -40,13 +40,29 @@ export async function createCategoryAction(formData: FormData) {
   redirect("/admin/categories");
 }
 
+const CATEGORY_DIFF_FIELDS = {
+  name: true,
+  slug: true,
+  description: true,
+  color: true,
+  icon: true,
+  visible: true,
+  order: true,
+  group: true,
+} as const;
+
 export async function updateCategoryAction(
   id: number,
   formData: FormData
 ) {
   await requireAdminUser();
 
-  await updateCategory(id, {
+  const before = await prisma.category.findUnique({
+    where: { id },
+    select: CATEGORY_DIFF_FIELDS,
+  });
+
+  const after = await updateCategory(id, {
     name: formData.get("name") as string,
     slug: formData.get("slug") as string,
     description: formData.get("description") as string,
@@ -57,7 +73,19 @@ export async function updateCategoryAction(
     group: (formData.get("group") as string) || "Knowledge Base",
   });
 
-  await logAction("Updated", "Category", id, await currentUserName());
+  await logAction("Updated", "Category", id, await currentUserName(), {
+    before,
+    after: {
+      name: after.name,
+      slug: after.slug,
+      description: after.description,
+      color: after.color,
+      icon: after.icon,
+      visible: after.visible,
+      order: after.order,
+      group: after.group,
+    },
+  });
 
   revalidatePath("/admin/categories");
   revalidatePath("/", "layout");
@@ -67,9 +95,14 @@ export async function updateCategoryAction(
 export async function deleteCategoryAction(id: number) {
   await requireAdminUser();
 
+  const before = await prisma.category.findUnique({
+    where: { id },
+    select: CATEGORY_DIFF_FIELDS,
+  });
+
   await deleteCategory(id);
 
-  await logAction("Deleted", "Category", id, await currentUserName());
+  await logAction("Deleted", "Category", id, await currentUserName(), { before });
 
   revalidatePath("/admin/categories");
 }

@@ -22,13 +22,22 @@ export default async function CategoriesPage() {
         title="Categories"
         description="Organize your knowledge base with categories and subcategories."
         actions={
-          <Link
-            href="/admin/categories/new"
-            className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
-          >
-            <Plus size={18} />
-            New Category
-          </Link>
+          <>
+            <a
+              href="/admin/categories/export"
+              className="rounded-xl border px-6 py-3 font-semibold hover:bg-gray-50"
+            >
+              Export
+            </a>
+
+            <Link
+              href="/admin/categories/new"
+              className="flex items-center gap-2 rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"
+            >
+              <Plus size={18} />
+              New Category
+            </Link>
+          </>
         }
       />
 

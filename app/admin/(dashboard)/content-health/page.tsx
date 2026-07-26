@@ -7,6 +7,7 @@ import {
   getStaleArticles,
 } from "@/lib/content-health-service";
 import { getTopSearchMisses } from "@/lib/search-miss-service";
+import LinkCheckPanel from "@/components/admin/content-health/LinkCheckPanel";
 
 export default async function ContentHealthPage() {
   const [uncategorized, emptyCategories, danglingLinks, stale, topMisses] = await Promise.all([
@@ -103,6 +104,8 @@ export default async function ContentHealthPage() {
           </ul>
         )}
       </section>
+
+      <LinkCheckPanel />
 
       <section className="rounded-3xl bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-bold">Top Failed Searches ({topMisses.length})</h2>

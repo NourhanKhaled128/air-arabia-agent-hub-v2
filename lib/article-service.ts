@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import ExcelJS from "exceljs";
 
 function flattenCategory<T extends { category: { name: string } | null }>(
   article: T
@@ -13,6 +14,50 @@ export async function getTotalArticleViews() {
   });
 
   return result._sum.viewCount ?? 0;
+}
+
+/** Ranks articles by "Was this helpful?" feedback volume, most-reviewed first. */
+export async function getArticleFeedbackStats(limit = 10) {
+  const grouped = await prisma.feedback.groupBy({
+    by: ["articleId", "helpful"],
+    _count: { _all: true },
+  });
+
+  const byArticle = new Map<number, { helpful: number; notHelpful: number }>();
+
+  for (const row of grouped) {
+    const entry = byArticle.get(row.articleId) ?? { helpful: 0, notHelpful: 0 };
+    if (row.helpful) {
+      entry.helpful += row._count._all;
+    } else {
+      entry.notHelpful += row._count._all;
+    }
+    byArticle.set(row.articleId, entry);
+  }
+
+  const articleIds = Array.from(byArticle.keys());
+  const articles = articleIds.length
+    ? await prisma.article.findMany({
+        where: { id: { in: articleIds } },
+        select: { id: true, title: true },
+      })
+    : [];
+  const titleById = new Map(articles.map((a) => [a.id, a.title]));
+
+  return Array.from(byArticle.entries())
+    .map(([articleId, { helpful, notHelpful }]) => {
+      const total = helpful + notHelpful;
+      return {
+        articleId,
+        title: titleById.get(articleId) ?? "Untitled",
+        helpful,
+        notHelpful,
+        total,
+        ratio: total > 0 ? Math.round((helpful / total) * 100) : null,
+      };
+    })
+    .sort((a, b) => b.total - a.total)
+    .slice(0, limit);
 }
 
 export async function getAllArticles(opts?: { publishedOnly?: boolean }) {
@@ -390,4 +435,67 @@ export function buildArticleSectionsReplaceData(body: ArticleSectionsInput) {
   ) as {
     [K in keyof typeof createData]: { deleteMany: Record<string, never> } & (typeof createData)[K];
   };
+}
+
+// ---- Admin: Excel export ----
+
+/** Export-only — deliberately no matching import. Article content is spread across
+ * ~10 related tables (see getArticleById above), so a round-trip CSV/Excel import
+ * risks silently corrupting structured content; the nested column here is for
+ * reporting/backup, not re-import. */
+export async function exportArticlesWorkbook(): Promise<Buffer> {
+  const articles = await prisma.article.findMany({
+    include: {
+      category: { select: { name: true } },
+      procedures: { orderBy: { stepNo: "asc" } },
+      dispositions: true,
+      escalations: true,
+      notes: true,
+      references: true,
+      scenarios: true,
+    },
+    orderBy: { updatedAt: "desc" },
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("Articles");
+
+  sheet.columns = [
+    { header: "Title", key: "title", width: 40 },
+    { header: "Slug", key: "slug", width: 30 },
+    { header: "Category", key: "category", width: 24 },
+    { header: "Status", key: "status", width: 12 },
+    { header: "Author", key: "author", width: 20 },
+    { header: "Views", key: "views", width: 10 },
+    { header: "Last Updated", key: "updatedAt", width: 18 },
+    { header: "Description", key: "description", width: 40 },
+    { header: "Overview", key: "overview", width: 50 },
+    { header: "Structured Content (JSON, not re-importable)", key: "content", width: 60 },
+  ];
+  sheet.getRow(1).font = { bold: true };
+
+  for (const article of articles) {
+    sheet.addRow({
+      title: article.title,
+      slug: article.slug,
+      category: article.category?.name ?? "Uncategorized",
+      status: article.status,
+      author: article.author,
+      views: article.viewCount,
+      updatedAt: article.updatedAt.toLocaleString("en-GB"),
+      description: article.description,
+      overview: article.overview,
+      content: JSON.stringify({
+        procedures: article.procedures,
+        dispositions: article.dispositions,
+        escalations: article.escalations,
+        notes: article.notes,
+        references: article.references,
+        scenarios: article.scenarios,
+      }),
+    });
+  }
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(buffer);
 }

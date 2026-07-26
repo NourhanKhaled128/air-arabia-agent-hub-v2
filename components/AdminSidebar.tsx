@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -74,11 +73,16 @@ export const adminMenuGroups = [
       { title: "Categories", href: "/admin/categories", icon: Folder },
       { title: "Decision Trees", href: "/admin/decision-trees", icon: GitBranch },
       { title: "Scheduled Changes", href: "/admin/scheduled-changes", icon: History },
+      { title: "Media Library", href: "/admin/media", icon: ImageIcon },
+    ],
+  },
+  {
+    label: "Learning & Reference",
+    items: [
       { title: "Training", href: "/admin/training", icon: GraduationCap },
       { title: "Quizzes", href: "/admin/quizzes", icon: ClipboardCheck },
       { title: "Glossary", href: "/admin/glossary", icon: BookOpen },
       { title: "Quick Reference", href: "/admin/quick-reference", icon: ListChecks },
-      { title: "Media Library", href: "/admin/media", icon: ImageIcon },
     ],
   },
   {
@@ -97,6 +101,11 @@ export const adminMenuGroups = [
       { title: "Announcements", href: "/admin/announcements", icon: Megaphone },
       { title: "Notifications", href: "/admin/notifications", icon: Bell },
       { title: "Home Widgets", href: "/admin/home-widgets", icon: LayoutGrid },
+    ],
+  },
+  {
+    label: "Feedback & Quality",
+    items: [
       { title: "Comments", href: "/admin/comments", icon: MessageCircle },
       { title: "Feedback", href: "/admin/feedback", icon: MessageSquare },
       { title: "Content Suggestions", href: "/admin/content-suggestions", icon: Pencil },
@@ -137,22 +146,27 @@ export default function AdminSidebar() {
     toggleCollapsed,
     setDock,
     closeMobile,
+    openGroups,
+    setGroupOpen,
   } = useSidebarPrefs();
 
   const activeGroupLabel = adminMenuGroups.find((group) =>
     group.items.some((item) => item.href === pathname)
   )?.label;
 
-  const [closedGroups, setClosedGroups] = useState<Record<string, boolean>>({});
+  function groupKey(label: string) {
+    return `admin:group:${label}`;
+  }
 
   function isGroupOpen(label: string) {
-    if (closedGroups[label] !== undefined) return !closedGroups[label];
-    // Auto-expand whichever group contains the current page.
-    return true;
+    const stored = openGroups[groupKey(label)];
+    if (stored !== undefined) return stored;
+    // Closed by default; only the group containing the current page starts open.
+    return label === activeGroupLabel;
   }
 
   function toggleGroup(label: string) {
-    setClosedGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+    setGroupOpen(groupKey(label), !isGroupOpen(label));
   }
 
   const sideClasses = dock === "left" ? "left-0 border-r" : "right-0 border-l";

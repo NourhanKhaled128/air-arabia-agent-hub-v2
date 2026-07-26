@@ -13,13 +13,27 @@ async function currentUserName() {
 export async function deleteArticleAction(id: number) {
   await requireAdminUser();
 
+  const before = await prisma.article.findUnique({
+    where: { id },
+    select: {
+      title: true,
+      categoryId: true,
+      folderId: true,
+      description: true,
+      overview: true,
+      author: true,
+      status: true,
+      coverImage: true,
+    },
+  });
+
   await prisma.article.delete({
     where: {
       id,
     },
   });
 
-  await logAction("Deleted", "Article", id, await currentUserName());
+  await logAction("Deleted", "Article", id, await currentUserName(), { before });
 
   revalidatePath("/admin/articles");
 }

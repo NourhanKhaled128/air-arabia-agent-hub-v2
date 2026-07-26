@@ -1,17 +1,24 @@
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 export async function logAction(
   action: string,
   entity: string,
   entityId: number | null,
-  userName: string
+  userName: string,
+  diff?: { before?: unknown; after?: unknown }
 ) {
+  // A plain `null` (as opposed to `undefined`) makes Prisma throw for optional Json
+  // fields ("Expected NullableJsonNullValueInput or InputJsonValue, provided Null") —
+  // treat "no snapshot available" the same as "no diff was passed" and omit the field.
   return prisma.auditLog.create({
     data: {
       action,
       entity,
       entityId,
       userName,
+      before: diff?.before == null ? undefined : (diff.before as Prisma.InputJsonValue),
+      after: diff?.after == null ? undefined : (diff.after as Prisma.InputJsonValue),
     },
   });
 }

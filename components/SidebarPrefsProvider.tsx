@@ -21,9 +21,12 @@ interface SidebarPrefs {
   setDock: (dock: Dock) => void;
   toggleMobileOpen: () => void;
   closeMobile: () => void;
+  openGroups: Record<string, boolean>;
+  setGroupOpen: (key: string, open: boolean) => void;
 }
 
 const STORAGE_KEY = "sidebar-prefs";
+const GROUPS_STORAGE_KEY = "sidebar-groups";
 const EXPANDED_WIDTH = "18rem";
 const COLLAPSED_WIDTH = "4.5rem";
 const SCROLL_HIDE_THRESHOLD = 80;
@@ -50,10 +53,25 @@ function loadStoredPrefs(): { collapsed: boolean; dock: Dock } {
   }
 }
 
+function loadStoredGroups(): Record<string, boolean> {
+  if (typeof window === "undefined") return {};
+
+  try {
+    const raw = localStorage.getItem(GROUPS_STORAGE_KEY);
+    if (!raw) return {};
+
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
 export function SidebarPrefsProvider({ children }: { children: ReactNode }) {
   const [{ collapsed, dock }, setPersisted] = useState(loadStoredPrefs);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrollHidden, setScrollHidden] = useState(false);
+  const [openGroups, setOpenGroups] = useState(loadStoredGroups);
 
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
@@ -61,6 +79,10 @@ export function SidebarPrefsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ collapsed, dock }));
   }, [collapsed, dock]);
+
+  useEffect(() => {
+    localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(openGroups));
+  }, [openGroups]);
 
   useLayoutEffect(() => {
     document.documentElement.style.setProperty(
@@ -110,6 +132,9 @@ export function SidebarPrefsProvider({ children }: { children: ReactNode }) {
       setPersisted((prev) => ({ ...prev, dock: nextDock })),
     toggleMobileOpen: () => setMobileOpen((prev) => !prev),
     closeMobile: () => setMobileOpen(false),
+    openGroups,
+    setGroupOpen: (key, open) =>
+      setOpenGroups((prev) => ({ ...prev, [key]: open })),
   };
 
   return (

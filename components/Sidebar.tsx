@@ -193,11 +193,11 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
     toggleCollapsed,
     setDock,
     closeMobile,
+    openGroups,
+    setGroupOpen,
   } = useSidebarPrefs();
 
   const [search, setSearch] = useState("");
-
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
   const [toolsOpen, setToolsOpen] = useState(true);
 
@@ -205,8 +205,13 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
 
   const [openCategoryFolders, setOpenCategoryFolders] = useState<Record<number, boolean>>({});
 
+  const activeCategoryId = categories.find(
+    (category) => pathname === `/category/${category.slug}`
+  )?.id;
+
   function isCategoryFoldersOpen(categoryId: number) {
-    return openCategoryFolders[categoryId] ?? true;
+    // Closed by default; the folder list for the active category starts open for convenience.
+    return openCategoryFolders[categoryId] ?? categoryId === activeCategoryId;
   }
 
   function toggleCategoryFolders(categoryId: number) {
@@ -228,15 +233,29 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
     groups.set(category.group, items);
   }
 
+  const activeGroup = categories.find(
+    (category) => pathname === `/category/${category.slug}`
+  )?.group;
+
+  function groupKey(group: string) {
+    return `portal:group:${group}`;
+  }
+
   function isGroupOpen(group: string) {
-    return openGroups[group] ?? true;
+    // Closed by default; the group containing the current page starts open.
+    // A stored preference (from a prior manual toggle) always wins.
+    return openGroups[groupKey(group)] ?? group === activeGroup;
   }
 
   function toggleGroup(group: string) {
-    setOpenGroups((prev) => ({
-      ...prev,
-      [group]: !isGroupOpen(group),
-    }));
+    setGroupOpen(groupKey(group), !isGroupOpen(group));
+  }
+
+  const isPinnedOpen =
+    openGroups["portal:pinned"] ?? pinnedLinks.some((link) => link.href === pathname);
+
+  function togglePinned() {
+    setGroupOpen("portal:pinned", !isPinnedOpen);
   }
 
   const sideClasses =
@@ -360,23 +379,45 @@ export default function Sidebar({ categories, pinnedLinks, toolLinks, importantL
 
           <div className="mb-8">
 
-            {!collapsed && (
-              <h3 className="mb-3 flex items-center gap-2 px-4 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">
+            {collapsed ? (
+              <MenuSection
+                items={toMenuItems(pinnedLinks)}
+                pathname={pathname}
+                search={search}
+                collapsed={collapsed}
+                onNavigate={closeMobile}
+              />
+            ) : (
+              <>
+                <button
+                  onClick={togglePinned}
+                  className="mb-3 flex w-full items-center justify-between px-4"
+                >
 
-                <Star size={15} />
+                  <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400">
+                    <Star size={15} />
+                    Pinned Sectors
+                  </span>
 
-                Pinned Knowledge
+                  {isPinnedOpen ? (
+                    <ChevronDown size={16} />
+                  ) : (
+                    <ChevronRight size={16} />
+                  )}
 
-              </h3>
+                </button>
+
+                {isPinnedOpen && (
+                  <MenuSection
+                    items={toMenuItems(pinnedLinks)}
+                    pathname={pathname}
+                    search={search}
+                    collapsed={collapsed}
+                    onNavigate={closeMobile}
+                  />
+                )}
+              </>
             )}
-
-            <MenuSection
-              items={toMenuItems(pinnedLinks)}
-              pathname={pathname}
-              search={search}
-              collapsed={collapsed}
-              onNavigate={closeMobile}
-            />
 
           </div>
 

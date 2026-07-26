@@ -21,6 +21,13 @@ export default async function ArticlesPage() {
               Categories
             </Link>
 
+            <a
+              href="/admin/articles/export"
+              className="rounded-xl border px-6 py-3 font-semibold hover:bg-gray-50"
+            >
+              Export
+            </a>
+
             <Link
               href="/admin/articles/new"
               className="rounded-xl bg-red-700 px-6 py-3 font-semibold text-white hover:bg-red-800"

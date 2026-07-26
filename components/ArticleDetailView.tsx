@@ -11,6 +11,7 @@ import ArticleTemplateTabs from "@/components/ArticleTemplateTabs";
 import ArticleComments from "@/components/ArticleComments";
 import ArticleViewTracker from "@/components/ArticleViewTracker";
 import BookmarkButton from "@/components/BookmarkButton";
+import CopyArticleLinkButton from "@/components/CopyArticleLinkButton";
 import SuggestEditButton from "@/components/SuggestEditButton";
 import { prisma } from "@/lib/prisma";
 import { getArticleById, getArticlesByCategoryId, getArticleChangeHistory } from "@/lib/article-service";
@@ -66,6 +67,8 @@ interface Props {
   backHref?: string;
   backLabel?: string;
   categoryBasePath?: string;
+  /** Admin-only preview: skips the Draft gate below. Never set on the public route. */
+  allowDraft?: boolean;
 }
 
 export default async function ArticleDetailView({
@@ -75,6 +78,7 @@ export default async function ArticleDetailView({
   backHref = "/Knowledge",
   backLabel = "Knowledge Base",
   categoryBasePath = "/category",
+  allowDraft = false,
 }: Props) {
   const summary = await prisma.article.findUnique({
     where: { slug },
@@ -91,7 +95,7 @@ export default async function ArticleDetailView({
     notFound();
   }
 
-  if (article.status === "Draft") {
+  if (article.status === "Draft" && !allowDraft) {
     notFound();
   }
 
@@ -185,6 +189,8 @@ export default async function ArticleDetailView({
             <BookmarkButton articleId={article.id} initialBookmarked={bookmarked} />
 
             {portalUser && <SuggestEditButton articleId={article.id} />}
+
+            <CopyArticleLinkButton />
 
             <PrintButton />
 

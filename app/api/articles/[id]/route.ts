@@ -33,6 +33,22 @@ export async function PUT(
     const user = await getCurrentAdminUser();
     const userName = user?.name ?? "System";
 
+    const diffFields = {
+      title: true,
+      categoryId: true,
+      folderId: true,
+      description: true,
+      overview: true,
+      author: true,
+      status: true,
+      coverImage: true,
+    } as const;
+
+    const before = await prisma.article.findUnique({
+      where: { id: articleId },
+      select: diffFields,
+    });
+
     const article = await prisma.article.update({
       where: {
         id: articleId,
@@ -56,7 +72,19 @@ export async function PUT(
       },
     });
 
-    await logAction("Updated", "Article", article.id, userName);
+    await logAction("Updated", "Article", article.id, userName, {
+      before,
+      after: {
+        title: article.title,
+        categoryId: article.categoryId,
+        folderId: article.folderId,
+        description: article.description,
+        overview: article.overview,
+        author: article.author,
+        status: article.status,
+        coverImage: article.coverImage,
+      },
+    });
 
     return NextResponse.json(article);
 

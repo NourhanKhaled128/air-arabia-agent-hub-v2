@@ -343,6 +343,10 @@ model AuditLog {
   entityId  Int?
   userName  String
   createdAt DateTime @default(now())
+  /// Optional before/after snapshots for diffing — currently only populated by
+  /// Article and Category update/delete actions, not every entity type.
+  before    Json?
+  after     Json?
 }
 
 /// A staged content edit for an Article or DecisionTree that applies itself

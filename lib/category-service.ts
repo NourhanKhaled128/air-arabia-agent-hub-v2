@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import ExcelJS from "exceljs";
 
 export async function getCategories() {
   return prisma.category.findMany({
@@ -166,4 +167,46 @@ export async function deleteCategoryFolder(id: number) {
   return prisma.categoryFolder.delete({
     where: { id },
   });
+}
+
+// ---- Admin: Excel export ----
+
+export async function exportCategoriesWorkbook(): Promise<Buffer> {
+  const categories = await prisma.category.findMany({
+    include: {
+      _count: { select: { articles: true, folders: true } },
+    },
+    orderBy: { name: "asc" },
+  });
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("Categories");
+
+  sheet.columns = [
+    { header: "Name", key: "name", width: 30 },
+    { header: "Slug", key: "slug", width: 24 },
+    { header: "Group", key: "group", width: 20 },
+    { header: "Order", key: "order", width: 8 },
+    { header: "Visible", key: "visible", width: 10 },
+    { header: "Articles", key: "articles", width: 10 },
+    { header: "Folders", key: "folders", width: 10 },
+    { header: "Description", key: "description", width: 40 },
+  ];
+  sheet.getRow(1).font = { bold: true };
+
+  for (const category of categories) {
+    sheet.addRow({
+      name: category.name,
+      slug: category.slug,
+      group: category.group,
+      order: category.order,
+      visible: category.visible ? "Yes" : "No",
+      articles: category._count.articles,
+      folders: category._count.folders,
+      description: category.description ?? "",
+    });
+  }
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(buffer);
 }
