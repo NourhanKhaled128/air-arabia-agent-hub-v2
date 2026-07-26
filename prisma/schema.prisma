@@ -345,6 +345,25 @@ model AuditLog {
   createdAt DateTime @default(now())
 }
 
+/// A staged content edit for an Article or DecisionTree that applies itself
+/// automatically once `effectiveDate` arrives, via the daily cron at
+/// app/api/cron/apply-scheduled-changes. `payload` mirrors the exact JSON body the
+/// entity's own PUT route already accepts (see lib/scheduled-change-service.ts) — it
+/// is a discriminated union keyed by `entityType`, not a generic diff format.
+model ScheduledChange {
+  id            Int       @id @default(autoincrement())
+  entityType    String
+  entityId      Int
+  label         String
+  effectiveDate DateTime
+  status        String    @default("Pending")
+  payload       Json
+  failureReason String?
+  createdBy     String
+  createdAt     DateTime  @default(now())
+  appliedAt     DateTime?
+}
+
 model AppSetting {
   id        Int      @id @default(autoincrement())
   key       String   @unique

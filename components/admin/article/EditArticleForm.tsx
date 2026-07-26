@@ -18,6 +18,7 @@ import ChatTemplatesSection, { type ChatTemplateInput } from "./ChatTemplatesSec
 import EmailTemplatesSection, { type EmailTemplateInput } from "./EmailTemplatesSection";
 import UpdatesSection, { type UpdateInput } from "./UpdatesSection";
 import ArticleSidebar from "./ArticleSidebar";
+import { createScheduledChangeAction } from "@/app/admin/actions/scheduled-change-actions";
 
 interface ArticleWithRelations {
   id: number;
@@ -170,6 +171,8 @@ export default function EditArticleForm({
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [scheduling, setScheduling] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState("");
 
   const [form, setForm] = useState<EditFormData>(() => toFormData(article));
 
@@ -223,6 +226,35 @@ export default function EditArticleForm({
 
     }
 
+  }
+
+  async function scheduleForLater() {
+    if (!scheduleDate) {
+      alert("Pick an effective date first.");
+      return;
+    }
+
+    setScheduling(true);
+
+    try {
+      await createScheduledChangeAction({
+        entityType: "Article",
+        entityId: article.id,
+        label: `${form.title} — scheduled edit`,
+        effectiveDate: new Date(scheduleDate),
+        payload: form,
+      });
+
+      alert(`Scheduled — this edit will go live on ${new Date(scheduleDate).toLocaleString()}. The live article is unchanged until then.`);
+
+      router.push("/admin/scheduled-changes");
+
+      router.refresh();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unknown error");
+    } finally {
+      setScheduling(false);
+    }
   }
 
   return (
@@ -303,11 +335,29 @@ export default function EditArticleForm({
         history={history}
       />
 
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-end gap-3">
+
+        <label className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+          Effective date
+          <input
+            type="datetime-local"
+            value={scheduleDate}
+            onChange={(e) => setScheduleDate(e.target.value)}
+            className="rounded-lg border border-slate-300 px-2 py-1.5 dark:border-slate-700 dark:bg-slate-900"
+          />
+        </label>
+
+        <button
+          onClick={scheduleForLater}
+          disabled={scheduling || loading}
+          className="rounded-xl border border-red-700 px-6 py-3 font-semibold text-red-700 dark:text-red-400"
+        >
+          {scheduling ? "Scheduling..." : "Schedule for later"}
+        </button>
 
         <button
           onClick={save}
-          disabled={loading}
+          disabled={loading || scheduling}
           className="rounded-xl bg-red-700 px-8 py-3 font-semibold text-white"
         >
           {loading ? "Saving..." : "Save Changes"}

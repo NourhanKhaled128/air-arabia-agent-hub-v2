@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import NodeEditor, { type DecisionNodeInput } from "./NodeEditor";
+import { createScheduledChangeAction } from "@/app/admin/actions/scheduled-change-actions";
 
 interface DecisionTreeWithNodes {
   id: number;
@@ -70,10 +71,35 @@ function toFormData(tree: DecisionTreeWithNodes): EditFormData {
 export default function EditDecisionTreeForm({ tree, articles = [], trees = [] }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [scheduling, setScheduling] = useState(false);
+  const [scheduleDate, setScheduleDate] = useState("");
   const [form, setForm] = useState<EditFormData>(() => toFormData(tree));
 
   function updateField<K extends keyof EditFormData>(name: K, value: EditFormData[K]) {
     setForm((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function buildPutBody() {
+    return {
+      title: form.title,
+      description: form.description,
+      topic: form.topic,
+      status: form.status,
+      author: form.author,
+      sourceArticleId: form.sourceArticleId,
+      nodes: form.nodes.map((node, index) => ({
+        clientKey: node.id,
+        type: node.type,
+        text: node.text,
+        image: node.image,
+        order: index,
+        options: node.options.map((opt) => ({
+          label: opt.label,
+          targetClientKey: opt.targetId,
+          targetTreeId: opt.targetTreeId,
+        })),
+      })),
+    };
   }
 
   async function save() {
@@ -83,26 +109,7 @@ export default function EditDecisionTreeForm({ tree, articles = [], trees = [] }
       const response = await fetch(`/api/decision-trees/${tree.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: form.title,
-          description: form.description,
-          topic: form.topic,
-          status: form.status,
-          author: form.author,
-          sourceArticleId: form.sourceArticleId,
-          nodes: form.nodes.map((node, index) => ({
-            clientKey: node.id,
-            type: node.type,
-            text: node.text,
-            image: node.image,
-            order: index,
-            options: node.options.map((opt) => ({
-              label: opt.label,
-              targetClientKey: opt.targetId,
-              targetTreeId: opt.targetTreeId,
-            })),
-          })),
-        }),
+        body: JSON.stringify(buildPutBody()),
       });
 
       const result = await response.json();
@@ -118,6 +125,34 @@ export default function EditDecisionTreeForm({ tree, articles = [], trees = [] }
       alert(error instanceof Error ? error.message : "Unknown error");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function scheduleForLater() {
+    if (!scheduleDate) {
+      alert("Pick an effective date first.");
+      return;
+    }
+
+    setScheduling(true);
+
+    try {
+      await createScheduledChangeAction({
+        entityType: "DecisionTree",
+        entityId: tree.id,
+        label: `${form.title} — scheduled edit`,
+        effectiveDate: new Date(scheduleDate),
+        payload: buildPutBody(),
+      });
+
+      alert(`Scheduled — this edit will go live on ${new Date(scheduleDate).toLocaleString()}. The live tree is unchanged until then.`);
+
+      router.push("/admin/scheduled-changes");
+      router.refresh();
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Unknown error");
+    } finally {
+      setScheduling(false);
     }
   }
 
@@ -199,10 +234,28 @@ export default function EditDecisionTreeForm({ tree, articles = [], trees = [] }
         currentTreeId={tree.id}
       />
 
-      <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-end gap-3">
+        <label className="flex items-center gap-2 text-sm text-gray-600">
+          Effective date
+          <input
+            type="datetime-local"
+            value={scheduleDate}
+            onChange={(e) => setScheduleDate(e.target.value)}
+            className="rounded-xl border p-2"
+          />
+        </label>
+
+        <button
+          onClick={scheduleForLater}
+          disabled={scheduling || loading}
+          className="rounded-xl border border-red-700 px-6 py-3 font-semibold text-red-700 disabled:opacity-50"
+        >
+          {scheduling ? "Scheduling..." : "Schedule for later"}
+        </button>
+
         <button
           onClick={save}
-          disabled={loading}
+          disabled={loading || scheduling}
           className="rounded-xl bg-red-700 px-8 py-3 font-semibold text-white disabled:opacity-50"
         >
           {loading ? "Saving..." : "Save Changes"}

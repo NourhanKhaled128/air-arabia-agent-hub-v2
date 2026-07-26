@@ -73,6 +73,7 @@ export const adminMenuGroups = [
       { title: "Articles", href: "/admin/articles", icon: FileText },
       { title: "Categories", href: "/admin/categories", icon: Folder },
       { title: "Decision Trees", href: "/admin/decision-trees", icon: GitBranch },
+      { title: "Scheduled Changes", href: "/admin/scheduled-changes", icon: History },
       { title: "Training", href: "/admin/training", icon: GraduationCap },
       { title: "Quizzes", href: "/admin/quizzes", icon: ClipboardCheck },
       { title: "Glossary", href: "/admin/glossary", icon: BookOpen },
