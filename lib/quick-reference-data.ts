@@ -29,7 +29,7 @@ export const QUICK_REFERENCE_HUBS: QuickReferenceHub[] = [
     facts: [
       { label: "Bundle Ultimate", value: "30/40kg baggage, any seat row 2+, hot meal, 2 free mods (8h), priority check-in included" },
       { label: "Bundle Basic/Value mod/cancel T&C", value: "Basic: AED 200 mod (24h notice), AED 200 cancel — credit only, no refund · Value: 1 free mod (24h notice), cancel AED 100 credit or AED 300 refund — not applicable on Cairo routes" },
-      { label: "Name change (paid)", value: "AED 350/passenger + fare difference, 24h notice" },
+      { label: "Name change (paid — SUSPENDED from 1 Aug 2026)", value: "Was AED 350/passenger + fare difference, 24h notice. Free exceptions only: spelling correction, genuine last-name change with proof." },
       { label: "Excess baggage (Sub-Continent, point-to-point)", value: "AED 60/kg" },
       { label: "TV handling", value: "<40in free · 40–60in AED 150 · >60in not allowed" },
       { label: "Cargo (Sharjah)", value: "Export 06-514-1174 · Import 06-514-1188 / 1189 (24/7)" },
@@ -57,7 +57,7 @@ export const QUICK_REFERENCE_HUBS: QuickReferenceHub[] = [
       { label: "Bundle Basic/Value T&C (Domestic)", value: "Basic: PKR 4,500 mod (24h notice), cancel credit PKR 5,500 only, no refund · Value: 23kg baggage, 1 free mod (12h notice)" },
       { label: "Bundle Ultimate (International)", value: "40kg baggage, any seat row 2+, hot meal, priority check-in, 2 free mods (8h), free cancel credit or AED 200 refund" },
       { label: "Bundle Basic/Value T&C (International)", value: "Basic: AED 200 mod (24h notice), cancel credit AED 200 only, no refund · Value: 20/30kg baggage, 1 free mod (24h notice)" },
-      { label: "Name change (paid)", value: "AED 350 (Intl) / PKR 3,500 (Domestic) + fare difference, 24h notice" },
+      { label: "Name change (paid — SUSPENDED from 1 Aug 2026)", value: "Was AED 350 (Intl) / PKR 3,500 (Domestic) + fare difference, 24h notice. Free exceptions only: spelling correction, genuine last-name change with proof." },
       { label: "Excess baggage (arriving, direct)", value: "AED 60/kg · connecting AED 70/kg" },
       { label: "Dead body transport", value: "PKR 20,000 + fees · report 1h before departure at cargo · 24/7: +92 300 8214381" },
       { label: "OTB", value: "Free at Pakistan offices · AED 15–20 at UAE offices" },
@@ -69,6 +69,7 @@ export const QUICK_REFERENCE_HUBS: QuickReferenceHub[] = [
     facts: [
       { label: "TV handling", value: "<40in free · 40–60in EGP 2,000 · max 60in" },
       { label: "Excess baggage / cargo", value: "See the live Excess Baggage Rates – E5 / Cargo & Trade Contacts – E5 articles for current figures" },
+      { label: "Name change (paid — SUSPENDED from 1 Aug 2026)", value: "Not offered. Free exceptions only: spelling correction, genuine last-name change with proof." },
     ],
   },
   {
@@ -77,6 +78,7 @@ export const QUICK_REFERENCE_HUBS: QuickReferenceHub[] = [
     facts: [
       { label: "Early check-in", value: "Cruise Terminal/YAS Mall/Mussafah, 24h prior, AED 35/25/15 (adult/child/infant)" },
       { label: "Home check-in (MORAFIQ)", value: "24h–5h window, AED 185–400 by bag count" },
+      { label: "Name change (paid — SUSPENDED from 1 Aug 2026)", value: "Was AED 350/passenger + fare difference, 24h notice (same as G9). Free exceptions only: spelling correction, genuine last-name change with proof." },
     ],
   },
 ];

@@ -89,18 +89,18 @@ export const G9_3L_TREES: DecisionTreeSpec[] = [
   },
   {
     title: "G9 Name Change — How Is It Being Paid?",
-    description: "Route the name change request by payment method.",
+    description: "Route the name change request by payment method. Paid option suspended effective 1 Aug 2026 — see outcomes.",
     topic: "G9",
     sourceArticleSlug: "g9-name-change-g9",
     nodes: [
-      { clientKey: 1, type: "question", text: "How is the passenger paying for the name change?", options: [
+      { clientKey: 1, type: "question", text: "How would the name change be paid, or is it a free exception?", options: [
         { label: "Credit card or cash", targetClientKey: 2 },
         { label: "Previous credit voucher (immediate family only)", targetClientKey: 3 },
-        { label: "Spelling correction only", targetClientKey: 4 },
+        { label: "Free exception — spelling correction or genuine last-name change", targetClientKey: 4 },
       ] },
-      { clientKey: 2, type: "outcome", text: "AED 350 per passenger + fare difference. Must be done 24h prior to the first sector's departure." },
-      { clientKey: 3, type: "outcome", text: "Same AED 350 + fare difference, 24h notice. Raise a Sprinklr case, ask for proof of relationship — passenger gets a reply by email." },
-      { clientKey: 4, type: "outcome", text: "Free of charge. Send the request to a supervisor directly with supporting documents (e.g. marriage certificate, ID mismatch proof)." },
+      { clientKey: 2, type: "outcome", text: "SUSPENDED EFFECTIVE 1 AUGUST 2026 — the paid Name Change option (credit card/cash) is no longer offered. For requests dated 1 Aug 2026 or later: do not process; advise the passenger that post-booking flexibility now requires booking the Value or Ultimate bundle (includes a refund option, applicable fees apply) — it can't be added retroactively to an existing Basic-fare booking. Until 31 July 2026: continue processing as before — AED 350 per passenger + fare difference, 24h notice before the first sector's departure." },
+      { clientKey: 3, type: "outcome", text: "SUSPENDED EFFECTIVE 1 AUGUST 2026 — paid Name Change funded by a previous credit voucher (immediate family) is suspended on the same terms as the credit/cash path. For requests dated 1 Aug 2026 or later: do not process; advise the passenger to use Value/Ultimate bundle flexibility going forward. Until 31 July 2026: continue processing as before — AED 350 + fare difference, 24h notice, Sprinklr case with proof of relationship." },
+      { clientKey: 4, type: "outcome", text: "Free of charge — unaffected by the paid-option suspension. Two allowed exceptions only: (1) a genuine spelling correction, and (2) a genuine last-name change (e.g. after marriage) with applicable proof documents (marriage certificate, ID/passport mismatch proof, etc.). Send the request directly to a supervisor with the supporting document. Don't process anything outside these two exceptions as a free case." },
     ],
   },
   {
@@ -181,6 +181,22 @@ export const G9_3L_TREES: DecisionTreeSpec[] = [
       { clientKey: 2, type: "outcome", text: "10% off Ultimate/Business (Cairo). Valid for cardholder + spouse & children up to 18. Raise a Sprinklr case; request original ID + relationship proof; do not create an on-hold booking." },
       { clientKey: 3, type: "outcome", text: "Same 10% discount; Esaad's family definition includes spouse, parents & children with no age limit. Same Sprinklr process." },
       { clientKey: 4, type: "outcome", text: "Not eligible — valid only on departures from Abu Dhabi, RAK or Sharjah. Suggest an Air Arabia Sales Shop in the UAE for other options." },
+    ],
+  },
+  {
+    title: "3L Name Change — How Is It Being Paid?",
+    description: "Route the name change request by payment method. Paid option suspended effective 1 Aug 2026 — same policy as G9.",
+    topic: "3L",
+    sourceArticleSlug: "3l-name-change-3l",
+    nodes: [
+      { clientKey: 1, type: "question", text: "How would the name change be paid, or is it a free exception?", options: [
+        { label: "Credit card or cash", targetClientKey: 2 },
+        { label: "Previous credit voucher (immediate family only)", targetClientKey: 3 },
+        { label: "Free exception — spelling correction or genuine last-name change", targetClientKey: 4 },
+      ] },
+      { clientKey: 2, type: "outcome", text: "SUSPENDED EFFECTIVE 1 AUGUST 2026 — the paid Name Change option (credit card/cash) is no longer offered. For requests dated 1 Aug 2026 or later: do not process; advise the passenger that post-booking flexibility now requires booking the Value or Ultimate bundle (includes a refund option, applicable fees apply) — it can't be added retroactively to an existing Basic-fare booking. Until 31 July 2026: continue processing as before — AED 350 per passenger + fare difference, 24h notice before the first sector's departure (same fee structure as G9)." },
+      { clientKey: 3, type: "outcome", text: "SUSPENDED EFFECTIVE 1 AUGUST 2026 — paid Name Change funded by a previous credit voucher (immediate family) is suspended on the same terms as the credit/cash path. For requests dated 1 Aug 2026 or later: do not process; advise the passenger to use Value/Ultimate bundle flexibility going forward. Until 31 July 2026: continue processing as before — AED 350 + fare difference, 24h notice, Sprinklr case with proof of relationship." },
+      { clientKey: 4, type: "outcome", text: "Free of charge — unaffected by the paid-option suspension. Two allowed exceptions only: (1) a genuine spelling correction, and (2) a genuine last-name change (e.g. after marriage) with applicable proof documents (marriage certificate, ID/passport mismatch proof, etc.). Send the request directly to a supervisor with the supporting document. Don't process anything outside these two exceptions as a free case." },
     ],
   },
   {
