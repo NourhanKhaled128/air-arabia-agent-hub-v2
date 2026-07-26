@@ -1,15 +1,14 @@
 "use client";
 
 import NotificationItem from "./NotificationItem";
-import useNotifications from "@/hooks/useNotifications";
+import type { Notification } from "@/hooks/useNotifications";
 
-export default function NotificationDropdown() {
+interface Props {
+  notifications: Notification[];
+  unread: number;
+}
 
-  const {
-    notifications,
-    unread,
-    markAllRead,
-  } = useNotifications();
+export default function NotificationDropdown({ notifications, unread }: Props) {
 
   return (
 
@@ -20,13 +19,6 @@ export default function NotificationDropdown() {
         <h2 className="text-xl font-bold text-gray-900 dark:text-slate-100">
           Notifications
         </h2>
-
-        <button
-          onClick={markAllRead}
-          className="text-sm font-semibold text-red-700 dark:text-brand"
-        >
-          Mark all read
-        </button>
 
       </div>
 

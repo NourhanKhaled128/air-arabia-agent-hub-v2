@@ -9,14 +9,23 @@ export default function NotificationBell() {
 
   const [open, setOpen] = useState(false);
 
-  const { unread } = useNotifications();
+  const { notifications, unread, markAllRead } = useNotifications();
+
+  function toggleOpen() {
+    const next = !open;
+    setOpen(next);
+
+    // Mark as read as soon as the agent actually opens and views the list —
+    // no separate "did they click the button" step required.
+    if (next) markAllRead();
+  }
 
   return (
 
     <div className="relative">
 
       <button
-        onClick={() => setOpen(!open)}
+        onClick={toggleOpen}
         className="relative rounded-xl border border-gray-200 dark:border-border-subtle p-3 text-gray-700 dark:text-slate-300 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
       >
 
@@ -34,7 +43,7 @@ export default function NotificationBell() {
 
       </button>
 
-      {open && <NotificationDropdown />}
+      {open && <NotificationDropdown notifications={notifications} unread={unread} />}
 
     </div>
 
