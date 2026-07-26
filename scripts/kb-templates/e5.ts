@@ -99,37 +99,4 @@ export const E5_TEMPLATES: Record<string, ArticleTemplateSet> = {
       emailResolutionAr: "نعم - يوجد لدعم وكالات السفريات على E5 رقمان صالحان: 002-03 419 7635 و002-011 299 152 99. يمكن استخدام أي منهما.",
     },
   ],
-
-  "e5-name-change-e5": [
-    {
-      chatEn: "I'm sorry, but the paid Name Change option was suspended on 1 August 2026 and isn't available anymore. If you'd like flexibility on a future booking, I'd recommend booking the Value or Ultimate bundle, which includes a refund option.",
-      chatAr: "نأسف، تم تعليق خيار تغيير الاسم المدفوع اعتبارًا من 1 أغسطس 2026 ولم يعد متاحًا. إذا رغبتم بمرونة على حجز مستقبلي، أنصح بحجز باقة Value أو Ultimate التي تتضمن خيار الاسترداد.",
-      emailSubjectEn: "Paid name change no longer available",
-      emailIssueEn: "Thank you for your name change request.",
-      emailResolutionEn: "The paid Name Change option was suspended effective 1 August 2026 and is no longer available. For flexibility on a future booking, we'd recommend the Value or Ultimate bundle, which includes a refund option (applicable fees apply).",
-      emailSubjectAr: "تغيير الاسم المدفوع لم يعد متاحًا",
-      emailIssueAr: "شكراً لطلبكم تغيير الاسم.",
-      emailResolutionAr: "تم تعليق خيار تغيير الاسم المدفوع اعتبارًا من 1 أغسطس 2026 ولم يعد متاحًا. لمرونة أكبر على حجز مستقبلي، ننصح بحجز باقة Value أو Ultimate التي تتضمن خيار الاسترداد (مع تطبيق الرسوم المعمول بها).",
-    },
-    {
-      chatEn: "Not a problem at all — a spelling correction like that is completely free and unaffected by the suspension of paid name changes. I'll send this directly to a supervisor to process.",
-      chatAr: "لا مشكلة إطلاقًا - تصحيح الإملاء من هذا النوع مجاني بالكامل وغير متأثر بتعليق تغييرات الاسم المدفوعة. سأرسل هذا مباشرة إلى المشرف لمعالجته.",
-      emailSubjectEn: "Free spelling correction request",
-      emailIssueEn: "Thank you for flagging the spelling discrepancy between your booking and passport.",
-      emailResolutionEn: "This qualifies as a free spelling correction, which remains unaffected by the 1 August 2026 suspension of paid name changes. We've forwarded your request directly to a supervisor for processing — no charge applies.",
-      emailSubjectAr: "طلب تصحيح إملائي مجاني",
-      emailIssueAr: "شكراً لإبلاغنا بالاختلاف الإملائي بين حجزكم وجواز سفركم.",
-      emailResolutionAr: "يندرج هذا ضمن التصحيح الإملائي المجاني، وهو غير متأثر بتعليق تغييرات الاسم المدفوعة اعتبارًا من 1 أغسطس 2026. لقد أحلنا طلبكم مباشرة إلى المشرف للمعالجة - دون أي رسوم.",
-    },
-    {
-      chatEn: "Congratulations on the wedding! Updating to your husband's last name is free of charge and unaffected by the suspension of paid name changes — please send proof of documents like the marriage certificate, and I'll forward this directly to a supervisor.",
-      chatAr: "تهانينا بالزواج! تحديث اللقب إلى لقب زوجكم مجاني وغير متأثر بتعليق تغييرات الاسم المدفوعة - يرجى إرسال المستندات المطلوبة مثل عقد الزواج، وسأحيل الطلب مباشرة إلى المشرف.",
-      emailSubjectEn: "Free name update after marriage",
-      emailIssueEn: "Thank you for your request to update your ticket to your husband's last name.",
-      emailResolutionEn: "This update is free of charge and remains unaffected by the 1 August 2026 suspension of paid name changes. Please send proof of documents (e.g. marriage certificate) — we're forwarding this directly to a supervisor for processing.",
-      emailSubjectAr: "تحديث اسم مجاني بعد الزواج",
-      emailIssueAr: "شكراً لطلبكم تحديث تذكرتكم إلى لقب زوجكم.",
-      emailResolutionAr: "هذا التحديث مجاني وغير متأثر بتعليق تغييرات الاسم المدفوعة. يرجى إرسال المستندات المطلوبة (مثل عقد الزواج) - سنحيل هذا الطلب مباشرة إلى المشرف للمعالجة.",
-    },
-  ],
 };

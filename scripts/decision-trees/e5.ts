@@ -32,21 +32,6 @@ export const E5_TREES: DecisionTreeSpec[] = [
     ],
   },
   {
-    title: "E5 Name Change — Which Category?",
-    description: "Paid Name Change suspended effective 1 Aug 2026 — only two free exceptions remain.",
-    topic: "E5",
-    sourceArticleSlug: "e5-name-change-e5",
-    nodes: [
-      { clientKey: 1, type: "question", text: "What kind of name change is this?", options: [
-        { label: "Genuine spelling correction", targetClientKey: 2 },
-        { label: "Genuine last-name change (e.g. marriage) with proof", targetClientKey: 2 },
-        { label: "Anything else (different name, different traveler, no proof)", targetClientKey: 3 },
-      ] },
-      { clientKey: 2, type: "outcome", text: "Free of charge. Send the request directly to a supervisor with the supporting document (e.g. marriage certificate, ID/passport mismatch proof). These are the only two free exceptions." },
-      { clientKey: 3, type: "outcome", text: "Not offered — the paid Name Change option was suspended effective 1 August 2026. Do not process a paid name change under any circumstances. Advise the passenger that post-booking flexibility now requires booking the Value or Ultimate bundle (includes a refund option, applicable fees apply) at time of booking — it can't be added retroactively to an existing booking." },
-    ],
-  },
-  {
     title: "E5 Cargo & Trade — Who Do I Contact?",
     description: "Routing for cargo and travel-agency support in Egypt.",
     topic: "E5",

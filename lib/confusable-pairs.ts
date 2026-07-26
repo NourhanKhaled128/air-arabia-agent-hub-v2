@@ -14,22 +14,12 @@ export const CONFUSABLE_PAIRS: Record<string, ConfusablePointer> = {
   "g9-name-change-g9": {
     targetSlug: "3o-name-correction-request-decision-flow-3o",
     targetTitle: "3O Name Correction — Decision Flow",
-    note: "The paid name change option was suspended effective 1 Aug 2026 — only two free exceptions remain (spelling correction, genuine last-name change with proof), both sent to a Supervisor. 3O runs a separate, unaffected free/fee/rejected policy — don't confuse the two queues.",
+    note: "A paid name change (different passenger, fare difference applies) is not the same as a free spelling correction (same passenger, sent to a Supervisor) — don't confuse the two queues.",
   },
   "9p-name-change-9p": {
     targetSlug: "3o-name-correction-request-decision-flow-3o",
     targetTitle: "3O Name Correction — Decision Flow",
-    note: "The paid name change option was suspended effective 1 Aug 2026 — only two free exceptions remain (spelling correction, genuine last-name change with proof), both sent to a Supervisor. 3O runs a separate, unaffected free/fee/rejected policy — don't confuse the two queues.",
-  },
-  "3l-name-change-3l": {
-    targetSlug: "3o-name-correction-request-decision-flow-3o",
-    targetTitle: "3O Name Correction — Decision Flow",
-    note: "The paid name change option was suspended effective 1 Aug 2026 — only two free exceptions remain (spelling correction, genuine last-name change with proof), both sent to a Supervisor. 3O runs a separate, unaffected free/fee/rejected policy — don't confuse the two queues.",
-  },
-  "e5-name-change-e5": {
-    targetSlug: "3o-name-correction-request-decision-flow-3o",
-    targetTitle: "3O Name Correction — Decision Flow",
-    note: "The paid name change option was suspended effective 1 Aug 2026 — only two free exceptions remain (spelling correction, genuine last-name change with proof), both sent to a Supervisor. 3O runs a separate, unaffected free/fee/rejected policy — don't confuse the two queues.",
+    note: "A paid name change (different passenger, fare difference applies) is not the same as a free spelling correction (same passenger, sent to a Supervisor) — don't confuse the two queues.",
   },
   "3o-name-change-3o": {
     targetSlug: "3o-name-correction-request-decision-flow-3o",

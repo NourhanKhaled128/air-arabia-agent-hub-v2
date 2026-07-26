@@ -60,18 +60,18 @@ export const NINE_P_TREES: DecisionTreeSpec[] = [
   },
   {
     title: "9P Name Change — How Is It Being Paid?",
-    description: "Route the name change request by payment method. Paid option suspended effective 1 Aug 2026 — see outcomes.",
+    description: "Route the name change request by payment method.",
     topic: "9P",
     sourceArticleSlug: "9p-name-change-9p",
     nodes: [
-      { clientKey: 1, type: "question", text: "How would the name change be paid, or is it a free exception?", options: [
+      { clientKey: 1, type: "question", text: "How is the passenger paying, and domestic or international?", options: [
         { label: "Credit card or cash", targetClientKey: 2 },
         { label: "Previous credit voucher (immediate family only)", targetClientKey: 3 },
-        { label: "Free exception — spelling correction or genuine last-name change", targetClientKey: 4 },
+        { label: "Spelling correction only", targetClientKey: 4 },
       ] },
-      { clientKey: 2, type: "outcome", text: "SUSPENDED EFFECTIVE 1 AUGUST 2026 — the paid Name Change option (credit card/cash) is no longer offered. For requests dated 1 Aug 2026 or later: do not process; advise the passenger that post-booking flexibility now requires booking the Value or Ultimate bundle (includes a refund option, applicable fees apply) — it can't be added retroactively to an existing Basic-fare booking. Until 31 July 2026: continue processing as before — PKR 3,500 (domestic) or AED 350 (international) per passenger + fare difference, 24h notice before the first sector's departure." },
-      { clientKey: 3, type: "outcome", text: "SUSPENDED EFFECTIVE 1 AUGUST 2026 — paid Name Change funded by a previous credit voucher (immediate family) is suspended on the same terms as the credit/cash path. For requests dated 1 Aug 2026 or later: do not process; advise the passenger to use Value/Ultimate bundle flexibility going forward. Until 31 July 2026: continue processing as before — same fees, 24h notice, Sprinklr case with proof of relationship." },
-      { clientKey: 4, type: "outcome", text: "Free of charge — unaffected by the paid-option suspension. Two allowed exceptions only: (1) a genuine spelling correction, and (2) a genuine last-name change (e.g. after marriage) with applicable proof documents. Send directly to a supervisor with supporting documents. Don't process anything outside these two exceptions as a free case." },
+      { clientKey: 2, type: "outcome", text: "PKR 3,500 (domestic) or AED 350 (international) per passenger + fare difference. 24h notice before first sector's departure." },
+      { clientKey: 3, type: "outcome", text: "Same fees, 24h notice. Raise a Sprinklr case, ask for proof of relationship — reply comes by email." },
+      { clientKey: 4, type: "outcome", text: "Free of charge. Send directly to a supervisor with supporting documents." },
     ],
   },
   {
