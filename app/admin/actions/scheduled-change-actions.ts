@@ -17,7 +17,11 @@ interface CreateScheduledChangeInput {
   entityId: number;
   label: string;
   effectiveDate: Date;
-  payload: Prisma.InputJsonValue;
+  // Callers pass their form-state object directly (EditFormData, etc.) — those are
+  // plain JSON-safe data but don't have an index signature, so they don't structurally
+  // satisfy Prisma.InputJsonValue. Accept `object` here and cast at the Prisma call
+  // instead of forcing every caller to cast/import Prisma types.
+  payload: object;
 }
 
 // Same permission split as the entities' own publish actions: Article publishes are
@@ -39,7 +43,7 @@ export async function createScheduledChangeAction(input: CreateScheduledChangeIn
       entityId: input.entityId,
       label: input.label,
       effectiveDate: input.effectiveDate,
-      payload: input.payload,
+      payload: input.payload as unknown as Prisma.InputJsonValue,
       createdBy: userName,
     },
   });
